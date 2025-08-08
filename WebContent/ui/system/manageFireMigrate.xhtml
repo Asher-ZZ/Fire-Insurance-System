@@ -317,6 +317,9 @@
 						<h:outputText value="" />
 						<h:outputText
 							value="#{ManageFireBuildingActionBean.buildingInfo.floor}" />
+							
+							
+							
 						<h:outputText value="" />
 					</h:panelGrid>
 					<p:commandButton value="Next" action="next" process="@this"
@@ -325,130 +328,142 @@
 						action="#{ManageFireBuildingActionBean.saveBuildingInfo}"
 						update=":fireProposalEntry" process="@this" />
 				</p:tab>
-				<!--  Summary Tab  -->
-				<p:tab id="summary" title="Summary">
-					<h:panelGrid columns="2" styleClass="ui-fluid">
-						<h:outputText value="Proposal Summary" styleClass="title" />
-						<h:outputText value="" />
-						<h:outputText value="Property Interest: " />
-						<h:outputText
-							value="#{ManageFireProposalActionBean.fireProposal.propertyInterest}" />
-						<h:outputText value="Property Location: " />
-						<h:outputText
-							value="#{ManageFireProposalActionBean.fireProposal.propertyLocation}" />
-						<h:outputText value="Township: " />
-						<h:outputText
-							value="#{ManageFireProposalActionBean.fireProposal.township}" />
-						<h:outputText value="Policy No.: " />
-						<h:outputText
-							value="#{ManageFireProposalActionBean.fireProposal.policyNumber}" />
-						<h:outputText value="Sale Channel: " />
-						<h:outputText
-							value="#{ManageFireProposalActionBean.fireProposal.saleChannel}" />
-						<h:outputText value="Payment Type: " />
-						<h:outputText
-							value="#{ManageFireProposalActionBean.fireProposal.paymentType}" />
-						<h:outputText value="Branch: " />
-						<h:outputText
-							value="#{ManageFireProposalActionBean.fireProposal.branch}" />
-						<h:outputText value="Submit Date: " />
-						<h:outputText
-							value="#{ManageFireProposalActionBean.fireProposal.submittedDate}">
-							<f:convertDateTime pattern="dd-MM-yyyy" />
-						</h:outputText>
-						<h:outputText value="Currency Type: " />
-						<h:outputText
-							value="#{ManageFireProposalActionBean.fireProposal.currencyType}" />
-						<h:outputText value="Period of Insurance: " />
-						<h:outputText
-							value="#{ManageFireProposalActionBean.fireProposal.insurancePeriodDays}" />
-						<h:outputText value="Policy Start Date: " />
-						<h:outputText
-							value="#{ManageFireProposalActionBean.fireProposal.policyStartDate}">
-							<f:convertDateTime pattern="dd-MM-yyyy" />
-						</h:outputText>
-						<h:outputText value="Building Name: " />
-						<h:outputText
-							value="#{ManageFireBuildingActionBean.buildingInfo.buildingName}" />
-						<h:outputText value="Floor: " />
-						<h:outputText
-							value="#{ManageFireBuildingActionBean.buildingInfo.floor}" />
-						<h:outputText value="Wall: " />
-						<h:outputText
-							value="#{ManageFireBuildingActionBean.buildingInfo.wall}" />
-						<h:outputText value="Roofing: " />
-						<h:outputText
-							value="#{ManageFireBuildingActionBean.buildingInfo.roofing}" />
-						<h:outputText value="Building Class: " />
-						<h:outputText
-							value="#{ManageFireBuildingActionBean.buildingInfo.buildingClass}" />
-						<h:outputText value="Nature of Business: " />
-						<h:outputText
-							value="#{ManageFireBuildingActionBean.buildingInfo.natureOfBusiness}" />
-						<h:outputText value="Main Cover: " />
-						<h:outputText
-							value="#{ManageFireBuildingActionBean.buildingInfo.mainCover}" />
-						<h:outputText value="Floor Name: " />
-						<h:outputText
-							value="#{ManageFireBuildingActionBean.buildingInfo.floorName}" />
-						<h:outputText value="Sum Insured: " />
-						<h:outputText
-							value="#{ManageFireBuildingActionBean.buildingInfo.sumInsured}">
-							<f:convertNumber minFractionDigits="2" />
-						</h:outputText>
-						<h:outputText value="Length (ft): " />
-						<h:outputText
-							value="#{ManageFireBuildingActionBean.buildingInfo.length}" />
-						<h:outputText value="Width (ft): " />
-						<h:outputText
-							value="#{ManageFireBuildingActionBean.buildingInfo.width}" />
-						<h:outputText value="Height (ft): " />
-						<h:outputText
-							value="#{ManageFireBuildingActionBean.buildingInfo.height}" />
-						<h:outputText value="Square Feet: " />
-						<h:outputText
-							value="#{ManageFireBuildingActionBean.buildingInfo.squareFeet}" />
-						<h:outputText value="Air Craft Damage: " />
-						<h:outputText
-							value="#{ManageFireBuildingActionBean.buildingInfo.airCraftDamage}" />
-						<h:outputText value="EarthQuake Fire Earth Shock: " />
-						<h:outputText
-							value="#{ManageFireBuildingActionBean.buildingInfo.earthQuakeFire}" />
-						<h:outputText value="Flood And Inundation: " />
-						<h:outputText
-							value="#{ManageFireBuildingActionBean.buildingInfo.floodAndInundation}" />
-						<h:outputText value="Impact Damage: " />
-						<h:outputText
-							value="#{ManageFireBuildingActionBean.buildingInfo.impactDamage}" />
-						<h:outputText value="Riot, Strike And Malicious Damage: " />
-						<h:outputText
-							value="#{ManageFireBuildingActionBean.buildingInfo.riotStrike}" />
-						<h:outputText value="Spontaneous Combustion: " />
-						<h:outputText
-							value="#{ManageFireBuildingActionBean.buildingInfo.spontaneousCombustion}" />
-						<h:outputText
-							value="Storm, Typhoon, Hurricane, Tempest, Cyclone-Others: " />
-						<h:outputText
-							value="#{ManageFireBuildingActionBean.buildingInfo.stormTyphoon}" />
-						<h:outputText value="Water(B): " />
-						<h:outputText
-							value="#{ManageFireBuildingActionBean.buildingInfo.waterDamage}" />
-						<h:outputText value="Subsidence And Landslide: " />
-						<h:outputText
-							value="#{ManageFireBuildingActionBean.buildingInfo.subsidenceAndLandslide}" />
-						<h:outputText value="War Risk: " />
-						<h:outputText
-							value="#{ManageFireBuildingActionBean.buildingInfo.warRisk}" />
-					</h:panelGrid>
-					<p:commandButton value="Save"
-						action="#{ManageFireProposalActionBean.saveFireProposal}"
-						update=":fireProposalEntry" process="@this"
-						styleClass="green-button" />
-					<p:commandButton value="Cancel"
-						action="#{ManageFireProposalActionBean.cancel}"
-						update=":fireProposalEntry" process="@this"
-						styleClass="red-button" />
+				
+				
+				
+				
+				<p:tab title="Premium Info">
+					<p:dataTable id="premiumTable" var="premium"
+						value="#{proposalBean.premiumList}" styleClass="ui-datatable">
+						<p:column headerText="No" style="width:5%;">
+							<h:outputText value="#{premium.rowNum}" />
+						</p:column>
+						<p:column headerText="Building Name" style="width:20%;">
+							<h:outputText value="#{premium.buildingName}" />
+						</p:column>
+						<p:column headerText="Sum Insured" style="width:15%;">
+							<h:outputText value="#{premium.sumInsured}">
+								<f:convertNumber type="currency"
+									currencySymbol="#{proposalBean.currencyType}" />
+							</h:outputText>
+						</p:column>
+						<p:column headerText="Premium Rate" style="width:15%;">
+							<h:outputText value="#{premium.premiumRate}">
+								<f:convertNumber pattern="#0.00' %'" />
+							</h:outputText>
+						</p:column>
+						<p:column headerText="Basic Premium (Period)" style="width:15%;">
+							<h:outputText value="#{premium.basicPremiumPeriod}">
+								<f:convertNumber type="currency"
+									currencySymbol="#{proposalBean.currencyType}" />
+							</h:outputText>
+						</p:column>
+						<p:column headerText="Basic Premium (Term)" style="width:15%;">
+							<h:outputText value="#{premium.basicPremiumTerm}">
+								<f:convertNumber type="currency"
+									currencySymbol="#{proposalBean.currencyType}" />
+							</h:outputText>
+						</p:column>
+						<p:column headerText="AddOn Premium (Period)" style="width:15%;">
+							<h:outputText value="#{premium.addOnPremiumPeriod}">
+								<f:convertNumber type="currency"
+									currencySymbol="#{proposalBean.currencyType}" />
+							</h:outputText>
+						</p:column>
+						<p:column headerText="AddOn Premium (Term)" style="width:15%;">
+							<h:outputText value="#{premium.addOnPremiumTerm}">
+								<f:convertNumber type="currency"
+									currencySymbol="#{proposalBean.currencyType}" />
+							</h:outputText>
+						</p:column>
+						<p:column headerText="Total Premium (Period)" style="width:15%;">
+							<h:outputText value="#{premium.totalPremiumPeriod}">
+								<f:convertNumber type="currency"
+									currencySymbol="#{proposalBean.currencyType}" />
+							</h:outputText>
+						</p:column>
+					</p:dataTable>
+					<p:dataTable id="premiumTotal" var="total"
+						value="#{proposalBean.premiumTotals}" rows="1"
+						styleClass="ui-datatable">
+						<p:column headerText="Total:" style="font-weight:bold;">
+							<h:outputText value="Total:" />
+						</p:column>
+						<p:column>
+							<h:outputText value="#{total.sumInsured}">
+								<f:convertNumber type="currency"
+									currencySymbol="#{proposalBean.currencyType}" />
+							</h:outputText>
+						</p:column>
+						<p:column>
+							<h:outputText value="" />
+						</p:column>
+						<p:column>
+							<h:outputText value="#{total.basicPremiumPeriod}">
+								<f:convertNumber type="currency"
+									currencySymbol="#{proposalBean.currencyType}" />
+							</h:outputText>
+						</p:column>
+						<p:column>
+							<h:outputText value="#{total.basicPremiumTerm}">
+								<f:convertNumber type="currency"
+									currencySymbol="#{proposalBean.currencyType}" />
+							</h:outputText>
+						</p:column>
+						<p:column>
+							<h:outputText value="#{total.addOnPremiumPeriod}">
+								<f:convertNumber type="currency"
+									currencySymbol="#{proposalBean.currencyType}" />
+							</h:outputText>
+						</p:column>
+						<p:column>
+							<h:outputText value="#{total.addOnPremiumTerm}">
+								<f:convertNumber type="currency"
+									currencySymbol="#{proposalBean.currencyType}" />
+							</h:outputText>
+						</p:column>
+						<p:column>
+							<h:outputText value="#{total.totalPremiumPeriod}">
+								<f:convertNumber type="currency"
+									currencySymbol="#{proposalBean.currencyType}" />
+							</h:outputText>
+						</p:column>
+					</p:dataTable>
+					
 				</p:tab>
+
+				<p:tab title="Fire Policy Enquiry">
+					<p:growl escape="false" globalOnly="true" life="5000"
+						showDetail="true" />
+					<h:outputText value="Fire Policy Enquiry" styleClass="title" />
+					<p:panelGrid columns="2"
+						columnClasses="ui-grid-col-3, ui-grid-col-9" layout="grid"
+						styleClass="ui-panelgrid-blank ui-fluid">
+						<h:outputText value="Policy Start Date From"
+							styleClass="input-label" />
+						<p:calendar id="startDateFrom"
+							value="#{policyEnquiryBean.startDateFrom}" pattern="dd-MM-yyyy"
+							showOn="button" />
+						<h:outputText value="Policy Start Date To"
+							styleClass="input-label" />
+						<p:calendar id="startDateTo"
+							value="#{policyEnquiryBean.startDateTo}" pattern="dd-MM-yyyy"
+							showOn="button" />
+						<h:outputText value="Product" styleClass="input-label" />
+						<p:autoComplete id="product" value="#{policyEnquiryBean.product}"
+							completeMethod="#{policyEnquiryBean.completeProduct}" var="prod"
+							itemLabel="#{prod.name}" itemValue="#{prod}"
+							placeholder="Select Product" />
+						<h:outputText value="Policy No." styleClass="input-label" />
+						<p:inputText id="enquiryPolicyNo"
+							value="#{policyEnquiryBean.policyNo}" />
+						<h:outputText value="" />
+					
+					</p:panelGrid>
+    ...
+</p:tab>
+
+
 			</p:wizard>
 		</h:form>
 	</ui:define>
