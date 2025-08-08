@@ -1,0 +1,53 @@
+<ui:composition 
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:p="http://primefaces.org/ui">
+
+    <h:form id="menuForm">
+        <style type="text/css">
+            .ui-menubar,
+            .ui-menu-child,
+            .ui-menu {
+                background: #00aab4 !important;
+                border: 1px solid #00aab5 !important;
+            }
+
+            .ui-menu .ui-menuitem-text {
+                color: white;
+            }
+
+            .ui-menu .ui-state-hover {
+                background: #75807a !important;
+            }
+        </style>
+
+        <p:menubar autoDisplay="false" rendered="#{not empty sessionScope.LoginUser}">
+            <p:menuitem value="Home" action="home" ajax="false" immediate="true" />
+
+            <p:submenu label="Setup Entry" rendered="#{LoginBean.hasPermission('Setup Entry')}">
+                <p:menuitem value="Branch Entry" action="branchEntry" ajax="false"
+                    rendered="#{LoginBean.hasSubmenuPermission('Branch Entry')}" />
+
+                <p:menuitem value="User Entry" action="userEntry" ajax="false"
+                    rendered="#{LoginBean.hasSubmenuPermission('User Entry')}" />
+
+                <p:menuitem value="Role Entry" action="roleEntry" ajax="false"
+                    rendered="#{LoginBean.hasSubmenuPermission('Role Entry')}" />
+
+                <p:menuitem value="FireProposal Entry" action="fireProposalEntry" ajax="false"
+                    rendered="#{LoginBean.hasSubmenuPermission('FireProposal Entry')}" />
+            </p:submenu>
+
+            <p:menuitem value="Wizard" action="wizard" ajax="false" immediate="true" />
+            <p:menuitem value="Customer List" action="customerList" ajax="false" immediate="true" />
+            <p:menuitem value="Manage Occupation" action="manageOccupation" ajax="false" immediate="true" />
+            <p:menuitem value="Manage Proposal" action="manageProposal" ajax="false" immediate="true" />
+            <p:menuitem value="Excel" action="excel" ajax="false" immediate="true" />
+            <p:menuitem value="Proposal Report" action="proposalListing" ajax="false" immediate="true" />
+            <p:menuitem value="Search Page" action="searchProposal" ajax="false" immediate="true" />
+            <p:menuitem value="FireProposal Form" action="fireProposalEntry" ajax="false" immediate="true" />
+        </p:menubar>
+    </h:form>
+</ui:composition>
