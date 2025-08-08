@@ -9,6 +9,8 @@ import org.ace.accounting.system.fire.FireProposal;
 import org.ace.accounting.system.fire.persistence.interfaces.IFireProposalDAO;
 import org.ace.java.component.persistence.BasicDAO;
 import org.ace.java.component.persistence.exception.DAOException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,14 +18,19 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository("FireProposalDAO")
 public class FireProposalDAO extends BasicDAO implements IFireProposalDAO {
 
+    private static final Logger logger = LoggerFactory.getLogger(FireProposalDAO.class);
+
     @SuppressWarnings("unchecked")
+    @Transactional(propagation = Propagation.REQUIRED, readOnly = true)
     public List<FireProposal> findAll() throws DAOException {
         List<FireProposal> result = null;
         try {
             Query q = em.createQuery("SELECT f FROM FireProposal f"); // JPQL query
             result = q.getResultList();
             em.flush();
+            logger.debug("Found {} fire proposals", result.size());
         } catch (PersistenceException pe) {
+            logger.error("Failed to find all FireProposal", pe);
             throw translate("Failed to find all FireProposal", pe);
         }
         return result;
@@ -32,9 +39,15 @@ public class FireProposalDAO extends BasicDAO implements IFireProposalDAO {
     @Transactional(propagation = Propagation.REQUIRED)
     public void insert(FireProposal fireProposal) throws DAOException {
         try {
+            if (fireProposal.getBuildingInfo() != null && !em.contains(fireProposal.getBuildingInfo())) {
+                em.persist(fireProposal.getBuildingInfo()); // Explicitly persist BuildingInfo if unmanaged
+                logger.debug("Persisted BuildingInfo with ID: {}", fireProposal.getBuildingInfo().getId());
+            }
             em.persist(fireProposal);
             em.flush();
+            logger.debug("Persisted FireProposal with ID: {}", fireProposal.getId());
         } catch (PersistenceException pe) {
+            logger.error("Failed to insert FireProposal", pe);
             throw translate("Failed to insert " + fireProposal.getClass().getName(), pe);
         }
     }
@@ -42,12 +55,18 @@ public class FireProposalDAO extends BasicDAO implements IFireProposalDAO {
     @Transactional(propagation = Propagation.REQUIRED)
     public FireProposal update(FireProposal fireProposal) throws DAOException {
         try {
+            if (fireProposal.getBuildingInfo() != null && !em.contains(fireProposal.getBuildingInfo())) {
+                em.merge(fireProposal.getBuildingInfo()); // Merge if unmanaged
+                logger.debug("Merged BuildingInfo with ID: {}", fireProposal.getBuildingInfo().getId());
+            }
             fireProposal = em.merge(fireProposal);
             em.flush();
+            logger.debug("Updated FireProposal with ID: {}", fireProposal.getId());
+            return fireProposal;
         } catch (PersistenceException pe) {
+            logger.error("Failed to update FireProposal", pe);
             throw translate("Failed to update " + fireProposal.getClass().getName(), pe);
         }
-        return fireProposal;
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
@@ -56,7 +75,9 @@ public class FireProposalDAO extends BasicDAO implements IFireProposalDAO {
             fireProposal = em.merge(fireProposal);
             em.remove(fireProposal);
             em.flush();
+            logger.debug("Deleted FireProposal with ID: {}", fireProposal.getId());
         } catch (PersistenceException pe) {
+            logger.error("Failed to delete FireProposal", pe);
             throw translate("Failed to delete " + fireProposal.getClass().getName(), pe);
         }
     }
@@ -64,8 +85,11 @@ public class FireProposalDAO extends BasicDAO implements IFireProposalDAO {
     @Transactional(propagation = Propagation.REQUIRED, readOnly = true)
     public FireProposal findById(String id) throws DAOException {
         try {
-            return em.find(FireProposal.class, id);
+            FireProposal result = em.find(FireProposal.class, id);
+            logger.debug("Found FireProposal with ID: {}", id);
+            return result;
         } catch (PersistenceException pe) {
+            logger.error("Failed to find FireProposal by id: " + id, pe);
             throw translate("Failed to find FireProposal by id: " + id, pe);
         }
     }
