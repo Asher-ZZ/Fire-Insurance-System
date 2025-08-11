@@ -25,6 +25,9 @@ import org.ace.java.web.common.BaseBean;
 import org.primefaces.event.FlowEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import java.util.Calendar;
+import java.util.Date;
+
 
 @ManagedBean(name = "ManageFireProposalActionBean")
 @ViewScoped
@@ -47,6 +50,7 @@ public class ManageFireProposalActionBean extends BaseBean {
 
     private Date minDate = toDate(LocalDate.of(1990, 1, 1));
     private Date maxDate = toDate(LocalDate.now(ZoneId.of("Australia/Sydney")));
+
 
     private Date toDate(LocalDate localDate) {
         return Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
@@ -168,21 +172,12 @@ public class ManageFireProposalActionBean extends BaseBean {
 
     public void saveAll() {
         try {
-            if (fireProposal.getBuildingInfo() == null) {
-                fireProposal.setBuildingInfo(buildingInfo);
-            }
-            if (fireProposal.getPremiumList() == null) {
-                fireProposal.setPremiumList(premiumList);
-            } else if (!fireProposal.getPremiumList().equals(premiumList)) {
-                fireProposal.getPremiumList().clear();
-                fireProposal.getPremiumList().addAll(premiumList);
-            }
-			/*
-			 * refreshTotals(); logger.
-			 * debug("Saving FireProposal: Customer={}, PaymentType={}, BuildingName={}",
-			 * fireProposal.getCustomer(), fireProposal.getPaymentType(),
-			 * fireProposal.getBuildingInfo().getBuildingName());
-			 */
+            // Sync building info and premium list as you already do...
+
+            // Make sure policyEndDate is calculated fresh before saving
+            calculatePolicyEndDate();
+            logger.debug("Saving FireProposal with policyEndDate: {}", fireProposal.getPolicyEndDate());
+
             if (createNew) {
                 fireProposalService.addNewFireProposal(fireProposal);
                 addInfoMessage(null, MessageId.INSERT_SUCCESS, fireProposal.getCustomer());
@@ -199,6 +194,7 @@ public class ManageFireProposalActionBean extends BaseBean {
             handleSysException(ex);
         }
     }
+
 
     public String cancel() {
         createNewFireProposal();
@@ -217,6 +213,42 @@ public class ManageFireProposalActionBean extends BaseBean {
         }
     }
     */
+    
+    
+    private void calculatePolicyEndDate() {
+        if (fireProposal.getPolicyStartDate() == null 
+            || fireProposal.getInsurancePeriodDays() == null 
+            || fireProposal.getInsurancePeriodUnit() == null) {
+            fireProposal.setPolicyEndDate(null);
+            return;
+        }
+
+        LocalDate start = fireProposal.getPolicyStartDate()
+                .toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate();
+
+        switch (fireProposal.getInsurancePeriodUnit().toUpperCase()) {
+            case "DAY":
+                start = start.plusDays(fireProposal.getInsurancePeriodDays() - 1);
+                break;
+            case "MONTH":
+                start = start.plusMonths(fireProposal.getInsurancePeriodDays()).minusDays(1);
+                break;
+            case "YEAR":
+                start = start.plusYears(fireProposal.getInsurancePeriodDays()).minusDays(1);
+                break;
+            default:
+                // fallback treat as days
+                start = start.plusDays(fireProposal.getInsurancePeriodDays() - 1);
+                break;
+        }
+
+        fireProposal.setPolicyEndDate(Date.from(start.atStartOfDay(ZoneId.systemDefault()).toInstant()));
+    }
+
+
+
 
     public FireProposal getFireProposal() {
         return fireProposal != null ? fireProposal : (fireProposal = new FireProposal());

@@ -93,6 +93,24 @@ public class FireProposal implements Serializable, Cloneable {
     @Column(name = "Version")
     private int version;
 
+    
+    @Temporal(TemporalType.DATE)
+    @Column(name = "PolicyEndDate")
+    private Date policyEndDate;
+
+    public Date getPolicyEndDate() {
+        return policyEndDate;
+    }
+
+    public void setPolicyEndDate(Date policyEndDate) {
+        this.policyEndDate = policyEndDate;
+    }
+
+    
+    
+    
+    
+    
     @Embedded
     private BasicEntity basicEntity;
 

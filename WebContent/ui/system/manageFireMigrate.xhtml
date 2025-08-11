@@ -8,6 +8,32 @@
     <ui:param name="headerRendered" value="true"/>
     <ui:define name="content">
         <h:outputStylesheet library="css" name="custom-styles.css"/>
+        <h:head>
+            <style>
+                .checkbox-grid {
+                    display: grid;
+                    grid-template-columns: repeat(2, 1fr);
+                    gap: 8px 30px;
+                    margin-top: 10px;
+                }
+                .checkbox-grid .ui-selectbooleancheckbox {
+                    display: flex;
+                    align-items: center;
+                }
+                .checkbox-grid .ui-selectbooleancheckbox label {
+                    margin-left: 6px;
+                    font-size: 14px;
+                }
+                .ui-selectbooleancheckbox {
+                    display: flex;
+                    align-items: center;
+                    margin-bottom: 8px;
+                }
+                .ui-selectbooleancheckbox label {
+                    margin-left: 6px;
+                }
+            </style>
+        </h:head>
         <h:form id="fireProposalEntry">
             <p:growl escape="false" globalOnly="true" life="5000" showDetail="true"/>
             <h:outputText value="Add New Fire Proposal" styleClass="title"/>
@@ -17,153 +43,171 @@
                     <p:panelGrid columns="2" columnClasses="ui-grid-col-6,ui-grid-col-6" layout="grid" styleClass="ui-panelgrid-blank ui-fluid">
                         <!-- Left Section -->
                         <p:panelGrid columns="2" columnClasses="ui-grid-col-3,ui-grid-col-9" layout="grid" styleClass="ui-panelgrid-blank ui-fluid">
-                            <h:outputText value="Customer Type" styleClass="input-label mandatory"/>
-                            <p:selectOneRadio id="customerTypeRadio" value="#{ManageFireProposalActionBean.fireProposal.customerType}" layout="lineDirection">
-                                <f:selectItem itemLabel="Person" itemValue="Person"/>
-                                <f:selectItem itemLabel="Organization" itemValue="Organization"/>
-                                <p:ajax update="customerName" process="@this"/>
+                            <p:outputLabel />
+                            <p:message display="text" for="customerTypeRadio" />
+                            <h:outputText value="Customer Type" styleClass="input-label mandatory" />
+                            <p:selectOneRadio id="customerTypeRadio" value="#{ManageFireProposalActionBean.fireProposal.customerType}" required="true" requiredMessage="Customer Type is required." layout="lineDirection">
+                                <f:selectItem itemLabel="Person" itemValue="Person" />
+                                <f:selectItem itemLabel="Organization" itemValue="Organization" />
+                                <p:ajax update="customerName" process="@this" />
                             </p:selectOneRadio>
-                            <h:outputText value="Customer" styleClass="mandatory input-label"/>
+                            <p:outputLabel />
+                            <p:message display="text" for="customerName" />
+                            <h:outputText value="Customer" styleClass="mandatory input-label" />
                             <p:inputText id="customerName" value="#{ManageFireProposalActionBean.fireProposal.customer}" required="true" requiredMessage="Customer name is required."
-                                         placeholder="#{ManageFireProposalActionBean.fireProposal.customerType eq 'Person' ? 'Select The Person' : (ManageFireProposalActionBean.fireProposal.customerType eq 'Organization' ? 'Select The Organization' : '')}"/>
-                            <h:outputText value="Property Interest" styleClass="mandatory input-label"/>
-                            <p:inputTextarea id="propertyInterest" value="#{ManageFireProposalActionBean.fireProposal.propertyInterest}" autoResize="true" rows="3" required="true" requiredMessage="Property interest is required."/>
-                            <h:outputText value="Property Location" styleClass="mandatory input-label"/>
-                            <p:inputTextarea id="propertyLocation" value="#{ManageFireProposalActionBean.fireProposal.propertyLocation}" autoResize="true" rows="3" required="true" requiredMessage="Property location is required."/>
-                            <h:outputText value="Township" styleClass="mandatory input-label"/>
-                            <p:inputText id="township" value="#{ManageFireProposalActionBean.fireProposal.township}" required="true" requiredMessage="Township is required."/>
-                            <h:outputText value="Policy No." styleClass="input-label"/>
-                            <p:inputText id="policyNo" value="#{ManageFireProposalActionBean.fireProposal.policyNumber}"/>
+                                         placeholder="#{ManageFireProposalActionBean.fireProposal.customerType eq 'Person' ? 'Select The Person' : (ManageFireProposalActionBean.fireProposal.customerType eq 'Organization' ? 'Select The Organization' : '')}" />
+                            <h:outputText value="Property Interest" styleClass="mandatory input-label" />
+                            <p:inputTextarea id="propertyInterest" value="#{ManageFireProposalActionBean.fireProposal.propertyInterest}" autoResize="true" rows="3" required="true" requiredMessage="Property interest is required." />
+                            <p:outputLabel />
+                            <p:message display="text" for="propertyLocation" />
+                            <h:outputText value="Property Location" styleClass="mandatory input-label" />
+                            <p:inputTextarea id="propertyLocation" value="#{ManageFireProposalActionBean.fireProposal.propertyLocation}" autoResize="true" rows="3" required="true" requiredMessage="Property location is required." />
+                            <p:outputLabel />
+                            <p:message display="text" for="township" />
+                            <h:outputText value="Township" styleClass="mandatory input-label" />
+                            <p:inputText id="township" value="#{ManageFireProposalActionBean.fireProposal.township}" required="true" requiredMessage="Township is required." />
+                            <p:outputLabel />
+                            <p:message display="text" for="policyNo" />
+                            <h:outputText value="Policy No." styleClass="input-label mandatory" />
+                            <p:inputText id="policyNo" value="#{ManageFireProposalActionBean.fireProposal.policyNumber}" required="true" />
                         </p:panelGrid>
                         <!-- Right Section -->
                         <p:panelGrid columns="2" columnClasses="ui-grid-col-3,ui-grid-col-9" layout="grid" styleClass="ui-panelgrid-blank ui-fluid">
-                            <h:outputText value="Sale Channel" styleClass="mandatory input-label"/>
+                            <p:outputLabel />
+                            <p:message display="text" for="saleChannel" />
+                            <h:outputText value="Sale Channel" styleClass="mandatory input-label" />
                             <p:selectOneMenu id="saleChannel" value="#{ManageFireProposalActionBean.fireProposal.saleChannel}" required="true" requiredMessage="Sale channel is required.">
                                 <f:selectItem itemLabel="Select Sale Channel" itemValue="" noSelectionOption="true"/>
                                 <f:selectItems value="#{ManageFireProposalActionBean.saleChannels}" var="channel" itemLabel="#{channel}" itemValue="#{channel}"/>
                             </p:selectOneMenu>
-                            <h:outputText value="Branch" styleClass="mandatory input-label"/>
+                            <p:outputLabel />
+                            <p:message display="text" for="paymentType" />
+                            <h:outputText value="Payment Type" styleClass="mandatory input-label" />
+                            <p:selectOneMenu id="paymentType" value="#{ManageFireProposalActionBean.fireProposal.paymentType}" required="true" requiredMessage="Please select a payment type">
+                                <f:selectItem itemLabel="Select Payment Type" itemValue="" noSelectionOption="true"/>
+                                <f:selectItems value="#{ManageFireProposalActionBean.paymentTypes}" var="type" itemLabel="#{type.label}" itemValue="#{type}"/>
+                            </p:selectOneMenu>
+                            <p:outputLabel />
+                            <p:message display="text" for="branch" />
+                            <h:outputText value="Branch" styleClass="mandatory input-label" />
                             <p:selectOneMenu id="branch" value="#{ManageFireProposalActionBean.fireProposal.branch}" required="true" requiredMessage="Branch is required.">
                                 <f:selectItem itemLabel="Select Branch" itemValue="" noSelectionOption="true"/>
                                 <f:selectItems value="#{ManageFireProposalActionBean.branches}" var="branch" itemLabel="#{branch}" itemValue="#{branch}"/>
                             </p:selectOneMenu>
-                            <h:outputText value="Submit Date" styleClass="mandatory input-label"/>
+                            <p:outputLabel />
+                            <p:message display="text" for="submitDate" />
+                            <h:outputText value="Submit Date" styleClass="mandatory input-label" />
                             <p:calendar id="submitDate" value="#{ManageFireProposalActionBean.fireProposal.submittedDate}" pattern="dd-MM-yyyy" required="true" requiredMessage="Submit date is required." showOn="button"/>
-                            <h:outputText value="Currency Type" styleClass="mandatory input-label"/>
+                            <p:outputLabel />
+                            <p:message display="text" for="currency" />
+                            <h:outputText value="Currency Type" styleClass="mandatory input-label" />
                             <p:selectOneMenu id="currency" value="#{ManageFireProposalActionBean.fireProposal.currencyType}" required="true" requiredMessage="Currency type is required.">
                                 <f:selectItem itemLabel="Select Currency Type" itemValue="" noSelectionOption="true"/>
                                 <f:selectItems value="#{ManageFireProposalActionBean.currencyTypes}" var="currency" itemLabel="#{currency}" itemValue="#{currency}"/>
                             </p:selectOneMenu>
-                            <!-- Period of Insurance -->
-                            <h:outputText value="Period of Insurance" styleClass="mandatory input-label"/>
+                            <p:outputLabel />
+                            <p:message display="text" for="period" />
+                            <h:outputText value="Period of Insurance" styleClass="mandatory input-label" />
                             <p:panelGrid columns="2" layout="grid" styleClass="ui-panelgrid-blank ui-fluid">
-                                <p:inputNumber id="period" value="#{ManageFireProposalActionBean.fireProposal.insurancePeriodDays}" min="0" required="true" requiredMessage="Insurance period is required." integerOnly="true"/>
+                                <p:inputText id="period" value="#{ManageFireProposalActionBean.fireProposal.insurancePeriodDays}" min="0" required="true" requiredMessage="Insurance period is required." styleClass="spinner-input"/>
                                 <p:selectOneMenu id="periodUnit" value="#{ManageFireProposalActionBean.fireProposal.insurancePeriodUnit}" required="true" requiredMessage="Period unit is required.">
                                     <f:selectItem itemLabel="DAY" itemValue="DAY"/>
                                     <f:selectItem itemLabel="WEEK" itemValue="WEEK"/>
                                     <f:selectItem itemLabel="MONTH" itemValue="MONTH"/>
                                 </p:selectOneMenu>
                             </p:panelGrid>
-                            <h:outputText value="Policy Start Date" styleClass="mandatory input-label"/>
+                            <p:outputLabel />
+                            <p:message display="text" for="startDate" />
+                            <h:outputText value="Policy Start Date" styleClass="mandatory input-label" />
                             <p:calendar id="startDate" value="#{ManageFireProposalActionBean.fireProposal.policyStartDate}" pattern="dd-MM-yyyy" required="true" requiredMessage="Start date is required." showOn="button"/>
                         </p:panelGrid>
                     </p:panelGrid>
-                    <p:commandButton value="Next" action="next" process="@form" update=":fireProposalEntry"/>
+    
+                    <p:commandButton value="Cancel" action="cancel" style="margin-right: 5px;" />
+              
                 </p:tab>
                 <!-- Building Info Tab -->
                 <p:tab id="buildingInfo" title="Building Info">
-                    <p:panelGrid columns="2" styleClass="ui-fluid">
-                        <h:outputText value="Building Info" styleClass="section-title"/>
-                        <h:outputText value=""/>
-                        <h:outputText value="Building Name" styleClass="mandatory input-label"/>
-                        <p:inputText value="#{ManageFireProposalActionBean.buildingInfo.buildingName}" required="true" requiredMessage="Building name is required."/>
-                        <h:outputText value="Floor" styleClass="input-label"/>
-                        <p:inputText value="#{ManageFireProposalActionBean.buildingInfo.floor}"/>
-                        <h:outputText value="Wall" styleClass="input-label"/>
-                        <p:selectOneMenu value="#{ManageFireProposalActionBean.buildingInfo.wall}">
-                            <f:selectItem itemLabel="Select" itemValue=""/>
-                            <f:selectItem itemLabel="Option 1" itemValue="Option1"/>
-                            <f:selectItem itemLabel="Option 2" itemValue="Option2"/>
-                        </p:selectOneMenu>
-                        <h:outputText value="Roofing" styleClass="input-label"/>
-                        <p:selectOneMenu value="#{ManageFireProposalActionBean.buildingInfo.roofing}">
-                            <f:selectItem itemLabel="Select" itemValue=""/>
-                            <f:selectItem itemLabel="Option 1" itemValue="Option1"/>
-                            <f:selectItem itemLabel="Option 2" itemValue="Option2"/>
-                        </p:selectOneMenu>
-                        <h:outputText value="Building Class" styleClass="mandatory input-label"/>
-                        <p:inputText value="#{ManageFireProposalActionBean.buildingInfo.buildingClass}" required="true" requiredMessage="Building class is required."/>
-                        <h:outputText value="Nature of Business" styleClass="mandatory input-label"/>
-                        <p:inputText value="#{ManageFireProposalActionBean.buildingInfo.natureOfBusiness}" required="true" requiredMessage="Nature of business is required."/>
-                        <h:outputText value="Main Cover" styleClass="mandatory input-label"/>
-                        <p:inputText value="#{ManageFireProposalActionBean.buildingInfo.mainCover}" required="true" requiredMessage="Main cover is required."/>
-                        <h:outputText value="Floor Name" styleClass="input-label"/>
-                        <p:inputText value="#{ManageFireProposalActionBean.buildingInfo.floorName}"/>
-                        <h:outputText value="Sum Insured" styleClass="mandatory input-label"/>
-                        <p:inputNumber value="#{ManageFireProposalActionBean.buildingInfo.sumInsured}" required="true" requiredMessage="Sum insured is required." minFractionDigits="2"/>
-                        <h:outputText value="Length (ft)" styleClass="input-label"/>
-                        <p:inputNumber value="#{ManageFireProposalActionBean.buildingInfo.length}" minFractionDigits="2"/>
-                        <h:outputText value="Width (ft)" styleClass="input-label"/>
-                        <p:inputNumber value="#{ManageFireProposalActionBean.buildingInfo.width}" minFractionDigits="2"/>
-                        <h:outputText value="Height (ft)" styleClass="input-label"/>
-                        <p:inputNumber value="#{ManageFireProposalActionBean.buildingInfo.height}" minFractionDigits="2"/>
-                        <h:outputText value="Square Feet" styleClass="mandatory input-label"/>
-                        <p:inputNumber value="#{ManageFireProposalActionBean.buildingInfo.squareFeet}" required="true" requiredMessage="Square feet is required." minFractionDigits="2"/>
+                    <p:panelGrid columns="2" columnClasses="ui-grid-col-6,ui-grid-col-6" layout="grid" styleClass="ui-panelgrid-blank ui-fluid">
+                        <p:panelGrid columns="2" columnClasses="ui-grid-col-3,ui-grid-col-9" layout="grid" styleClass="ui-panelgrid-blank ui-fluid">
+                            <p:outputLabel />
+                            <p:message display="text" for="buildingName" />
+                            <h:outputText value="Building Name" styleClass="input-label mandatory" />
+                            <p:inputText id="buildingName" value="#{ManageFireProposalActionBean.buildingInfo.buildingName}" required="true" requiredMessage="Building Name is required." />
+                            <h:outputText value="Floor" styleClass="input-label" />
+                            <p:inputText id="floor" value="#{ManageFireProposalActionBean.buildingInfo.floor}" />
+                            <h:outputText value="Wall" styleClass="input-label" />
+                            <p:selectOneMenu id="wall" value="#{ManageFireProposalActionBean.buildingInfo.wall}">
+                                <f:selectItem itemLabel="Select" itemValue="" />
+                                <f:selectItem itemLabel="Option 1" itemValue="Option1" />
+                                <f:selectItem itemLabel="Option 2" itemValue="Option2" />
+                            </p:selectOneMenu>
+                            <h:outputText value="Roofing" styleClass="input-label" />
+                            <p:selectOneMenu id="roofing" value="#{ManageFireProposalActionBean.buildingInfo.roofing}">
+                                <f:selectItem itemLabel="Select" itemValue="" />
+                                <f:selectItem itemLabel="Option 1" itemValue="Option1" />
+                                <f:selectItem itemLabel="Option 2" itemValue="Option2" />
+                            </p:selectOneMenu>
+                            <p:outputLabel />
+                            <p:message display="text" for="buildingClass" />
+                            <h:outputText value="Building Class" styleClass="mandatory input-label" />
+                            <p:inputText id="buildingClass" value="#{ManageFireProposalActionBean.buildingInfo.buildingClass}" required="true" requiredMessage="Building Class is required." />
+                            <p:outputLabel />
+                            <p:message display="text" for="natureOfBusiness" />
+                            <h:outputText value="Nature of Business" styleClass="mandatory input-label" />
+                            <p:inputText id="natureOfBusiness" value="#{ManageFireProposalActionBean.buildingInfo.natureOfBusiness}" required="true" requiredMessage="Nature Of Business is required." />
+                        </p:panelGrid>
+                        <p:panelGrid columns="2" columnClasses="ui-grid-col-3,ui-grid-col-9" layout="grid" styleClass="ui-panelgrid-blank ui-fluid">
+                            <p:outputLabel />
+                            <p:message display="text" for="mainCover" />
+                            <h:outputText value="Main Cover" styleClass="mandatory input-label" />
+                            <p:inputText id="mainCover" value="#{ManageFireProposalActionBean.buildingInfo.mainCover}" required="true" requiredMessage="Main Cover is required" />
+                            <h:outputText value="Floor Name" styleClass="input-label" />
+                            <p:inputText id="floorName" value="#{ManageFireProposalActionBean.buildingInfo.floorName}" />
+                            <p:outputLabel />
+                            <p:message display="text" for="sumInsured" />
+                            <h:outputText value="Sum Insured" styleClass="mandatory input-label" />
+                            <p:inputText id="sumInsured" value="#{ManageFireProposalActionBean.buildingInfo.sumInsured}" required="true" requiredMessage="Sum Insured is required.">
+                                <f:convertNumber minFractionDigits="2" />
+                            </p:inputText>
+                            <h:outputText value="Length (ft)" styleClass="input-label" />
+                            <p:inputText id="length" value="#{ManageFireProposalActionBean.buildingInfo.length}" />
+                            <h:outputText value="Width (ft)" styleClass="input-label" />
+                            <p:inputText id="width" value="#{ManageFireProposalActionBean.buildingInfo.width}" />
+                            <h:outputText value="Height (ft)" styleClass="input-label" />
+                            <p:inputText id="height" value="#{ManageFireProposalActionBean.buildingInfo.height}" />
+                            <p:outputLabel />
+                            <p:message display="text" for="squareFeet" />
+                            <h:outputText value="Square Feet" styleClass="mandatory input-label" />
+                            <p:inputText id="squareFeet" value="#{ManageFireProposalActionBean.buildingInfo.squareFeet}" required="true" requiredMessage="Square Feet is required" />
+                        </p:panelGrid>
                     </p:panelGrid>
-                    <h:panelGrid columns="2">
-                        <h:outputText value="Additional Cover" styleClass="section-title"/>
-                        <h:outputText value=""/>
-                     <p:selectBooleanCheckbox value="#{ManageFireProposalActionBean.buildingInfo.airCraftDamage != null ? ManageFireProposalActionBean.buildingInfo.airCraftDamage : false}">
-    <h:outputLabel value="Air Craft Damage"/>
-</p:selectBooleanCheckbox>
-                        <p:selectBooleanCheckbox value="#{ManageFireProposalActionBean.buildingInfo.earthQuakeFire}">
-                            <h:outputLabel value="EarthQuake Fire Earth Shock"/>
-                        </p:selectBooleanCheckbox>
-                        <p:selectBooleanCheckbox value="#{ManageFireProposalActionBean.buildingInfo.floodAndInundation}">
-                            <h:outputLabel value="Flood And Inundation"/>
-                        </p:selectBooleanCheckbox>
-                        <p:selectBooleanCheckbox value="#{ManageFireProposalActionBean.buildingInfo.impactDamage}">
-                            <h:outputLabel value="Impact Damage"/>
-                        </p:selectBooleanCheckbox>
-                        <p:selectBooleanCheckbox value="#{ManageFireProposalActionBean.buildingInfo.riotStrike}">
-                            <h:outputLabel value="Riot, Strike And Malicious Payment"/>
-                        </p:selectBooleanCheckbox>
-                        <p:selectBooleanCheckbox value="#{ManageFireProposalActionBean.buildingInfo.spontaneousCombustion}">
-                            <h:outputLabel value="Spontaneous Combustion"/>
-                        </p:selectBooleanCheckbox>
-                        <p:selectBooleanCheckbox value="#{ManageFireProposalActionBean.buildingInfo.stormTyphoon}">
-                            <h:outputLabel value="Storm, Typhoon, Hurricane, Tempest, Cyclone-Others"/>
-                        </p:selectBooleanCheckbox>
-                        <p:selectBooleanCheckbox value="#{ManageFireProposalActionBean.buildingInfo.waterDamage}">
-                            <h:outputLabel value="Water(B)"/>
-                        </p:selectBooleanCheckbox>
-                        <p:selectBooleanCheckbox value="#{ManageFireProposalActionBean.buildingInfo.subsidenceAndLandslide}">
-                            <h:outputLabel value="Subsidence And Landslide"/>
-                        </p:selectBooleanCheckbox>
-                        <p:selectBooleanCheckbox value="#{ManageFireProposalActionBean.buildingInfo.warRisk}">
-                            <h:outputLabel value="War Risk"/>
-                        </p:selectBooleanCheckbox>
+                    <!-- Additional Cover -->
+                    <h:panelGrid columns="1" style="display: flex; justify-content: center;">
+                        <h:outputText value="Additional Cover" styleClass="section-title" />
+                        <h:panelGrid columns="2" cellpadding="8" style="margin-top: 8px;">
+                            <!-- Left Column -->
+                            <h:panelGroup layout="block">
+                                <p:selectBooleanCheckbox value="#{ManageFireProposalActionBean.buildingInfo.airCraftDamage}" itemLabel="Air Craft Damage" />
+                                <p:selectBooleanCheckbox value="#{ManageFireProposalActionBean.buildingInfo.earthQuakeFire}" itemLabel="EarthQuake Fire Earth Shock" />
+                                <p:selectBooleanCheckbox value="#{ManageFireProposalActionBean.buildingInfo.floodAndInundation}" itemLabel="Flood And Inundation" />
+                                <p:selectBooleanCheckbox value="#{ManageFireProposalActionBean.buildingInfo.impactDamage}" itemLabel="Impact Damage" />
+                                <p:selectBooleanCheckbox value="#{ManageFireProposalActionBean.buildingInfo.riotStrike}" itemLabel="Riot, Strike And Malicious Damage" />
+                            </h:panelGroup>
+                            <!-- Right Column -->
+                            <h:panelGroup layout="block">
+                                <p:selectBooleanCheckbox value="#{ManageFireProposalActionBean.buildingInfo.spontaneousCombustion}" itemLabel="Spontaneous Combustion" />
+                                <p:selectBooleanCheckbox value="#{ManageFireProposalActionBean.buildingInfo.stormTyphoon}" itemLabel="Storm, Typhoon, Hurricane, Tempest, Cyclone-Others" />
+                                <p:selectBooleanCheckbox value="#{ManageFireProposalActionBean.buildingInfo.waterDamage}" itemLabel="Water(B)" />
+                                <p:selectBooleanCheckbox value="#{ManageFireProposalActionBean.buildingInfo.subsidenceAndLandslide}" itemLabel="Subsidence And Landslide" />
+                                <p:selectBooleanCheckbox value="#{ManageFireProposalActionBean.buildingInfo.warRisk}" itemLabel="War Risk" />
+                            </h:panelGroup>
+                        </h:panelGrid>
                     </h:panelGrid>
-                    <h:panelGrid columns="7">
-                        <h:outputText value="Building Name"/>
-                        <h:outputText value="Building Class"/>
-                        <h:outputText value="Building Occupation"/>
-                        <h:outputText value="Sum Insured"/>
-                        <h:outputText value="Premium Rate (Building Only)"/>
-                        <h:outputText value="Storey"/>
-                        <h:outputText value="Age of Building"/>
-                        <h:outputText value="#{ManageFireProposalActionBean.buildingInfo.buildingName}"/>
-                        <h:outputText value="#{ManageFireProposalActionBean.buildingInfo.buildingClass}"/>
-                        <h:outputText value="#{ManageFireProposalActionBean.buildingInfo.natureOfBusiness}"/>
-                        <h:outputText value="#{ManageFireProposalActionBean.buildingInfo.sumInsured}">
-                            <f:convertNumber minFractionDigits="2"/>
-                        </h:outputText>
-                        <h:outputText value=""/>
-                        <h:outputText value="#{ManageFireProposalActionBean.buildingInfo.floor}"/>
-                        <h:outputText value=""/>
-                    </h:panelGrid>
-                    <p:commandButton value="Next" action="next" process="@this" update=":fireProposalEntry"/>
-                    <p:commandButton value="Save" action="#{ManageFireProposalActionBean.saveAll}" update=":fireProposalEntry" process="@this"/>
+                
+                    <p:commandButton value="Cancel" action="cancel" style="margin-right: 5px;" />
+          
+                 
                 </p:tab>
                 <!-- Premium Info Tab -->
                 <p:tab id="premiumInfo" title="Premium Info">
@@ -209,8 +253,10 @@
                             <f:convertNumber minFractionDigits="2"/>
                         </h:outputText>
                     </p:panelGrid>
-                    <p:commandButton value="Next" action="next" process="@this" update=":fireProposalEntry"/>
-                    <p:commandButton value="Submit" action="#{ManageFireProposalActionBean.saveAll}" update=":fireProposalEntry" process="@form" styleClass="green-button"/>
+             
+                    <p:commandButton value="Cancel" action="cancel" style="margin-right: 5px;" />
+                    <p:commandButton value="Save" action="#{ManageFireProposalActionBean.saveAll}" style="float: right;" update=":fireProposalEntry" process="@form" styleClass="green-button"  />
+      
                 </p:tab>
             </p:wizard>
         </h:form>
