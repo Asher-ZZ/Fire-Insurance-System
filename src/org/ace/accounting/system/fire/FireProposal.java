@@ -17,239 +17,310 @@ import org.ace.java.component.idgen.service.IDInterceptor;
 
 @Entity
 @Table(name = TableName.FIREPOLICY)
-@TableGenerator(name = "FIREPOLICY_GEN", table = "ID_GEN", pkColumnName = "GEN_NAME", valueColumnName = "GEN_VAL", pkColumnValue = "FIREPOLICY_GEN", allocationSize = 10)
-@EntityListeners(IDInterceptor.class)
 public class FireProposal implements Serializable, Cloneable {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.TABLE, generator = "FIREPOLICY_GEN")
-	@Column(name = "ProposalID")
-	private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // Changed to IDENTITY
+    @Column(name = "ProposalID")
+    private Long id;
 
-	@Column(name = "CustomerType", length = 50)
-	private String customerType;
+    // Remove @TableGenerator and @EntityListeners(IDInterceptor.class)
 
-	@Column(name = "Customer", length = 100)
-	private String customer;
+    // Existing fields, getters, and setters remain the same
+    @Column(name = "CustomerType", length = 50)
+    private String customerType;
 
-	@Column(name = "PropertyInterest", length = 255)
-	private String propertyInterest;
+    @Column(name = "Customer", length = 100)
+    private String customer;
 
-	@Column(name = "PropertyLocation", length = 255)
-	private String propertyLocation;
+    @Column(name = "PropertyInterest", length = 255)
+    private String propertyInterest;
 
-	@Column(name = "Township", length = 100)
-	private String township;
+    @Column(name = "PropertyLocation", length = 255)
+    private String propertyLocation;
 
-	@Column(name = "PolicyNumber", length = 50)
-	private String policyNumber;
+    @Column(name = "Township", length = 100)
+    private String township;
 
-	@Temporal(TemporalType.DATE)
-	@Column(name = "PolicyStartDate")
-	private Date policyStartDate;
+    @Column(name = "PolicyNumber", length = 50)
+    private String policyNumber;
 
-	@Enumerated(EnumType.STRING)
-	@Column(name = "SaleChannel", length = 100)
-	private SaleChannel saleChannel;
+    @Temporal(TemporalType.DATE)
+    @Column(name = "PolicyStartDate")
+    private Date policyStartDate;
 
-	private PaymentType paymentType;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "SaleChannel", length = 100)
+    private SaleChannel saleChannel;
 
-	@Enumerated(EnumType.STRING)
-	@Column(name = "Branch", length = 100)
-	private Branch branch;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "PaymentType", length = 100)
+    private PaymentType paymentType; // Added mapping
 
-	@Temporal(TemporalType.DATE)
-	@Column(name = "SubmittedDate")
-	private Date submittedDate;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "Branch", length = 100)
+    private Branch branch;
 
-	@Enumerated(EnumType.STRING)
-	@Column(name = "CurrencyType", length = 50)
-	private CurrencyType1 currencyType;
+    @Temporal(TemporalType.DATE)
+    @Column(name = "SubmittedDate")
+    private Date submittedDate;
 
-	@Column(name = "InsurancePeriodDays")
-	private Integer insurancePeriodDays;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "CurrencyType", length = 50)
+    private CurrencyType1 currencyType;
 
-	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-	@JoinColumn(name = "BuildingInfoID")
-	private BuildingInfo buildingInfo;
+    @Column(name = "InsurancePeriodDays")
+    private Integer insurancePeriodDays;
 
-	@Temporal(TemporalType.DATE)
-	@Column(name = "StartDateFrom")
-	private Date startDateFrom;
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "BuildingInfoID")
+    private BuildingInfo buildingInfo;
 
-	@Temporal(TemporalType.DATE)
-	@Column(name = "StartDateTo")
-	private Date startDateTo;
+    @OneToMany(mappedBy = "fireProposal", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Premium> premiumList = new ArrayList<>();
 
-	@Version
-	@Column(name = "Version")
-	private int version;
+    @Temporal(TemporalType.DATE)
+    @Column(name = "StartDateFrom")
+    private Date startDateFrom;
 
-	@Embedded
-	private BasicEntity basicEntity;
+    @Temporal(TemporalType.DATE)
+    @Column(name = "StartDateTo")
+    private Date startDateTo;
 
-	// --- Constructors ---
-	public FireProposal() {
-	}
+    @Version
+    @Column(name = "Version")
+    private int version;
 
-	// --- Getters & Setters ---
-	public Long getId() {
-		return id;
-	}
+    @Embedded
+    private BasicEntity basicEntity;
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    @Column(name = "InsurancePeriodUnit", length = 10)
+    private String insurancePeriodUnit;
 
-	public String getCustomerType() {
-		return customerType != null ? customerType : "";
-	}
+    @Column(name = "TotalSumInsured", precision = 15, scale = 2)
+    private Double totalSumInsured = 0.0;
 
-	public void setCustomerType(String customerType) {
-		this.customerType = customerType;
-	}
+    @Column(name = "TotalPremiumPeriod", precision = 15, scale = 2)
+    private Double totalPremiumPeriod = 0.0;
 
-	public String getCustomer() {
-		return customer != null ? customer : "";
-	}
+    // Getters and setters (as provided), including new fields
 
-	public void setCustomer(String customer) {
-		this.customer = customer;
-	}
 
-	public String getPropertyInterest() {
-		return propertyInterest != null ? propertyInterest : "";
-	}
+    // --- Constructors ---
+    public FireProposal() {}
 
-	public void setPropertyInterest(String propertyInterest) {
-		this.propertyInterest = propertyInterest;
-	}
+    // --- Getters & Setters ---
+    public Long getId() {
+        return id;
+    }
 
-	public String getPropertyLocation() {
-		return propertyLocation != null ? propertyLocation : "";
-	}
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-	public void setPropertyLocation(String propertyLocation) {
-		this.propertyLocation = propertyLocation;
-	}
+    public String getCustomerType() {
+        return customerType != null ? customerType : "";
+    }
 
-	public String getTownship() {
-		return township != null ? township : "";
-	}
+    public void setCustomerType(String customerType) {
+        this.customerType = customerType;
+    }
 
-	public void setTownship(String township) {
-		this.township = township;
-	}
+    public String getCustomer() {
+        return customer != null ? customer : "";
+    }
 
-	public String getPolicyNumber() {
-		return policyNumber != null ? policyNumber : "";
-	}
+    public void setCustomer(String customer) {
+        this.customer = customer;
+    }
 
-	public void setPolicyNumber(String policyNumber) {
-		this.policyNumber = policyNumber;
-	}
+    public String getPropertyInterest() {
+        return propertyInterest != null ? propertyInterest : "";
+    }
 
-	public Date getPolicyStartDate() {
-		return policyStartDate;
-	}
+    public void setPropertyInterest(String propertyInterest) {
+        this.propertyInterest = propertyInterest;
+    }
 
-	public void setPolicyStartDate(Date policyStartDate) {
-		this.policyStartDate = policyStartDate;
-	}
+    public String getPropertyLocation() {
+        return propertyLocation != null ? propertyLocation : "";
+    }
 
-	public SaleChannel getSaleChannel() {
-		return saleChannel; // Default value
-	}
+    public void setPropertyLocation(String propertyLocation) {
+        this.propertyLocation = propertyLocation;
+    }
 
-	public void setSaleChannel(SaleChannel saleChannel) {
-		this.saleChannel = saleChannel;
-	}
+    public String getTownship() {
+        return township != null ? township : "";
+    }
 
-	public PaymentType getPaymentType() {
-	    return paymentType;
-	}
+    public void setTownship(String township) {
+        this.township = township;
+    }
 
-	public void setPaymentType(PaymentType paymentType) {
-	    this.paymentType = paymentType;
-	}
+    public String getPolicyNumber() {
+        return policyNumber != null ? policyNumber : "";
+    }
 
-	public Branch getBranch() {
-		return branch; // Default value
-	}
+    public void setPolicyNumber(String policyNumber) {
+        this.policyNumber = policyNumber;
+    }
 
-	public void setBranch(Branch branch) {
-		this.branch = branch;
-	}
+    public Date getPolicyStartDate() {
+        return policyStartDate;
+    }
 
-	public Date getSubmittedDate() {
-		return submittedDate;
-	}
+    public void setPolicyStartDate(Date policyStartDate) {
+        this.policyStartDate = policyStartDate;
+    }
 
-	public void setSubmittedDate(Date submittedDate) {
-		this.submittedDate = submittedDate;
-	}
+    public SaleChannel getSaleChannel() {
+        return saleChannel;
+    }
 
-	public CurrencyType1 getCurrencyType() {
-		return currencyType; // Default value
-	}
+    public void setSaleChannel(SaleChannel saleChannel) {
+        this.saleChannel = saleChannel;
+    }
 
-	public void setCurrencyType(CurrencyType1 currencyType) {
-		this.currencyType = currencyType;
-	}
+    public PaymentType getPaymentType() {
+        return paymentType;
+    }
 
-	public Integer getInsurancePeriodDays() {
-		return insurancePeriodDays != null ? insurancePeriodDays : 0;
-	}
+    public void setPaymentType(PaymentType paymentType) {
+        this.paymentType = paymentType;
+    }
 
-	public void setInsurancePeriodDays(Integer insurancePeriodDays) {
-		this.insurancePeriodDays = insurancePeriodDays;
-	}
+    public Branch getBranch() {
+        return branch;
+    }
 
-	public BuildingInfo getBuildingInfo() {
-		if (buildingInfo == null) {
-			buildingInfo = new BuildingInfo();
-		}
-		return buildingInfo;
-	}
+    public void setBranch(Branch branch) {
+        this.branch = branch;
+    }
 
-	public void setBuildingInfo(BuildingInfo buildingInfo) {
-		this.buildingInfo = buildingInfo;
-	}
+    public Date getSubmittedDate() {
+        return submittedDate;
+    }
 
-	Date getStartDateFrom() {
-		return startDateFrom;
-	}
+    public void setSubmittedDate(Date submittedDate) {
+        this.submittedDate = submittedDate;
+    }
 
-	public void setStartDateFrom(Date startDateFrom) {
-		this.startDateFrom = startDateFrom;
-	}
+    public CurrencyType1 getCurrencyType() {
+        return currencyType;
+    }
 
-	public Date getStartDateTo() {
-		return startDateTo;
-	}
+    public void setCurrencyType(CurrencyType1 currencyType) {
+        this.currencyType = currencyType;
+    }
 
-	public void setStartDateTo(Date startDateTo) {
-		this.startDateTo = startDateTo;
-	}
+    public Integer getInsurancePeriodDays() {
+        return insurancePeriodDays != null ? insurancePeriodDays : 0;
+    }
 
-	public int getVersion() {
-		return version;
-	}
+    public void setInsurancePeriodDays(Integer insurancePeriodDays) {
+        this.insurancePeriodDays = insurancePeriodDays;
+    }
 
-	public void setVersion(int version) {
-		this.version = version;
-	}
+    public BuildingInfo getBuildingInfo() {
+        if (buildingInfo == null) {
+            buildingInfo = new BuildingInfo();
+        }
+        return buildingInfo;
+    }
 
-	public BasicEntity getBasicEntity() {
-		if (basicEntity == null) {
-			basicEntity = new BasicEntity();
-		}
-		return basicEntity;
-	}
+    public void setBuildingInfo(BuildingInfo buildingInfo) {
+        this.buildingInfo = buildingInfo;
+    }
 
-	public void setBasicEntity(BasicEntity basicEntity) {
-		this.basicEntity = basicEntity;
-	}
+    public List<Premium> getPremiumList() {
+        return premiumList;
+    }
+
+    public void setPremiumList(List<Premium> premiumList) {
+        this.premiumList = premiumList;
+        if (premiumList != null) {
+            for (Premium premium : premiumList) {
+                premium.setFireProposal(this);
+            }
+        }
+    }
+
+    public Date getStartDateFrom() {
+        return startDateFrom;
+    }
+
+    public void setStartDateFrom(Date startDateFrom) {
+        this.startDateFrom = startDateFrom;
+    }
+
+    public Date getStartDateTo() {
+        return startDateTo;
+    }
+
+    public void setStartDateTo(Date startDateTo) {
+        this.startDateTo = startDateTo;
+    }
+
+    public int getVersion() {
+        return version;
+    }
+
+    public void setVersion(int version) {
+        this.version = version;
+    }
+
+    public BasicEntity getBasicEntity() {
+        if (basicEntity == null) {
+            basicEntity = new BasicEntity();
+        }
+        return basicEntity;
+    }
+
+    public void setBasicEntity(BasicEntity basicEntity) {
+        this.basicEntity = basicEntity;
+    }
+    
+    // You can add helper methods for calculating totals if needed
+    public double calculateTotalSumInsured() {
+        return premiumList.stream()
+                .mapToDouble(p -> p.getSumInsured() != null ? p.getSumInsured() : 0.0)
+                .sum();
+    }
+    
+ // Add these fields inside your FireProposal class
+
+
+
+    public Double getTotalSumInsured() {
+        return totalSumInsured != null ? totalSumInsured : 0.0;
+    }
+
+    public void setTotalSumInsured(Double totalSumInsured) {
+        this.totalSumInsured = totalSumInsured;
+    }
+
+    public Double getTotalPremiumPeriod() {
+        return totalPremiumPeriod != null ? totalPremiumPeriod : 0.0;
+    }
+
+    public void setTotalPremiumPeriod(Double totalPremiumPeriod) {
+        this.totalPremiumPeriod = totalPremiumPeriod;
+    }
+
+
+
+    // Getter
+    public String getInsurancePeriodUnit() {
+        return insurancePeriodUnit != null ? insurancePeriodUnit : "DAY"; // default value if you want
+    }
+
+    // Setter
+    public void setInsurancePeriodUnit(String insurancePeriodUnit) {
+        this.insurancePeriodUnit = insurancePeriodUnit;
+    }
+
+    
 }
