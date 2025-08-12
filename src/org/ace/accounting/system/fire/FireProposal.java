@@ -17,14 +17,16 @@ import org.ace.java.component.idgen.service.IDInterceptor;
 
 @Entity
 @Table(name = TableName.FIREPOLICY)
-public class FireProposal implements Serializable, Cloneable {
+@TableGenerator(name = "FIREPROPOSAL_GEN", table = "ID_GEN", pkColumnName = "GEN_NAME", valueColumnName = "GEN_VAL", pkColumnValue = "FIREPROPOSAL_GEN", allocationSize = 10)
+@EntityListeners(IDInterceptor.class)
+public class FireProposal implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // Changed to IDENTITY
+    @GeneratedValue(strategy = GenerationType.TABLE, generator = "FIREPROPOSAL_GEN") // Changed to IDENTITY
     @Column(name = "ProposalID")
-    private Long id;
+    private String id;
 
     // Remove @TableGenerator and @EntityListeners(IDInterceptor.class)
 
@@ -112,11 +114,11 @@ public class FireProposal implements Serializable, Cloneable {
     public FireProposal() {}
 
     // --- Getters & Setters ---
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
