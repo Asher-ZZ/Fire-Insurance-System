@@ -5,6 +5,7 @@ import java.util.List;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 
+import org.ace.accounting.system.fire.BuildingInfo;
 import org.ace.accounting.system.fire.FireProposal;
 import org.ace.accounting.system.fire.persistence.interfaces.IFireProposalDAO;
 import org.ace.java.component.persistence.BasicDAO;
@@ -39,9 +40,13 @@ public class FireProposalDAO extends BasicDAO implements IFireProposalDAO {
     @Transactional(propagation = Propagation.REQUIRED)
     public void insert(FireProposal fireProposal) throws DAOException {
         try {
-            if (fireProposal.getBuildingInfo() != null && !em.contains(fireProposal.getBuildingInfo())) {
-                em.persist(fireProposal.getBuildingInfo()); // Explicitly persist BuildingInfo if unmanaged
-                logger.debug("Persisted BuildingInfo with ID: {}", fireProposal.getBuildingInfo().getId());
+            if (fireProposal.getBuildingList() != null) {
+                for (BuildingInfo building : fireProposal.getBuildingList()) {
+                    if (!em.contains(building)) {
+                        em.persist(building);
+                        logger.debug("Persisted BuildingInfo with ID: {}", building.getId());
+                    }
+                }
             }
             em.persist(fireProposal);
             em.flush();
@@ -55,9 +60,13 @@ public class FireProposalDAO extends BasicDAO implements IFireProposalDAO {
     @Transactional(propagation = Propagation.REQUIRED)
     public FireProposal update(FireProposal fireProposal) throws DAOException {
         try {
-            if (fireProposal.getBuildingInfo() != null && !em.contains(fireProposal.getBuildingInfo())) {
-                em.merge(fireProposal.getBuildingInfo()); // Merge if unmanaged
-                logger.debug("Merged BuildingInfo with ID: {}", fireProposal.getBuildingInfo().getId());
+            if (fireProposal.getBuildingList() != null) {
+                for (BuildingInfo building : fireProposal.getBuildingList()) {
+                    if (!em.contains(building)) {
+                        em.merge(building);
+                        logger.debug("Merged BuildingInfo with ID: {}", building.getId());
+                    }
+                }
             }
             fireProposal = em.merge(fireProposal);
             em.flush();

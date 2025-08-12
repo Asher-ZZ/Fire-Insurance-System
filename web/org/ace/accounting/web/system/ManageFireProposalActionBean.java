@@ -10,6 +10,7 @@ import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
+import javax.faces.event.AjaxBehaviorEvent;
 
 import org.ace.accounting.common.Branch;
 import org.ace.accounting.common.CurrencyType1;
@@ -25,6 +26,9 @@ import org.ace.java.web.common.BaseBean;
 import org.primefaces.event.FlowEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
+
 
 @ManagedBean(name = "ManageFireProposalActionBean")
 @ViewScoped
@@ -39,9 +43,12 @@ public class ManageFireProposalActionBean extends BaseBean {
     private boolean createNew;
     private FireProposal fireProposal;
     private BuildingInfo buildingInfo;
+    private List<BuildingInfo> buildings;
     private Premium newPremium;
     private List<Premium> premiumList;
     private List<FireProposal> fireProposalList;
+    private int periodMin;
+    private int periodMax;
 
     private String currentStep = "proposalInfo";
 
@@ -62,11 +69,12 @@ public class ManageFireProposalActionBean extends BaseBean {
         createNew = true;
         fireProposal = new FireProposal();
         buildingInfo = new BuildingInfo();
+        buildings = new ArrayList<>();
         newPremium = new Premium();
         premiumList = new ArrayList<>();
         fireProposal.setPremiumList(premiumList);
-        fireProposal.setBuildingInfo(buildingInfo);
-        logger.debug("Initialized new FireProposal and BuildingInfo");
+        fireProposal.setBuildingList(buildings); // Initialize with the buildings list
+        logger.debug("Initialized new FireProposal with multiple buildings support");
     }
 
     private void loadFireProposals() {
@@ -78,41 +86,33 @@ public class ManageFireProposalActionBean extends BaseBean {
             logger.warn("FireProposalService is null, initialized empty fire proposal list");
         }
     }
-
     public String onFlowProcess(FlowEvent event) {
+        String newStep = event.getNewStep();
+
+        // When leaving buildingInfo step, add building info and validate dates
         if ("buildingInfo".equals(currentStep)) {
-            if (fireProposal.getBuildingInfo() == null) {
-                fireProposal.setBuildingInfo(buildingInfo);
-            } else {
-                BuildingInfo linkedBuildingInfo = fireProposal.getBuildingInfo();
-                linkedBuildingInfo.setBuildingName(buildingInfo.getBuildingName());
-                linkedBuildingInfo.setFloor(buildingInfo.getFloor());
-                linkedBuildingInfo.setWall(buildingInfo.getWall());
-                linkedBuildingInfo.setRoofing(buildingInfo.getRoofing());
-                linkedBuildingInfo.setBuildingClass(buildingInfo.getBuildingClass());
-                linkedBuildingInfo.setNatureOfBusiness(buildingInfo.getNatureOfBusiness());
-                linkedBuildingInfo.setMainCover(buildingInfo.getMainCover());
-                linkedBuildingInfo.setFloorName(buildingInfo.getFloorName());
-                linkedBuildingInfo.setSumInsured(buildingInfo.getSumInsured());
-                linkedBuildingInfo.setLength(buildingInfo.getLength());
-                linkedBuildingInfo.setWidth(buildingInfo.getWidth());
-                linkedBuildingInfo.setHeight(buildingInfo.getHeight());
-                linkedBuildingInfo.setSquareFeet(buildingInfo.getSquareFeet());
-                linkedBuildingInfo.setAirCraftDamage(buildingInfo.getAirCraftDamage());
-                linkedBuildingInfo.setEarthQuakeFire(buildingInfo.getEarthQuakeFire());
-                linkedBuildingInfo.setFloodAndInundation(buildingInfo.getFloodAndInundation());
-                linkedBuildingInfo.setImpactDamage(buildingInfo.getImpactDamage());
-                linkedBuildingInfo.setRiotStrike(buildingInfo.getRiotStrike());
-                linkedBuildingInfo.setSpontaneousCombustion(buildingInfo.getSpontaneousCombustion());
-                linkedBuildingInfo.setStormTyphoon(buildingInfo.getStormTyphoon());
-                linkedBuildingInfo.setWaterDamage(buildingInfo.getWaterDamage());
-                linkedBuildingInfo.setSubsidenceAndLandslide(buildingInfo.getSubsidenceAndLandslide());
-                linkedBuildingInfo.setWarRisk(buildingInfo.getWarRisk());
-                logger.debug("Synced BuildingInfo data: BuildingName={}", buildingInfo.getBuildingName());
+            if (fireProposal.getBuildingList() == null) {
+                fireProposal.setBuildingList(new ArrayList<>());
             }
+            
+            // Add building only if valid and not already added this session
+            if (buildingInfo != null && buildingInfo.isValid()) {
+                fireProposal.getBuildingList().add(buildingInfo.clone());
+                logger.debug("Added BuildingInfo: {}", buildingInfo.getBuildingName());
+            } else {
+                addErrorMessage(null, "Please fill in all mandatory building info fields before proceeding.");
+                return currentStep; // prevent moving forward
+            }
+            
+            // Validate dates after adding building info
             validateDates();
+            if (hasErrors()) { // check if validation added errors
+                return currentStep; // prevent moving forward
+            }
         }
-        if ("premiumInfo".equals(event.getNewStep())) {
+
+        // When moving to premiumInfo step, sync premium list
+        if ("premiumInfo".equals(newStep)) {
             if (fireProposal.getPremiumList() == null) {
                 fireProposal.setPremiumList(premiumList);
             } else {
@@ -120,9 +120,12 @@ public class ManageFireProposalActionBean extends BaseBean {
                 fireProposal.getPremiumList().addAll(premiumList);
             }
         }
-        currentStep = event.getNewStep();
+
+        currentStep = newStep;
         return currentStep;
     }
+
+
 
     private void validateDates() {
         Date submittedDate = fireProposal.getSubmittedDate();
@@ -168,21 +171,14 @@ public class ManageFireProposalActionBean extends BaseBean {
 
     public void saveAll() {
         try {
-            if (fireProposal.getBuildingInfo() == null) {
-                fireProposal.setBuildingInfo(buildingInfo);
+            // Set fireProposal reference in each building so FK can be persisted
+            for (BuildingInfo b : buildings) {
+                b.setFireProposal(fireProposal);
             }
-            if (fireProposal.getPremiumList() == null) {
-                fireProposal.setPremiumList(premiumList);
-            } else if (!fireProposal.getPremiumList().equals(premiumList)) {
-                fireProposal.getPremiumList().clear();
-                fireProposal.getPremiumList().addAll(premiumList);
-            }
-			/*
-			 * refreshTotals(); logger.
-			 * debug("Saving FireProposal: Customer={}, PaymentType={}, BuildingName={}",
-			 * fireProposal.getCustomer(), fireProposal.getPaymentType(),
-			 * fireProposal.getBuildingInfo().getBuildingName());
-			 */
+            fireProposal.setBuildingList(buildings);
+            calculatePolicyEndDate();
+            logger.debug("Saving FireProposal with policyEndDate: {}", fireProposal.getPolicyEndDate());
+
             if (createNew) {
                 fireProposalService.addNewFireProposal(fireProposal);
                 addInfoMessage(null, MessageId.INSERT_SUCCESS, fireProposal.getCustomer());
@@ -200,23 +196,109 @@ public class ManageFireProposalActionBean extends BaseBean {
         }
     }
 
+
     public String cancel() {
         createNewFireProposal();
         return null;
     }
 
-    // Remove these methods as they conflict with the direct binding to fireProposal.paymentType
-    /*
-    public PaymentType getPaymentType() {
-        return fireProposal != null ? fireProposal.getPaymentType() : null;
+    private void calculatePolicyEndDate() {
+        if (fireProposal.getPolicyStartDate() == null 
+            || fireProposal.getInsurancePeriodDays() == null 
+            || fireProposal.getInsurancePeriodUnit() == null) {
+            fireProposal.setPolicyEndDate(null);
+            return;
+        }
+
+        LocalDate start = fireProposal.getPolicyStartDate()
+                .toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate();
+
+        switch (fireProposal.getInsurancePeriodUnit().toUpperCase()) {
+            case "DAY":
+                start = start.plusDays(fireProposal.getInsurancePeriodDays() - 1);
+                break;
+            case "MONTH":
+                start = start.plusMonths(fireProposal.getInsurancePeriodDays()).minusDays(1);
+                break;
+            case "YEAR":
+                start = start.plusYears(fireProposal.getInsurancePeriodDays()).minusDays(1);
+                break;
+            default:
+                start = start.plusDays(fireProposal.getInsurancePeriodDays() - 1);
+                break;
+        }
+
+        fireProposal.setPolicyEndDate(Date.from(start.atStartOfDay(ZoneId.systemDefault()).toInstant()));
     }
 
-    public void setPaymentType(PaymentType paymentType) {
-        if (fireProposal != null) {
-            fireProposal.setPaymentType(paymentType);
+    public ManageFireProposalActionBean() {
+        fireProposal = new FireProposal();
+        updatePeriodRange(null);
+    }
+
+    public void updatePeriodRange(AjaxBehaviorEvent event) {
+        String unit = fireProposal.getInsurancePeriodUnit();
+        if ("DAY".equalsIgnoreCase(unit)) {
+            periodMin = 10;
+            periodMax = 365;
+        } else if ("MONTH".equalsIgnoreCase(unit)) {
+            periodMin = 1;
+            periodMax = 12;
+        } else if ("YEAR".equalsIgnoreCase(unit)) {
+            periodMin = 1;
+            periodMax = 1;
+        } else {
+            periodMin = 0;
+            periodMax = Integer.MAX_VALUE;
+        }
+        if (fireProposal.getInsurancePeriodDays() != null) {
+            int value = fireProposal.getInsurancePeriodDays();
+            if (value < periodMin || value > periodMax) {
+                fireProposal.setInsurancePeriodDays(periodMin);
+            }
         }
     }
-    */
+
+    public void addBuilding() {
+        if (buildingInfo != null) {
+            if (buildingInfo.isValid()) {
+                BuildingInfo cloned = buildingInfo.clone(); // Clone once
+                // Add to only one list, since buildings and fireProposal.getBuildingList() are same
+                buildings.add(cloned);
+                // No need to add to fireProposal.getBuildingList() again
+            } else {
+                addErrorMessage(null, "Please fill building details before adding.");
+                return;
+            }
+            buildingInfo = new BuildingInfo(); // Reset for next entry
+        } else {
+            addErrorMessage(null, "Building info is null, cannot add.");
+        }
+    }
+
+
+    public boolean hasErrors() {
+        FacesContext context = FacesContext.getCurrentInstance();
+        return context.getMessages().hasNext(); // Returns true if any message exists (including errors)
+    }
+    public void removeBuilding(BuildingInfo building) {
+        buildings.remove(building);
+        fireProposal.getBuildingList().remove(building);
+    }
+
+    public void setFireProposal(FireProposal fireProposal) {
+        this.fireProposal = fireProposal;
+    }
+
+    public int getPeriodMin() {
+        return periodMin;
+    }
+
+    public int getPeriodMax() {
+        return periodMax;
+    }
 
     public FireProposal getFireProposal() {
         return fireProposal != null ? fireProposal : (fireProposal = new FireProposal());
@@ -268,5 +350,17 @@ public class ManageFireProposalActionBean extends BaseBean {
 
     public void setFireProposalService(IFireProposalService fireProposalService) {
         this.fireProposalService = fireProposalService;
+    }
+
+    public List<BuildingInfo> getBuildings() {
+        return buildings;
+    }
+
+    public void setBuildings(List<BuildingInfo> buildings) {
+        this.buildings = buildings;
+    }
+
+    public void setBuildingInfo(BuildingInfo buildingInfo) {
+        this.buildingInfo = buildingInfo;
     }
 }

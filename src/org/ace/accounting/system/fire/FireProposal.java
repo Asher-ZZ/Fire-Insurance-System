@@ -19,7 +19,7 @@ import org.ace.java.component.idgen.service.IDInterceptor;
 @Table(name = TableName.FIREPOLICY)
 @TableGenerator(name = "FIREPROPOSAL_GEN", table = "ID_GEN", pkColumnName = "GEN_NAME", valueColumnName = "GEN_VAL", pkColumnValue = "FIREPROPOSAL_GEN", allocationSize = 10)
 @EntityListeners(IDInterceptor.class)
-public class FireProposal implements Serializable {
+public class FireProposal implements Serializable, Cloneable {
 
     private static final long serialVersionUID = 1L;
 
@@ -76,10 +76,10 @@ public class FireProposal implements Serializable {
     @Column(name = "InsurancePeriodDays")
     private Integer insurancePeriodDays;
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "BuildingInfoID")
-    private BuildingInfo buildingInfo;
+    @OneToMany(mappedBy = "fireProposal", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<BuildingInfo> buildingList = new ArrayList<>();
 
+   
     @OneToMany(mappedBy = "fireProposal", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Premium> premiumList = new ArrayList<>();
 
@@ -95,6 +95,24 @@ public class FireProposal implements Serializable {
     @Column(name = "Version")
     private int version;
 
+    
+    @Temporal(TemporalType.DATE)
+    @Column(name = "PolicyEndDate")
+    private Date policyEndDate;
+
+    public Date getPolicyEndDate() {
+        return policyEndDate;
+    }
+
+    public void setPolicyEndDate(Date policyEndDate) {
+        this.policyEndDate = policyEndDate;
+    }
+
+    
+    
+    
+    
+    
     @Embedded
     private BasicEntity basicEntity;
 
@@ -226,17 +244,19 @@ public class FireProposal implements Serializable {
         this.insurancePeriodDays = insurancePeriodDays;
     }
 
-    public BuildingInfo getBuildingInfo() {
-        if (buildingInfo == null) {
-            buildingInfo = new BuildingInfo();
+
+public List<BuildingInfo> getBuildingList() {
+    return buildingList;
+}
+
+public void setBuildingList(List<BuildingInfo> buildingList) {
+    this.buildingList = buildingList;
+    if (buildingList != null) {
+        for (BuildingInfo b : buildingList) {
+            b.setFireProposal(this);
         }
-        return buildingInfo;
     }
-
-    public void setBuildingInfo(BuildingInfo buildingInfo) {
-        this.buildingInfo = buildingInfo;
-    }
-
+}
     public List<Premium> getPremiumList() {
         return premiumList;
     }
@@ -323,6 +343,8 @@ public class FireProposal implements Serializable {
     public void setInsurancePeriodUnit(String insurancePeriodUnit) {
         this.insurancePeriodUnit = insurancePeriodUnit;
     }
+
+
 
     
 }
