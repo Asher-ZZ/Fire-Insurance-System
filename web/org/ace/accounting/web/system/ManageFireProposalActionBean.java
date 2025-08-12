@@ -123,7 +123,7 @@ public class ManageFireProposalActionBean extends BaseBean {
                 fireProposal.getPremiumList().clear();
                 fireProposal.getPremiumList().addAll(premiumList);
             }
-        }
+        } 
         currentStep = event.getNewStep();
         return currentStep;
     }
@@ -153,7 +153,8 @@ public class ManageFireProposalActionBean extends BaseBean {
             addErrorMessage(null, "Sum insured and premium rate are required to add a premium.");
         }
     }
-
+    
+   
     public void removePremium(Premium premium) {
         if (premium != null && premiumList.contains(premium)) {
             premiumList.remove(premium);
@@ -247,8 +248,48 @@ public class ManageFireProposalActionBean extends BaseBean {
         fireProposal.setPolicyEndDate(Date.from(start.atStartOfDay(ZoneId.systemDefault()).toInstant()));
     }
 
+//    building info
+    private List<BuildingInfo> buildingInfoList = new ArrayList<>();
+    public void addBuildingInfo() {
+        // Copy current input to new object to avoid reference issues
+        BuildingInfo newInfo = new BuildingInfo();
+        newInfo.setBuildingName(buildingInfo.getBuildingName());
+        newInfo.setFloor(buildingInfo.getFloor());
+        newInfo.setWall(buildingInfo.getWall());
+        newInfo.setRoofing(buildingInfo.getRoofing());
+        newInfo.setSumInsured(buildingInfo.getSumInsured());
+        // Copy other fields as needed
 
+        buildingInfoList.add(newInfo);
+        addPremiumForBuilding(newInfo);
+        // Clear form fields after adding
+        buildingInfo = new BuildingInfo();
+    }
 
+    public List<BuildingInfo> getBuildingInfoList() {
+        return buildingInfoList;
+    }
+
+    public void setBuildingInfoList(List<BuildingInfo> buildingInfoList) {
+        this.buildingInfoList = buildingInfoList;
+    }
+    
+    public void removeBuildingInfo(BuildingInfo info) {
+        buildingInfoList.remove(info);
+    }
+    
+    private void addPremiumForBuilding(BuildingInfo b) {
+        Premium p = new Premium();
+        p.setBuildingName(b.getBuildingName());
+        p.setSumInsured(b.getSumInsured());
+        // Set default values for demo
+        p.setBasicPremiumPeriod(1.0);
+        p.setBasicPremiumTerm(1.0);
+        p.setTotalPremiumPeriod(p.getSumInsured() * p.getPremiumRate()); // example calculation
+        premiumList.add(p);
+    }
+
+//end of building info
 
     public FireProposal getFireProposal() {
         return fireProposal != null ? fireProposal : (fireProposal = new FireProposal());
