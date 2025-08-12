@@ -4,16 +4,20 @@ import java.io.Serializable;
 
 import javax.persistence.*;
 
+import org.ace.java.component.idgen.service.IDInterceptor;
+
 @Entity
 @Table(name = "BUILDING_INFO")
+@TableGenerator(name = "BUILDING_INFO_GEN", table = "ID_GEN", pkColumnName = "GEN_NAME", valueColumnName = "GEN_VAL", pkColumnValue = "BUILDING_INFO_GEN", allocationSize = 10)
+@EntityListeners(IDInterceptor.class)
 public class BuildingInfo implements Serializable, Cloneable {
 
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.TABLE, generator = "BUILDING_INFO_GEN") // Changed to IDENTITY
     @Column(name = "BuildingInfoID")
-    private Long id;
+    private String id;
 
     @Column(name = "BuildingName", length = 100)
     private String buildingName;
@@ -55,41 +59,45 @@ public class BuildingInfo implements Serializable, Cloneable {
     private Double squareFeet;
 
     @Column(name = "AirCraftDamage")
-    private Boolean airCraftDamage; // Changed to Boolean
+    private Boolean airCraftDamage;
 
     @Column(name = "EarthQuakeFire")
-    private Boolean earthQuakeFire; // Changed to Boolean
+    private Boolean earthQuakeFire;
 
     @Column(name = "FloodAndInundation")
-    private Boolean floodAndInundation; // Changed to Boolean
+    private Boolean floodAndInundation;
 
     @Column(name = "ImpactDamage")
-    private Boolean impactDamage; // Changed to Boolean
+    private Boolean impactDamage;
 
     @Column(name = "RiotStrike")
-    private Boolean riotStrike; // Changed to Boolean
+    private Boolean riotStrike;
 
     @Column(name = "SpontaneousCombustion")
-    private Boolean spontaneousCombustion; // Changed to Boolean
+    private Boolean spontaneousCombustion;
 
     @Column(name = "StormTyphoon")
-    private Boolean stormTyphoon; // Changed to Boolean
+    private Boolean stormTyphoon;
 
     @Column(name = "WaterDamage")
-    private Boolean waterDamage; // Changed to Boolean
+    private Boolean waterDamage;
 
     @Column(name = "SubsidenceAndLandslide")
-    private Boolean subsidenceAndLandslide; // Changed to Boolean
+    private Boolean subsidenceAndLandslide;
 
     @Column(name = "WarRisk")
-    private Boolean warRisk; // Changed to Boolean
+    private Boolean warRisk;
 
-    @OneToOne(mappedBy = "buildingInfo")
+    @ManyToOne
+    @JoinColumn(name = "FIRE_PROPOSAL_ID")
     private FireProposal fireProposal;
 
-    // Getters and setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    // Default constructor
+    public BuildingInfo() {}
+
+    // Getters and Setters
+    public String getId() { return id; }
+    public void setId(String id) { this.id = id; }
     public String getBuildingName() { return buildingName != null ? buildingName : ""; }
     public void setBuildingName(String buildingName) { this.buildingName = buildingName; }
     public String getFloor() { return floor != null ? floor : ""; }
@@ -116,7 +124,7 @@ public class BuildingInfo implements Serializable, Cloneable {
     public void setHeight(Double height) { this.height = height; }
     public Double getSquareFeet() { return squareFeet != null ? squareFeet : 0.0; }
     public void setSquareFeet(Double squareFeet) { this.squareFeet = squareFeet; }
-    public Boolean getAirCraftDamage() { return airCraftDamage != null ? airCraftDamage : false; } // Changed getter
+    public Boolean getAirCraftDamage() { return airCraftDamage != null ? airCraftDamage : false; }
     public void setAirCraftDamage(Boolean airCraftDamage) { this.airCraftDamage = airCraftDamage; }
     public Boolean getEarthQuakeFire() { return earthQuakeFire != null ? earthQuakeFire : false; }
     public void setEarthQuakeFire(Boolean earthQuakeFire) { this.earthQuakeFire = earthQuakeFire; }
@@ -142,9 +150,43 @@ public class BuildingInfo implements Serializable, Cloneable {
     @Override
     public BuildingInfo clone() {
         try {
-            return (BuildingInfo) super.clone();
+            BuildingInfo clone = (BuildingInfo) super.clone();
+            clone.setId(this.id);
+            clone.setBuildingName(this.buildingName);
+            clone.setFloor(this.floor);
+            clone.setWall(this.wall);
+            clone.setRoofing(this.roofing);
+            clone.setBuildingClass(this.buildingClass);
+            clone.setNatureOfBusiness(this.natureOfBusiness);
+            clone.setMainCover(this.mainCover);
+            clone.setFloorName(this.floorName);
+            clone.setSumInsured(this.sumInsured);
+            clone.setLength(this.length);
+            clone.setWidth(this.width);
+            clone.setHeight(this.height);
+            clone.setSquareFeet(this.squareFeet);
+            clone.setAirCraftDamage(this.airCraftDamage);
+            clone.setEarthQuakeFire(this.earthQuakeFire);
+            clone.setFloodAndInundation(this.floodAndInundation);
+            clone.setImpactDamage(this.impactDamage);
+            clone.setRiotStrike(this.riotStrike);
+            clone.setSpontaneousCombustion(this.spontaneousCombustion);
+            clone.setStormTyphoon(this.stormTyphoon);
+            clone.setWaterDamage(this.waterDamage);
+            clone.setSubsidenceAndLandslide(this.subsidenceAndLandslide);
+            clone.setWarRisk(this.warRisk);
+            clone.setFireProposal(this.fireProposal); // Handle relationship if needed
+            return clone;
         } catch (CloneNotSupportedException e) {
-            throw new RuntimeException(e);
+            throw new AssertionError("Cloning not supported", e); // Should never happen
         }
+    }
+
+    public boolean isValid() {
+        return buildingName != null && !buildingName.trim().isEmpty() &&
+               buildingClass != null && !buildingClass.trim().isEmpty() &&
+               natureOfBusiness != null && !natureOfBusiness.trim().isEmpty() &&
+               sumInsured != null && sumInsured > 0 &&
+               squareFeet != null && squareFeet > 0;
     }
 }
