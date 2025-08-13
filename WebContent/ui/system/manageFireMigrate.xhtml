@@ -392,40 +392,20 @@
 					<p:commandButton value="Cancel" action="cancel"
 						style="margin-right: 5px;" />
 				</p:tab>
-				<!-- Premium Info Tab -->
-<p:tab id="premiumInfo" title="Premium Info">
+	<!-- Premium Info Tab -->
+<p:tab id="premiumInfo" title="Premium Info" 
+       listener="#{ManageFireProposalActionBean.onTabChange}">
+
     <h:form id="premiumForm">
 
         <h:outputText value="Premium Details" styleClass="section-title" />
-
-        <!-- Add Premium Section -->
-        <p:panelGrid columns="4" styleClass="ui-fluid" style="margin-bottom:10px;">
-            <h:outputLabel value="Basic Premium (Period):" />
-            <p:inputText value="#{ManageFireProposalActionBean.newPremium.basicPremiumPeriod}">
-                <f:convertNumber minFractionDigits="2"/>
-                <p:ajax event="blur" listener="#{ManageFireProposalActionBean.tempCalcForNewPremium}" update="premiumTable totalPremiumOutput"/>
-            </p:inputText>
-
-            <h:outputLabel value="Add-On Premium (Period):" />
-            <p:inputText value="#{ManageFireProposalActionBean.newPremium.addOnPremiumPeriod}">
-                <f:convertNumber minFractionDigits="2"/>
-                <p:ajax event="blur" listener="#{ManageFireProposalActionBean.tempCalcForNewPremium}" update="premiumTable totalPremiumOutput"/>
-            </p:inputText>
-
-          <p:commandButton value="Add Premium"
-                 action="#{ManageFireProposalActionBean.addPremium}"
-                 update="premiumTable totalPremiumOutput"
-                 process="@form"
-                 icon="pi pi-plus"/>
-
-        </p:panelGrid>
 
         <!-- Premium Data Table -->                                                   
         <p:dataTable id="premiumTable"
                      value="#{ManageFireProposalActionBean.premiumList}"
                      var="premium"
-                     styleClass="ui-datatable"
                      rowIndexVar="rowIndex"
+                     styleClass="ui-datatable"
                      emptyMessage="No premiums added yet.">
 
             <p:column headerText="No." style="width:50px; text-align:center;">
@@ -442,10 +422,14 @@
                 </h:outputText>
             </p:column>
 
+            <!-- Editable Basic Premium -->
             <p:column headerText="Basic Premium (Period)" style="text-align:right;">
-                <h:outputText value="#{premium.basicPremiumPeriod}">
+                <p:inputText value="#{premium.basicPremiumPeriod}">
                     <f:convertNumber minFractionDigits="2" />
-                </h:outputText>
+                    <p:ajax event="blur"
+                            listener="#{ManageFireProposalActionBean.recalculatePremiums}"
+                            update="premiumTable :fireProposalEntry:premiumForm:totalPremiumOutput" />
+                </p:inputText>
             </p:column>
 
             <p:column headerText="Basic Premium (Term)" style="text-align:right;">
@@ -454,10 +438,14 @@
                 </h:outputText>
             </p:column>
 
+            <!-- Editable Add-On Premium -->
             <p:column headerText="Add-On Premium (Period)" style="text-align:right;">
-                <h:outputText value="#{premium.addOnPremiumPeriod}">
+                <p:inputText value="#{premium.addOnPremiumPeriod}">
                     <f:convertNumber minFractionDigits="2" />
-                </h:outputText>
+                    <p:ajax event="blur"
+                            listener="#{ManageFireProposalActionBean.recalculatePremiums}"
+                            update="premiumTable :fireProposalEntry:premiumForm:totalPremiumOutput" />
+                </p:inputText>
             </p:column>
 
             <p:column headerText="Add-On Premium (Term)" style="text-align:right;">
@@ -475,7 +463,8 @@
             <p:column headerText="Action" style="text-align:center; width:80px;">
                 <p:commandButton value="Remove"
                                  action="#{ManageFireProposalActionBean.removePremium(premium)}"
-                                 update="@form" process="@this"
+                                 update="@form"
+                                 process="@this"
                                  icon="pi pi-trash" />
             </p:column>
 
@@ -491,6 +480,7 @@
 
     </h:form>
 </p:tab>
+
 
 
 

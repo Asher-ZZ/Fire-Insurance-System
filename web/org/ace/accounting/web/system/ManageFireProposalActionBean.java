@@ -24,6 +24,7 @@ import org.ace.accounting.system.fire.service.interfaces.IFireProposalService;
 import org.ace.java.component.SystemException;
 import org.ace.java.web.common.BaseBean;
 import org.primefaces.event.FlowEvent;
+import org.primefaces.event.TabChangeEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import javax.faces.application.FacesMessage;
@@ -88,37 +89,54 @@ public class ManageFireProposalActionBean extends BaseBean {
 			logger.warn("FireProposalService is null, initialized empty fire proposal list");
 		}
 	}
-
 	public String onFlowProcess(FlowEvent event) {
-		String newStep = event.getNewStep();
+	    String newStep = event.getNewStep();
 
-		if ("buildingInfo".equals(currentStep)) {
-			// Don't add buildingInfo here; add only via addBuilding() button
+	    if ("buildingInfo".equals(currentStep)) {
+	        // Validate required fields
+	        if (buildingInfo == null || !buildingInfo.isValid()) {
+	            addErrorMessage(null, "Please fill in all mandatory building info fields before proceeding.");
+	            return currentStep; // prevent moving forward
+	        }
 
-			// Just validate required fields or dates if you want
-			if (buildingInfo == null || !buildingInfo.isValid()) {
-				addErrorMessage(null, "Please fill in all mandatory building info fields before proceeding.");
-				return currentStep; // prevent moving forward
-			}
+	        validateDates();
+	        if (hasErrors()) {
+	            return currentStep; // prevent moving forward if errors exist
+	        }
+	    }
 
-			validateDates();
-			if (hasErrors()) {
-				return currentStep; // prevent moving forward if errors exist
-			}
-		}
+	    if ("premiumInfo".equals(newStep)) {
+	        // Populate premiumList from buildings if empty
+	        if (premiumList == null) {
+	            premiumList = new ArrayList<>();
+	        } else {
+	            premiumList.clear();
+	        }
 
-		if ("premiumInfo".equals(newStep)) {
-			if (fireProposal.getPremiumList() == null) {
-				fireProposal.setPremiumList(premiumList);
-			} else {
-				fireProposal.getPremiumList().clear();
-				fireProposal.getPremiumList().addAll(premiumList);
-			}
-		}
+	        double divisor = getPaymentDivisor(fireProposal.getPaymentType());
 
-		currentStep = newStep;
-		return currentStep;
+	        for (BuildingInfo b : buildings) {
+	            Premium p = new Premium();
+	            p.setBuildingName(b.getBuildingName());
+	            p.setSumInsured(b.getSumInsured());
+	            p.setFireProposal(fireProposal);
+
+	            p.setBasicPremiumPeriod(0.0);
+	            p.setAddOnPremiumPeriod(0.0);
+	            p.setBasicPremiumTerm(0.0);
+	            p.setAddOnPremiumTerm(0.0);
+	            p.setTotalPremiumPeriod(0.0);
+
+	            premiumList.add(p);
+	        }
+
+	        fireProposal.setPremiumList(premiumList);
+	    }
+
+	    currentStep = newStep;
+	    return currentStep;
 	}
+
 
 	private void validateDates() {
 		Date submittedDate = fireProposal.getSubmittedDate();
@@ -237,23 +255,24 @@ public class ManageFireProposalActionBean extends BaseBean {
 	}
 
 	public void addBuilding() {
-	    if (buildingInfo != null && buildingInfo.isValid()) {
-	        BuildingInfo cloned = buildingInfo.clone();
+		if (buildingInfo != null && buildingInfo.isValid()) {
+			BuildingInfo cloned = buildingInfo.clone();
 
-	        Premium premiumToAdd = new Premium();
-	        premiumToAdd.setBuildingName(cloned.getBuildingName());
-	        premiumToAdd.setSumInsured(cloned.getSumInsured());
-	        premiumToAdd.setFireProposal(fireProposal);
+			Premium premiumToAdd = new Premium();
+			premiumToAdd.setBuildingName(cloned.getBuildingName());
+			premiumToAdd.setSumInsured(cloned.getSumInsured());
+			premiumToAdd.setFireProposal(fireProposal);
 
-	        premiumList.add(premiumToAdd);
-	        buildings.add(cloned);
+			premiumList.add(premiumToAdd);
+			buildings.add(cloned);
 
-	        buildingInfo = new BuildingInfo(); // reset input
-	    } else {
-	        addErrorMessage(null, "Please fill building details before adding.");
-	    }
+			buildingInfo = new BuildingInfo(); // reset input
+		} else {
+			addErrorMessage(null, "Please fill building details before adding.");
+		}
 	}
-
+	
+	
 
 	// Return available payment types based on current insurance period
 	public PaymentType[] getAvailablePaymentTypes() {
@@ -388,17 +407,84 @@ public class ManageFireProposalActionBean extends BaseBean {
 	 * totals.
 	 */
 	public void addPremium() {
-	    if (buildings.isEmpty()) {
-	        addErrorMessage(null, "Please add at least one building before adding premium.");
-	        return;
+		if (buildings.isEmpty()) {
+			addErrorMessage(null, "Please add at least one building before adding premium.");
+			return;
+		}
+
+		// Clear previous premium list so we rebuild all rows
+		premiumList.clear();
+
+		double divisor = getPaymentDivisor(fireProposal.getPaymentType());
+		double basicPeriod = (newPremium.getBasicPremiumPeriod() != null ? newPremium.getBasicPremiumPeriod() : 0.0);
+		double addonPeriod = (newPremium.getAddOnPremiumPeriod() != null ? newPremium.getAddOnPremiumPeriod() : 0.0);
+
+		for (BuildingInfo b : buildings) {
+			Premium p = new Premium();
+			p.setBuildingName(b.getBuildingName());
+			p.setSumInsured(b.getSumInsured());
+			p.setFireProposal(fireProposal);
+
+			p.setBasicPremiumPeriod(basicPeriod);
+			p.setAddOnPremiumPeriod(addonPeriod);
+
+			double basicTerm = divisor != 0 ? basicPeriod / divisor : 0.0;
+			double addonTerm = divisor != 0 ? addonPeriod / divisor : 0.0;
+
+			p.setBasicPremiumTerm(round(basicTerm));
+			p.setAddOnPremiumTerm(round(addonTerm));
+			p.setTotalPremiumPeriod(round(basicTerm + addonTerm));
+
+			premiumList.add(p);
+		}
+
+		fireProposal.setPremiumList(premiumList);
+
+		// Reset newPremium input
+		newPremium = new Premium();
+
+		// Recalculate grand totals
+		recalculatePremiums();
+	}
+	
+	public void onTabChange(TabChangeEvent event) {
+	    if ("premiumInfo".equals(event.getTab().getId())) {
+	        // Only populate if premiumList is empty
+	        if (premiumList == null) {
+	            premiumList = new ArrayList<>();
+	        } else {
+	            premiumList.clear();
+	        }
+
+	        double divisor = getPaymentDivisor(fireProposal.getPaymentType());
+
+	        for (BuildingInfo b : buildings) {
+	            Premium p = new Premium();
+	            p.setBuildingName(b.getBuildingName());
+	            p.setSumInsured(b.getSumInsured());
+	            p.setFireProposal(fireProposal);
+
+	            // Initialize premiums to 0
+	            p.setBasicPremiumPeriod(0.0);
+	            p.setAddOnPremiumPeriod(0.0);
+	            p.setBasicPremiumTerm(0.0);
+	            p.setAddOnPremiumTerm(0.0);
+	            p.setTotalPremiumPeriod(0.0);
+
+	            premiumList.add(p);
+	        }
+
+	        fireProposal.setPremiumList(premiumList);
 	    }
+	}
 
-	    // Clear previous premium list so we rebuild all rows
+
+
+	private void loadPremiumsFromBuildings() {
+	    if (buildings == null || buildings.isEmpty()) return;
+
 	    premiumList.clear();
-
 	    double divisor = getPaymentDivisor(fireProposal.getPaymentType());
-	    double basicPeriod = (newPremium.getBasicPremiumPeriod() != null ? newPremium.getBasicPremiumPeriod() : 0.0);
-	    double addonPeriod = (newPremium.getAddOnPremiumPeriod() != null ? newPremium.getAddOnPremiumPeriod() : 0.0);
 
 	    for (BuildingInfo b : buildings) {
 	        Premium p = new Premium();
@@ -406,30 +492,21 @@ public class ManageFireProposalActionBean extends BaseBean {
 	        p.setSumInsured(b.getSumInsured());
 	        p.setFireProposal(fireProposal);
 
-	        p.setBasicPremiumPeriod(basicPeriod);
-	        p.setAddOnPremiumPeriod(addonPeriod);
-
-	        double basicTerm = divisor != 0 ? basicPeriod / divisor : 0.0;
-	        double addonTerm = divisor != 0 ? addonPeriod / divisor : 0.0;
-
-	        p.setBasicPremiumTerm(round(basicTerm));
-	        p.setAddOnPremiumTerm(round(addonTerm));
-	        p.setTotalPremiumPeriod(round(basicTerm + addonTerm));
+	        p.setBasicPremiumPeriod(0.0);
+	        p.setAddOnPremiumPeriod(0.0);
+	        p.setBasicPremiumTerm(0.0);
+	        p.setAddOnPremiumTerm(0.0);
+	        p.setTotalPremiumPeriod(0.0);
 
 	        premiumList.add(p);
 	    }
 
 	    fireProposal.setPremiumList(premiumList);
-
-	    // Reset newPremium input
-	    newPremium = new Premium();
-
-	    // Recalculate grand totals
-	    recalculatePremiums();
 	}
 
+
 	private double round(double value) {
-	    return BigDecimal.valueOf(value).setScale(2, RoundingMode.HALF_UP).doubleValue();
+		return BigDecimal.valueOf(value).setScale(2, RoundingMode.HALF_UP).doubleValue();
 	}
 
 	/*
