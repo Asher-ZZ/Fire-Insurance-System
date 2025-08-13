@@ -84,7 +84,7 @@ public class BuildingInfo implements Serializable, Cloneable {
     @Column(name = "WarRisk")
     private Boolean warRisk; // Changed to Boolean
 
-    @OneToOne(mappedBy = "buildingInfo")
+    @OneToMany(mappedBy = "buildingInfo")
     private FireProposal fireProposal;
 
     // Getters and setters
@@ -147,4 +147,20 @@ public class BuildingInfo implements Serializable, Cloneable {
             throw new RuntimeException(e);
         }
     }
+	public Double getBasicPremiumPeriod() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	public Double getBasicPremiumTerm() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	public void setBasicPremiumPeriod(Double basicPremiumPeriod) {
+		// TODO Auto-generated method stub
+		
+	}
+	public void setBasicPremiumTerm(Double basicPremiumTerm) {
+		
+		
+	}
 }

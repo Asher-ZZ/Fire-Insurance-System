@@ -22,6 +22,7 @@ import org.ace.accounting.system.fire.Premium;
 import org.ace.accounting.system.fire.service.interfaces.IFireProposalService;
 import org.ace.java.component.SystemException;
 import org.ace.java.web.common.BaseBean;
+import org.primefaces.PrimeFaces;
 import org.primefaces.event.FlowEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,6 +56,16 @@ public class ManageFireProposalActionBean extends BaseBean {
     private Date toDate(LocalDate localDate) {
         return Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
     }
+
+    private Double basicPremiumPeriod = 0.0;
+    private Double basicPremiumTerm = 0.0;
+
+    // Getters & Setters
+    public Double getBasicPremiumPeriod() { return basicPremiumPeriod; }
+    public void setBasicPremiumPeriod(Double basicPremiumPeriod) { this.basicPremiumPeriod = basicPremiumPeriod; }
+
+    public Double getBasicPremiumTerm() { return basicPremiumTerm; }
+    public void setBasicPremiumTerm(Double basicPremiumTerm) { this.basicPremiumTerm = basicPremiumTerm; }
 
     @PostConstruct
     public void init() {
@@ -173,11 +184,11 @@ public class ManageFireProposalActionBean extends BaseBean {
 
     public void saveAll() {
         try {
-            // Sync building info and premium list as you already do...
+            // Save FireProposal and child lists
+            fireProposal.setBuildingInfoList(buildingInfoList);
+            fireProposal.setPremiumList(premiumList);
 
-            // Make sure policyEndDate is calculated fresh before saving
             calculatePolicyEndDate();
-            logger.debug("Saving FireProposal with policyEndDate: {}", fireProposal.getPolicyEndDate());
 
             if (createNew) {
                 fireProposalService.addNewFireProposal(fireProposal);
@@ -187,8 +198,16 @@ public class ManageFireProposalActionBean extends BaseBean {
                 addInfoMessage(null, MessageId.UPDATE_SUCCESS, fireProposal.getCustomer());
             }
 
+            // Clear all lists and input forms
             createNewFireProposal();
+            buildingInfoList.clear();
+            premiumList.clear();
+            buildingInfo = new BuildingInfo();
+
             loadFireProposals();
+
+            // Reset wizard to first step
+            PrimeFaces.current().executeScript("PF('wizardWidget').loadStep('fireProposalTab', true);");
 
         } catch (SystemException ex) {
             logger.error("Failed to save FireProposal", ex);
@@ -250,22 +269,6 @@ public class ManageFireProposalActionBean extends BaseBean {
 
 //    building info
     private List<BuildingInfo> buildingInfoList = new ArrayList<>();
-    public void addBuildingInfo() {
-        // Copy current input to new object to avoid reference issues
-        BuildingInfo newInfo = new BuildingInfo();
-        newInfo.setBuildingName(buildingInfo.getBuildingName());
-        newInfo.setFloor(buildingInfo.getFloor());
-        newInfo.setWall(buildingInfo.getWall());
-        newInfo.setRoofing(buildingInfo.getRoofing());
-        newInfo.setSumInsured(buildingInfo.getSumInsured());
-        // Copy other fields as needed
-
-        buildingInfoList.add(newInfo);
-        addPremiumForBuilding(newInfo);
-        // Clear form fields after adding
-        buildingInfo = new BuildingInfo();
-    }
-
     public List<BuildingInfo> getBuildingInfoList() {
         return buildingInfoList;
     }
@@ -273,6 +276,30 @@ public class ManageFireProposalActionBean extends BaseBean {
     public void setBuildingInfoList(List<BuildingInfo> buildingInfoList) {
         this.buildingInfoList = buildingInfoList;
     }
+    public void addBuildingInfo() {
+        // Copy input to a new BuildingInfo object
+        BuildingInfo newInfo = new BuildingInfo();
+        newInfo.setBuildingName(buildingInfo.getBuildingName());
+        newInfo.setFloor(buildingInfo.getFloor());
+        newInfo.setWall(buildingInfo.getWall());
+        newInfo.setRoofing(buildingInfo.getRoofing());
+        newInfo.setSumInsured(buildingInfo.getSumInsured());
+        newInfo.setBasicPremiumPeriod(buildingInfo.getBasicPremiumPeriod());
+        newInfo.setBasicPremiumTerm(buildingInfo.getBasicPremiumTerm());
+
+        // Link to FireProposal
+        newInfo.setFireProposal(fireProposal); // important!
+
+        buildingInfoList.add(newInfo);
+
+        // Add Premium linked to FireProposal
+        addPremiumForBuilding(newInfo);
+
+        // Reset form fields
+        buildingInfo = new BuildingInfo();
+    }
+
+    
     
     public void removeBuildingInfo(BuildingInfo info) {
         buildingInfoList.remove(info);
@@ -282,10 +309,16 @@ public class ManageFireProposalActionBean extends BaseBean {
         Premium p = new Premium();
         p.setBuildingName(b.getBuildingName());
         p.setSumInsured(b.getSumInsured());
-        // Set default values for demo
-        p.setBasicPremiumPeriod(1.0);
-        p.setBasicPremiumTerm(1.0);
-        p.setTotalPremiumPeriod(p.getSumInsured() * p.getPremiumRate()); // example calculation
+        p.setBasicPremiumPeriod(b.getBasicPremiumPeriod());
+        p.setBasicPremiumTerm(b.getBasicPremiumTerm());
+        double addOnPremium = 0.0; // add-on can be from user input
+        p.setAddOnPremiumPeriod(addOnPremium);
+        p.setAddOnPremiumTerm(addOnPremium);
+        p.setTotalPremiumPeriod(p.getBasicPremiumPeriod() + addOnPremium);
+
+        // Link to FireProposal
+        p.setFireProposal(fireProposal);
+
         premiumList.add(p);
     }
 

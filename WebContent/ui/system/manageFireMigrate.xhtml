@@ -42,7 +42,7 @@
 			<p:growl escape="false" globalOnly="true" life="5000"
 				showDetail="true" />
 			<h:outputText value="Add New Fire Proposal" styleClass="title" />
-			<p:wizard 
+			<p:wizard widgetVar="wizard" id="FireWizard"
 				flowListener="#{ManageFireProposalActionBean.onFlowProcess}">
 				<!-- Proposal Info Tab -->
 				<p:tab id="proposalInfo" title="Proposal Info">
@@ -198,7 +198,7 @@
 				</p:tab>
 				<!-- Building Info Tab -->
 				<p:tab id="buildingInfo" title="Building Info">
-					<p:panelGrid columns="2"
+					<p:panelGrid columns="2" id="buildingInfoPanel"
 						columnClasses="ui-grid-col-6,ui-grid-col-6" layout="grid"
 						styleClass="ui-panelgrid-blank ui-fluid">
 						<p:panelGrid columns="2"
@@ -334,7 +334,7 @@
 
 					<p:dataTable id="buildingTable"
 						value="#{ManageFireProposalActionBean.buildingInfoList}" var="b"
-						style="margin-top:15px;"
+						style="margin-top:15px;" widgetVar="buildingTable"
 						emptyMessage="No building info added yet.">
 
 						<p:column headerText="Building Name">
@@ -364,67 +364,57 @@
 								styleClass="ui-button-danger" />
 						</p:column>
 					</p:dataTable>
-					<p:commandButton value="Next"
-                                 style="margin-top: 15px;"
-                                 update="premiumTable"
-                                 process="@form"
-                                 immediate="true" 
-                                 oncomplete="PF('wizard').select(1)" />
-					
+
+
 				</p:tab>
 				<!-- Premium Info Tab -->
 				<p:tab id="premiumInfo" title="Premium Info">
 					<p:panel header="Fire Premium"
 						style="background-color:##00aab4; color:black; font-weight:bold;">
-						<!-- <h:outputText value="Premium Details" styleClass="section-title"/>
-                        <h:outputText value=""/>
-                        <h:outputText value="Add New Premium"/> -->
-						<!-- <p:panelGrid columns="4" styleClass="ui-panelgrid-blank ui-fluid">
-                            <p:inputNumber value="#{ManageFireProposalActionBean.newPremium.sumInsured}" required="true" requiredMessage="Sum insured is required." minFractionDigits="2"/>
-                            <p:inputNumber value="#{ManageFireProposalActionBean.newPremium.premiumRate}" required="true" requiredMessage="Premium rate is required." minFractionDigits="2" maxFractionDigits="2"/>
-                            <p:inputText value="#{ManageFireProposalActionBean.newPremium.buildingName}" placeholder="Building Name"/>
-                            <p:commandButton value="Add" action="#{ManageFireProposalActionBean.addPremium}" update="premiumTable" process="@this"/>
-                        </p:panelGrid> -->
-						<p:dataTable id="premiumTable"
-							value="#{ManageFireProposalActionBean.premiumList}" var="premium">
-							<p:column headerText="Building Name">
-								<h:outputText value="#{premium.buildingName}" />
-							</p:column>
-							<p:column headerText="Sum Insured">
-								<h:outputText value="#{premium.sumInsured}">
-									<f:convertNumber minFractionDigits="2" />
-								</h:outputText>
-							</p:column>
-							<p:column headerText="Basic Premium Period">
-								<h:outputText value="#{premium.basicPremiumPeriod}">
-									<f:convertNumber minFractionDigits="2" />
-								</h:outputText>
-							</p:column>
-							<p:column headerText="Basic Premium Term">
-								<h:outputText value="#{premium.basicPremiumTerm}">
-									<f:convertNumber minFractionDigits="2" />
-								</h:outputText>
-							</p:column>
-							<p:column headerText="Total Premium">
-								<h:outputText value="#{premium.totalPremiumPeriod}">
-									<f:convertNumber minFractionDigits="2" />
-								</h:outputText>
-							</p:column>
-							<p:column headerText="Action">
-								<p:commandButton value="Remove"
-									action="#{ManageFireProposalActionBean.removePremium(premium)}"
-									update="premiumTable" process="@this" />
-							</p:column>
-						</p:dataTable>
-
-						<!-- <h:outputText value="Total Sum Insured: "/>
-                        <h:outputText value="#{ManageFireProposalActionBean.fireProposal.totalSumInsured}"> 
-                            <f:convertNumber minFractionDigits="2"/>
-                        </h:outputText>
-                        <h:outputText value="Total Premium Period: "/>
-                        <h:outputText value="#{ManageFireProposalActionBean.fireProposal.totalPremiumPeriod}">
-                            <f:convertNumber minFractionDigits="2"/> -->
-						<!-- </h:outputText> -->
+						<h:form id="premiumform">
+							<p:dataTable id="premiumTable"
+								value="#{ManageFireProposalActionBean.buildingInfoList}"
+								var="premium">
+								<p:column headerText="Building Name">
+									<h:outputText value="#{premium.buildingName}" />
+								</p:column>
+								<p:column headerText="Sum Insured">
+									<h:outputText value="#{premium.sumInsured}">
+										<f:convertNumber minFractionDigits="2" />
+									</h:outputText>
+								</p:column>
+								<p:column headerText="Basic Premium Period">
+									<p:inputText id="basicPremiumPeriod"
+										value="#{ManageFireProposalActionBean.basicPremiumPeriod}"
+										required="true" >
+										<f:convertNumber minFractionDigits="2" />
+										</p:inputText>
+								</p:column>
+								<p:column headerText="Basic Premium Term">
+									<h:outputText
+										value="#{ManageFireProposalActionBean.basicPremiumTerm}">
+										<f:convertNumber minFractionDigits="2" />
+									</h:outputText>
+								</p:column>
+								<p:column headerText="Basic Premium Term">
+									<h:outputText
+										value="#{ManageFireProposalActionBean.basicPremiumTerm}">
+										<f:convertNumber minFractionDigits="2" />
+									</h:outputText>
+								</p:column> 
+								<!-- <p:column headerText="Total Premium">
+									<zh:outputText
+										value="#{ManageFireProposalActionBean.totalPremiumPeriod}">
+										<f:convertNumber minFractionDigits="2" />
+									</h:outputText>
+								</p:column> -->
+								<p:column headerText="Action">
+									<p:commandButton value="Remove"
+										action="#{ManageFireProposalActionBean.removePremium(premium)}"
+										update="premiumTable" process="@this" />
+								</p:column>
+							</p:dataTable>
+						</h:form>
 					</p:panel>
 					<div class="bb" style="Margin: 20px;">
 						<p:commandButton value="Cancel" action="cancel"

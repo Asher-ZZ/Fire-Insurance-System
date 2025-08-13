@@ -74,7 +74,7 @@ public class FireProposal implements Serializable, Cloneable {
     @Column(name = "InsurancePeriodDays")
     private Integer insurancePeriodDays;
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "BuildingInfoID")
     private BuildingInfo buildingInfo;
 
@@ -339,6 +339,11 @@ public class FireProposal implements Serializable, Cloneable {
     public void setInsurancePeriodUnit(String insurancePeriodUnit) {
         this.insurancePeriodUnit = insurancePeriodUnit;
     }
+
+	public void setBuildingInfoList(List<BuildingInfo> buildingInfoList) {
+		
+		
+	}
 
     
 }
