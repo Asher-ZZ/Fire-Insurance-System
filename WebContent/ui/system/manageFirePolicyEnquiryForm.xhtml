@@ -1,9 +1,9 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:ui="http://java.sun.com/jsf/facelets"
-                xmlns:h="http://java.sun.com/jsf/html"
-                xmlns:f="http://java.sun.com/jsf/core"
-                xmlns:p="http://primefaces.org/ui"
-                template="/common/commonLayout.xhtml">
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/common/commonLayout.xhtml">     
     <ui:param name="header" value="Fire Policy Enquiry" />
     <ui:param name="headerRendered" value="true" />
 
@@ -46,7 +46,7 @@
                 <!-- Action Buttons -->
                 <p:commandButton value="Search"
                     action="#{ManageFireEnquiryBean.search}"
-                    update="resultsTable progressInfo growl" icon="pi pi-search" />
+                    update="resultsTable growl" icon="pi pi-search" />
                 <p:commandButton value="Reset"
                     action="#{ManageFireEnquiryBean.reset}" update="@form"
                     style="margin-left:10px;" icon="pi pi-refresh" />
@@ -59,7 +59,7 @@
                     currentPageReportTemplate="( {currentPage} of {totalPages} )"
                     rowsPerPageTemplate="5,10,20" styleClass="policy-table"
                     style="margin-top:20px;">
-                    
+
                     <p:column headerText="Policy No." style="width:120px;">
                         <h:outputText value="#{policy.policyNo}" />
                     </p:column>
@@ -93,10 +93,10 @@
                     </p:column>
                 </p:dataTable>
 
-
                 <!-- Growl -->
                 <p:growl id="growl" showDetail="true" life="3000" />
             </h:panelGroup>
         </h:form>
     </ui:define>
 </ui:composition>
+
