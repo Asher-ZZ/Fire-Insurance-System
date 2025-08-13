@@ -17,14 +17,16 @@ import org.ace.java.component.idgen.service.IDInterceptor;
 
 @Entity
 @Table(name = TableName.FIREPOLICY)
+@TableGenerator(name = "FIREPROPOSAL_GEN", table = "ID_GEN", pkColumnName = "GEN_NAME", valueColumnName = "GEN_VAL", pkColumnValue = "FIREPROPOSAL_GEN", allocationSize = 10)
+@EntityListeners(IDInterceptor.class)
 public class FireProposal implements Serializable, Cloneable {
 
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // Changed to IDENTITY
+    @GeneratedValue(strategy = GenerationType.TABLE, generator = "FIREPROPOSAL_GEN") // Changed to IDENTITY
     @Column(name = "ProposalID")
-    private Long id;
+    private String id;
 
     // Remove @TableGenerator and @EntityListeners(IDInterceptor.class)
 
@@ -74,10 +76,10 @@ public class FireProposal implements Serializable, Cloneable {
     @Column(name = "InsurancePeriodDays")
     private Integer insurancePeriodDays;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "BuildingInfoID")
-    private BuildingInfo buildingInfo;
+    @OneToMany(mappedBy = "fireProposal", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<BuildingInfo> buildingList = new ArrayList<>();
 
+   
     @OneToMany(mappedBy = "fireProposal", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Premium> premiumList = new ArrayList<>();
 
@@ -130,11 +132,11 @@ public class FireProposal implements Serializable, Cloneable {
     public FireProposal() {}
 
     // --- Getters & Setters ---
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -242,17 +244,19 @@ public class FireProposal implements Serializable, Cloneable {
         this.insurancePeriodDays = insurancePeriodDays;
     }
 
-    public BuildingInfo getBuildingInfo() {
-        if (buildingInfo == null) {
-            buildingInfo = new BuildingInfo();
+
+public List<BuildingInfo> getBuildingList() {
+    return buildingList;
+}
+
+public void setBuildingList(List<BuildingInfo> buildingList) {
+    this.buildingList = buildingList;
+    if (buildingList != null) {
+        for (BuildingInfo b : buildingList) {
+            b.setFireProposal(this);
         }
-        return buildingInfo;
     }
-
-    public void setBuildingInfo(BuildingInfo buildingInfo) {
-        this.buildingInfo = buildingInfo;
-    }
-
+}
     public List<Premium> getPremiumList() {
         return premiumList;
     }
@@ -340,10 +344,7 @@ public class FireProposal implements Serializable, Cloneable {
         this.insurancePeriodUnit = insurancePeriodUnit;
     }
 
-	public void setBuildingInfoList(List<BuildingInfo> buildingInfoList) {
-		
-		
-	}
+
 
     
 }

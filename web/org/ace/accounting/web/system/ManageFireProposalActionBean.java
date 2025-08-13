@@ -10,6 +10,7 @@ import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
+import javax.faces.event.AjaxBehaviorEvent;
 
 import org.ace.accounting.common.Branch;
 import org.ace.accounting.common.CurrencyType1;
@@ -22,357 +23,515 @@ import org.ace.accounting.system.fire.Premium;
 import org.ace.accounting.system.fire.service.interfaces.IFireProposalService;
 import org.ace.java.component.SystemException;
 import org.ace.java.web.common.BaseBean;
-import org.primefaces.PrimeFaces;
 import org.primefaces.event.FlowEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.util.Calendar;
-import java.util.Date;
-
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import javax.faces.event.AjaxBehaviorEvent;
 
 @ManagedBean(name = "ManageFireProposalActionBean")
 @ViewScoped
 public class ManageFireProposalActionBean extends BaseBean {
 
-    private static final long serialVersionUID = 1L;
-    private static final Logger logger = LoggerFactory.getLogger(ManageFireProposalActionBean.class);
+	private static final long serialVersionUID = 1L;
+	private static final Logger logger = LoggerFactory.getLogger(ManageFireProposalActionBean.class);
 
-    @ManagedProperty(value = "#{FireProposalService}")
-    private IFireProposalService fireProposalService;
+	@ManagedProperty(value = "#{FireProposalService}")
+	private IFireProposalService fireProposalService;
 
-    private boolean createNew;
-    private FireProposal fireProposal;
-    private BuildingInfo buildingInfo;
-    private Premium newPremium;
-    private List<Premium> premiumList;
-    private List<FireProposal> fireProposalList;
+	private boolean createNew;
+	private FireProposal fireProposal;
+	private BuildingInfo buildingInfo;
+	private List<BuildingInfo> buildings;
+	private Premium newPremium;
+	private List<Premium> premiumList;
+	private List<FireProposal> fireProposalList;
+	private int periodMin;
+	private int periodMax;
 
-    private String currentStep = "proposalInfo";
+	private String currentStep = "proposalInfo";
 
-    private Date minDate = toDate(LocalDate.of(1990, 1, 1));
-    private Date maxDate = toDate(LocalDate.now(ZoneId.of("Australia/Sydney")));
+	private Date minDate = toDate(LocalDate.of(1990, 1, 1));
+	private Date maxDate = toDate(LocalDate.now(ZoneId.of("Australia/Sydney")));
+
+	private Date toDate(LocalDate localDate) {
+		return Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+	}
+
+	@PostConstruct
+	public void init() {
+		createNewFireProposal();
+		loadFireProposals();
+	}
+
+	private void createNewFireProposal() {
+		createNew = true;
+		fireProposal = new FireProposal();
+		buildingInfo = new BuildingInfo();
+		buildings = new ArrayList<>();
+		newPremium = new Premium();
+		premiumList = new ArrayList<>();
+		fireProposal.setPremiumList(premiumList);
+		fireProposal.setBuildingList(buildings); // Initialize with the buildings list
+		logger.debug("Initialized new FireProposal with multiple buildings support");
+	}
+
+	private void loadFireProposals() {
+		if (fireProposalService != null) {
+			fireProposalList = fireProposalService.findAllFireProposals();
+			logger.debug("Loaded {} fire proposals", fireProposalList.size());
+		} else {
+			fireProposalList = new ArrayList<>();
+			logger.warn("FireProposalService is null, initialized empty fire proposal list");
+		}
+	}
+
+	public String onFlowProcess(FlowEvent event) {
+		String newStep = event.getNewStep();
+
+		if ("buildingInfo".equals(currentStep)) {
+			// Don't add buildingInfo here; add only via addBuilding() button
+
+			// Just validate required fields or dates if you want
+			if (buildingInfo == null || !buildingInfo.isValid()) {
+				addErrorMessage(null, "Please fill in all mandatory building info fields before proceeding.");
+				return currentStep; // prevent moving forward
+			}
+
+			validateDates();
+			if (hasErrors()) {
+				return currentStep; // prevent moving forward if errors exist
+			}
+		}
+
+		if ("premiumInfo".equals(newStep)) {
+			if (fireProposal.getPremiumList() == null) {
+				fireProposal.setPremiumList(premiumList);
+			} else {
+				fireProposal.getPremiumList().clear();
+				fireProposal.getPremiumList().addAll(premiumList);
+			}
+		}
+
+		currentStep = newStep;
+		return currentStep;
+	}
+
+	private void validateDates() {
+		Date submittedDate = fireProposal.getSubmittedDate();
+		Date policyStartDate = fireProposal.getPolicyStartDate();
+		if (submittedDate != null && (submittedDate.before(minDate) || submittedDate.after(maxDate))) {
+			addErrorMessage(null, "Submitted date must be between " + minDate + " and " + maxDate);
+			return;
+		}
+		if (policyStartDate != null && (policyStartDate.before(minDate) || policyStartDate.after(maxDate))) {
+			addErrorMessage(null, "Policy start date must be between " + minDate + " and " + maxDate);
+			return;
+		}
+		logger.debug("Validated dates: SubmittedDate={}, PolicyStartDate={}", submittedDate, policyStartDate);
+	}
+
+	public void removePremium(Premium premium) {
+		if (premium != null && premiumList.contains(premium)) {
+			premiumList.remove(premium);
+			refreshTotals();
+			logger.debug("Removed premium: BuildingName={}", premium.getBuildingName());
+		}
+	}
+
+	private void refreshTotals() {
+		fireProposal.setTotalSumInsured(fireProposal.calculateTotalSumInsured());
+		fireProposal.setTotalPremiumPeriod(premiumList.stream().mapToDouble(Premium::getTotalPremiumPeriod).sum());
+		logger.debug("Refreshed totals: TotalSumInsured={}, TotalPremiumPeriod={}", fireProposal.getTotalSumInsured(),
+				fireProposal.getTotalPremiumPeriod());
+	}
+
+	public void saveAll() {
+		try {
+			// Set fireProposal reference in each building so FK can be persisted
+			for (BuildingInfo b : buildings) {
+				b.setFireProposal(fireProposal);
+			}
+			fireProposal.setBuildingList(buildings);
+			calculatePolicyEndDate();
+			logger.debug("Saving FireProposal with policyEndDate: {}", fireProposal.getPolicyEndDate());
+
+			if (createNew) {
+				fireProposalService.addNewFireProposal(fireProposal);
+				addInfoMessage(null, MessageId.INSERT_SUCCESS, fireProposal.getCustomer());
+			} else {
+				fireProposalService.updateFireProposal(fireProposal);
+				addInfoMessage(null, MessageId.UPDATE_SUCCESS, fireProposal.getCustomer());
+			}
+
+			createNewFireProposal();
+			loadFireProposals();
+
+		} catch (SystemException ex) {
+			logger.error("Failed to save FireProposal", ex);
+			handleSysException(ex);
+		}
+	}
+
+	public String cancel() {
+		createNewFireProposal();
+		return null;
+	}
+
+	private void calculatePolicyEndDate() {
+		if (fireProposal.getPolicyStartDate() == null || fireProposal.getInsurancePeriodDays() == null
+				|| fireProposal.getInsurancePeriodUnit() == null) {
+			fireProposal.setPolicyEndDate(null);
+			return;
+		}
+
+		LocalDate start = fireProposal.getPolicyStartDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+		switch (fireProposal.getInsurancePeriodUnit().toUpperCase()) {
+		case "DAY":
+			start = start.plusDays(fireProposal.getInsurancePeriodDays() - 1);
+			break;
+		case "MONTH":
+			start = start.plusMonths(fireProposal.getInsurancePeriodDays()).minusDays(1);
+			break;
+		case "YEAR":
+			start = start.plusYears(fireProposal.getInsurancePeriodDays()).minusDays(1);
+			break;
+		default:
+			start = start.plusDays(fireProposal.getInsurancePeriodDays() - 1);
+			break;
+		}
+
+		fireProposal.setPolicyEndDate(Date.from(start.atStartOfDay(ZoneId.systemDefault()).toInstant()));
+	}
+
+	public ManageFireProposalActionBean() {
+		fireProposal = new FireProposal();
+		updatePeriodRange(null);
+	}
+
+	public void updatePeriodRange(AjaxBehaviorEvent event) {
+		String unit = fireProposal.getInsurancePeriodUnit();
+		if ("DAY".equalsIgnoreCase(unit)) {
+			periodMin = 10;
+			periodMax = 365;
+		} else if ("MONTH".equalsIgnoreCase(unit)) {
+			periodMin = 1;
+			periodMax = 12;
+		} else if ("YEAR".equalsIgnoreCase(unit)) {
+			periodMin = 1;
+			periodMax = 1;
+		} else {
+			periodMin = 0;
+			periodMax = Integer.MAX_VALUE;
+		}
+		if (fireProposal.getInsurancePeriodDays() != null) {
+			int value = fireProposal.getInsurancePeriodDays();
+			if (value < periodMin || value > periodMax) {
+				fireProposal.setInsurancePeriodDays(periodMin);
+			}
+		}
+	}
+
+	public void addBuilding() {
+	    if (buildingInfo != null && buildingInfo.isValid()) {
+	        BuildingInfo cloned = buildingInfo.clone();
+
+	        Premium premiumToAdd = new Premium();
+	        premiumToAdd.setBuildingName(cloned.getBuildingName());
+	        premiumToAdd.setSumInsured(cloned.getSumInsured());
+	        premiumToAdd.setFireProposal(fireProposal);
+
+	        premiumList.add(premiumToAdd);
+	        buildings.add(cloned);
+
+	        buildingInfo = new BuildingInfo(); // reset input
+	    } else {
+	        addErrorMessage(null, "Please fill building details before adding.");
+	    }
+	}
 
 
-    private Date toDate(LocalDate localDate) {
-        return Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
-    }
+	// Return available payment types based on current insurance period
+	public PaymentType[] getAvailablePaymentTypes() {
+		Integer days = fireProposal.getInsurancePeriodDays();
+		String unit = fireProposal.getInsurancePeriodUnit();
 
-    private Double basicPremiumPeriod = 0.0;
-    private Double basicPremiumTerm = 0.0;
+		if (days == null || unit == null) {
+			return new PaymentType[] { PaymentType.LUMPSUM };
+		}
 
-    // Getters & Setters
-    public Double getBasicPremiumPeriod() { return basicPremiumPeriod; }
-    public void setBasicPremiumPeriod(Double basicPremiumPeriod) { this.basicPremiumPeriod = basicPremiumPeriod; }
+		boolean isFullYear = ("DAY".equalsIgnoreCase(unit) && days == 365)
+				|| ("MONTH".equalsIgnoreCase(unit) && days == 12) || ("YEAR".equalsIgnoreCase(unit) && days == 1);
 
-    public Double getBasicPremiumTerm() { return basicPremiumTerm; }
-    public void setBasicPremiumTerm(Double basicPremiumTerm) { this.basicPremiumTerm = basicPremiumTerm; }
+		if (isFullYear) {
+			// return all options
+			return new PaymentType[] { PaymentType.LUMPSUM, PaymentType.SEMI_ANNUAL, PaymentType.QUARTER,
+					PaymentType.MONTHLY };
+		} else {
+			// only lumpsum
+			// ensure selected payment type is valid
+			if (fireProposal.getPaymentType() != PaymentType.LUMPSUM) {
+				fireProposal.setPaymentType(PaymentType.LUMPSUM);
+			}
+			return new PaymentType[] { PaymentType.LUMPSUM };
+		}
+	}
 
-    @PostConstruct
-    public void init() {
-        createNewFireProposal();
-        loadFireProposals();
-    }
+	// Called when user changes period unit/value (wired in XHTML)
+	public void updatePeriodRange() {
+		updatePeriodRange((AjaxBehaviorEvent) null); // reuse your existing method that sets periodMin/periodMax
+		// ensure paymentType list and recalculation
+		recalculatePremiums();
+	}
 
-    private void createNewFireProposal() {
-        createNew = true;
-        fireProposal = new FireProposal();
-        buildingInfo = new BuildingInfo();
-        newPremium = new Premium();
-        premiumList = new ArrayList<>();
-        fireProposal.setPremiumList(premiumList);
-        fireProposal.setBuildingInfo(buildingInfo);
-        logger.debug("Initialized new FireProposal and BuildingInfo");
-    }
+	// Called when PaymentType changes (via p:ajax)
+	public void onPaymentTypeChange(AjaxBehaviorEvent event) {
+		recalculatePremiums();
+	}
 
-    private void loadFireProposals() {
-        if (fireProposalService != null) {
-            fireProposalList = fireProposalService.findAllFireProposals();
-            logger.debug("Loaded {} fire proposals", fireProposalList.size());
-        } else {
-            fireProposalList = new ArrayList<>();
-            logger.warn("FireProposalService is null, initialized empty fire proposal list");
-        }
-    }
+	// Calculate divisor for the payment type (divide by this)
+	private double getPaymentDivisor(PaymentType paymentType) {
+		if (paymentType == null)
+			return 1.0;
+		switch (paymentType) {
+		case LUMPSUM:
+			return 1.0;
+		case SEMI_ANNUAL:
+			return 2.0;
+		case QUARTER:
+			return 4.0;
+		case MONTHLY:
+			return 12.0;
+		default:
+			return 1.0;
+		}
+	}
 
-    public String onFlowProcess(FlowEvent event) {
-        if ("buildingInfo".equals(currentStep)) {
-            if (fireProposal.getBuildingInfo() == null) {
-                fireProposal.setBuildingInfo(buildingInfo);
-            } else {
-                BuildingInfo linkedBuildingInfo = fireProposal.getBuildingInfo();
-                linkedBuildingInfo.setBuildingName(buildingInfo.getBuildingName());
-                linkedBuildingInfo.setFloor(buildingInfo.getFloor());
-                linkedBuildingInfo.setWall(buildingInfo.getWall());
-                linkedBuildingInfo.setRoofing(buildingInfo.getRoofing());
-                linkedBuildingInfo.setBuildingClass(buildingInfo.getBuildingClass());
-                linkedBuildingInfo.setNatureOfBusiness(buildingInfo.getNatureOfBusiness());
-                linkedBuildingInfo.setMainCover(buildingInfo.getMainCover());
-                linkedBuildingInfo.setFloorName(buildingInfo.getFloorName());
-                linkedBuildingInfo.setSumInsured(buildingInfo.getSumInsured());
-                linkedBuildingInfo.setLength(buildingInfo.getLength());
-                linkedBuildingInfo.setWidth(buildingInfo.getWidth());
-                linkedBuildingInfo.setHeight(buildingInfo.getHeight());
-                linkedBuildingInfo.setSquareFeet(buildingInfo.getSquareFeet());
-                linkedBuildingInfo.setAirCraftDamage(buildingInfo.getAirCraftDamage());
-                linkedBuildingInfo.setEarthQuakeFire(buildingInfo.getEarthQuakeFire());
-                linkedBuildingInfo.setFloodAndInundation(buildingInfo.getFloodAndInundation());
-                linkedBuildingInfo.setImpactDamage(buildingInfo.getImpactDamage());
-                linkedBuildingInfo.setRiotStrike(buildingInfo.getRiotStrike());
-                linkedBuildingInfo.setSpontaneousCombustion(buildingInfo.getSpontaneousCombustion());
-                linkedBuildingInfo.setStormTyphoon(buildingInfo.getStormTyphoon());
-                linkedBuildingInfo.setWaterDamage(buildingInfo.getWaterDamage());
-                linkedBuildingInfo.setSubsidenceAndLandslide(buildingInfo.getSubsidenceAndLandslide());
-                linkedBuildingInfo.setWarRisk(buildingInfo.getWarRisk());
-                logger.debug("Synced BuildingInfo data: BuildingName={}", buildingInfo.getBuildingName());
-            }
-            validateDates();
-        }
-        if ("premiumInfo".equals(event.getNewStep())) {
-            if (fireProposal.getPremiumList() == null) {
-                fireProposal.setPremiumList(premiumList);
-            } else {
-                fireProposal.getPremiumList().clear();
-                fireProposal.getPremiumList().addAll(premiumList);
-            }
-        } 
-        currentStep = event.getNewStep();
-        return currentStep;
-    }
+	/**
+	 * Recalculate all derived premium values for every row and overall total. This
+	 * uses double arithmetic (keeps compatibility with existing Premium
+	 * getters/setters).
+	 */
+	public void recalculatePremiums() {
+		if (premiumList == null)
+			return;
 
-    private void validateDates() {
-        Date submittedDate = fireProposal.getSubmittedDate();
-        Date policyStartDate = fireProposal.getPolicyStartDate();
-        if (submittedDate != null && (submittedDate.before(minDate) || submittedDate.after(maxDate))) {
-            addErrorMessage(null, "Submitted date must be between " + minDate + " and " + maxDate);
-            return;
-        }
-        if (policyStartDate != null && (policyStartDate.before(minDate) || policyStartDate.after(maxDate))) {
-            addErrorMessage(null, "Policy start date must be between " + minDate + " and " + maxDate);
-            return;
-        }
-        logger.debug("Validated dates: SubmittedDate={}, PolicyStartDate={}", submittedDate, policyStartDate);
-    }
+		PaymentType pt = fireProposal.getPaymentType();
+		double divisor = getPaymentDivisor(pt);
 
-    public void addPremium() {
-        if (newPremium.getSumInsured() != null && newPremium.getPremiumRate() != null) {
-            newPremium.setFireProposal(fireProposal);
-            premiumList.add(newPremium);
-            newPremium = new Premium();
-            refreshTotals();
-            logger.debug("Added new premium: SumInsured={}, PremiumRate={}", newPremium.getSumInsured(), newPremium.getPremiumRate());
-        } else {
-            addErrorMessage(null, "Sum insured and premium rate are required to add a premium.");
-        }
-    }
-    
-   
-    public void removePremium(Premium premium) {
-        if (premium != null && premiumList.contains(premium)) {
-            premiumList.remove(premium);
-            refreshTotals();
-            logger.debug("Removed premium: BuildingName={}", premium.getBuildingName());
-        }
-    }
+		double grandTotal = 0.0;
 
-    private void refreshTotals() {
-        fireProposal.setTotalSumInsured(fireProposal.calculateTotalSumInsured());
-        fireProposal.setTotalPremiumPeriod(
-            premiumList.stream().mapToDouble(Premium::getTotalPremiumPeriod).sum()
-        );
-        logger.debug("Refreshed totals: TotalSumInsured={}, TotalPremiumPeriod={}", fireProposal.getTotalSumInsured(), fireProposal.getTotalPremiumPeriod());
-    }
+		for (Premium p : premiumList) {
+			// defensive null -> treat as 0.0
+			double basicPeriod = (p.getBasicPremiumPeriod() != null) ? p.getBasicPremiumPeriod() : 0.0;
+			double addonPeriod = (p.getAddOnPremiumPeriod() != null) ? p.getAddOnPremiumPeriod() : 0.0;
 
-    public void saveAll() {
-        try {
-            // Save FireProposal and child lists
-            fireProposal.setBuildingInfoList(buildingInfoList);
-            fireProposal.setPremiumList(premiumList);
+			// Compute terms = period / divisor
+			// We do step-by-step arithmetic to avoid floating surprises
+			double basicTerm = 0.0;
+			if (divisor != 0.0)
+				basicTerm = basicPeriod / divisor;
+			double addonTerm = 0.0;
+			if (divisor != 0.0)
+				addonTerm = addonPeriod / divisor;
 
-            calculatePolicyEndDate();
+			// optional: round to 2 decimals
+			BigDecimal bt = BigDecimal.valueOf(basicTerm).setScale(2, RoundingMode.HALF_UP);
+			BigDecimal at = BigDecimal.valueOf(addonTerm).setScale(2, RoundingMode.HALF_UP);
+			double basicTermRounded = bt.doubleValue();
+			double addonTermRounded = at.doubleValue();
 
-            if (createNew) {
-                fireProposalService.addNewFireProposal(fireProposal);
-                addInfoMessage(null, MessageId.INSERT_SUCCESS, fireProposal.getCustomer());
-            } else {
-                fireProposalService.updateFireProposal(fireProposal);
-                addInfoMessage(null, MessageId.UPDATE_SUCCESS, fireProposal.getCustomer());
-            }
+			p.setBasicPremiumTerm(basicTermRounded); // ensure your Premium has setter
+			p.setAddOnPremiumTerm(addonTermRounded);
 
-            // Clear all lists and input forms
-            createNewFireProposal();
-            buildingInfoList.clear();
-            premiumList.clear();
-            buildingInfo = new BuildingInfo();
+			double totalPeriod = basicTermRounded + addonTermRounded;
+			BigDecimal totalBd = BigDecimal.valueOf(totalPeriod).setScale(2, RoundingMode.HALF_UP);
+			p.setTotalPremiumPeriod(totalBd.doubleValue());
 
-            loadFireProposals();
+			grandTotal += p.getTotalPremiumPeriod();
+		}
 
-            // Reset wizard to first step
-            PrimeFaces.current().executeScript("PF('wizardWidget').loadStep('fireProposalTab', true);");
+		// Save grand total into fireProposal
+		// round grand total to 2 decimals
+		BigDecimal g = BigDecimal.valueOf(grandTotal).setScale(2, RoundingMode.HALF_UP);
+		fireProposal.setTotalPremiumPeriod(g.doubleValue());
+	}
 
-        } catch (SystemException ex) {
-            logger.error("Failed to save FireProposal", ex);
-            handleSysException(ex);
-        }
-    }
+	/**
+	 * Helper used while the user is typing in the Add new premium fields before
+	 * adding (keeps preview consistent). You can call recalculatePremiums() or
+	 * implement small logic if needed for newPremium.
+	 */
+	public void tempCalcForNewPremium(AjaxBehaviorEvent evt) {
+		// If you want to calculate newPremium terms on the fly before the user clicks
+		// Add:
+		PaymentType pt = fireProposal.getPaymentType();
+		double divisor = getPaymentDivisor(pt);
+		double basicPeriod = (newPremium.getBasicPremiumPeriod() != null) ? newPremium.getBasicPremiumPeriod() : 0.0;
+		double addonPeriod = (newPremium.getAddOnPremiumPeriod() != null) ? newPremium.getAddOnPremiumPeriod() : 0.0;
 
+		double basicTerm = divisor != 0.0 ? basicPeriod / divisor : 0.0;
+		double addonTerm = divisor != 0.0 ? addonPeriod / divisor : 0.0;
 
-    public String cancel() {
-        createNewFireProposal();
-        return null;
-    }
+		newPremium.setBasicPremiumTerm(BigDecimal.valueOf(basicTerm).setScale(2, RoundingMode.HALF_UP).doubleValue());
+		newPremium.setAddOnPremiumTerm(BigDecimal.valueOf(addonTerm).setScale(2, RoundingMode.HALF_UP).doubleValue());
+		newPremium.setTotalPremiumPeriod(
+				BigDecimal.valueOf(basicTerm + addonTerm).setScale(2, RoundingMode.HALF_UP).doubleValue());
+	}
 
-    // Remove these methods as they conflict with the direct binding to fireProposal.paymentType
-    /*
-    public PaymentType getPaymentType() {
-        return fireProposal != null ? fireProposal.getPaymentType() : null;
-    }
+	/**
+	 * Update addPremium to compute terms for the new row before adding, then recalc
+	 * totals.
+	 */
+	public void addPremium() {
+	    if (buildings.isEmpty()) {
+	        addErrorMessage(null, "Please add at least one building before adding premium.");
+	        return;
+	    }
 
-    public void setPaymentType(PaymentType paymentType) {
-        if (fireProposal != null) {
-            fireProposal.setPaymentType(paymentType);
-        }
-    }
-    */
-    
-    
-    private void calculatePolicyEndDate() {
-        if (fireProposal.getPolicyStartDate() == null 
-            || fireProposal.getInsurancePeriodDays() == null 
-            || fireProposal.getInsurancePeriodUnit() == null) {
-            fireProposal.setPolicyEndDate(null);
-            return;
-        }
+	    // Clear previous premium list so we rebuild all rows
+	    premiumList.clear();
 
-        LocalDate start = fireProposal.getPolicyStartDate()
-                .toInstant()
-                .atZone(ZoneId.systemDefault())
-                .toLocalDate();
+	    double divisor = getPaymentDivisor(fireProposal.getPaymentType());
+	    double basicPeriod = (newPremium.getBasicPremiumPeriod() != null ? newPremium.getBasicPremiumPeriod() : 0.0);
+	    double addonPeriod = (newPremium.getAddOnPremiumPeriod() != null ? newPremium.getAddOnPremiumPeriod() : 0.0);
 
-        switch (fireProposal.getInsurancePeriodUnit().toUpperCase()) {
-            case "DAY":
-                start = start.plusDays(fireProposal.getInsurancePeriodDays() - 1);
-                break;
-            case "MONTH":
-                start = start.plusMonths(fireProposal.getInsurancePeriodDays()).minusDays(1);
-                break;
-            case "YEAR":
-                start = start.plusYears(fireProposal.getInsurancePeriodDays()).minusDays(1);
-                break;
-            default:
-                // fallback treat as days
-                start = start.plusDays(fireProposal.getInsurancePeriodDays() - 1);
-                break;
-        }
+	    for (BuildingInfo b : buildings) {
+	        Premium p = new Premium();
+	        p.setBuildingName(b.getBuildingName());
+	        p.setSumInsured(b.getSumInsured());
+	        p.setFireProposal(fireProposal);
 
-        fireProposal.setPolicyEndDate(Date.from(start.atStartOfDay(ZoneId.systemDefault()).toInstant()));
-    }
+	        p.setBasicPremiumPeriod(basicPeriod);
+	        p.setAddOnPremiumPeriod(addonPeriod);
 
-//    building info
-    private List<BuildingInfo> buildingInfoList = new ArrayList<>();
-    public List<BuildingInfo> getBuildingInfoList() {
-        return buildingInfoList;
-    }
+	        double basicTerm = divisor != 0 ? basicPeriod / divisor : 0.0;
+	        double addonTerm = divisor != 0 ? addonPeriod / divisor : 0.0;
 
-    public void setBuildingInfoList(List<BuildingInfo> buildingInfoList) {
-        this.buildingInfoList = buildingInfoList;
-    }
-    public void addBuildingInfo() {
-        // Copy input to a new BuildingInfo object
-        BuildingInfo newInfo = new BuildingInfo();
-        newInfo.setBuildingName(buildingInfo.getBuildingName());
-        newInfo.setFloor(buildingInfo.getFloor());
-        newInfo.setWall(buildingInfo.getWall());
-        newInfo.setRoofing(buildingInfo.getRoofing());
-        newInfo.setSumInsured(buildingInfo.getSumInsured());
-        newInfo.setBasicPremiumPeriod(buildingInfo.getBasicPremiumPeriod());
-        newInfo.setBasicPremiumTerm(buildingInfo.getBasicPremiumTerm());
+	        p.setBasicPremiumTerm(round(basicTerm));
+	        p.setAddOnPremiumTerm(round(addonTerm));
+	        p.setTotalPremiumPeriod(round(basicTerm + addonTerm));
 
-        // Link to FireProposal
-        newInfo.setFireProposal(fireProposal); // important!
+	        premiumList.add(p);
+	    }
 
-        buildingInfoList.add(newInfo);
+	    fireProposal.setPremiumList(premiumList);
 
-        // Add Premium linked to FireProposal
-        addPremiumForBuilding(newInfo);
+	    // Reset newPremium input
+	    newPremium = new Premium();
 
-        // Reset form fields
-        buildingInfo = new BuildingInfo();
-    }
+	    // Recalculate grand totals
+	    recalculatePremiums();
+	}
 
-    
-    
-    public void removeBuildingInfo(BuildingInfo info) {
-        buildingInfoList.remove(info);
-    }
-    
-    private void addPremiumForBuilding(BuildingInfo b) {
-        Premium p = new Premium();
-        p.setBuildingName(b.getBuildingName());
-        p.setSumInsured(b.getSumInsured());
-        p.setBasicPremiumPeriod(b.getBasicPremiumPeriod());
-        p.setBasicPremiumTerm(b.getBasicPremiumTerm());
-        double addOnPremium = 0.0; // add-on can be from user input
-        p.setAddOnPremiumPeriod(addOnPremium);
-        p.setAddOnPremiumTerm(addOnPremium);
-        p.setTotalPremiumPeriod(p.getBasicPremiumPeriod() + addOnPremium);
+	private double round(double value) {
+	    return BigDecimal.valueOf(value).setScale(2, RoundingMode.HALF_UP).doubleValue();
+	}
 
-        // Link to FireProposal
-        p.setFireProposal(fireProposal);
+	/*
+	 * private void addPremiumForBuilding(BuildingInfo b) { Premium p = new
+	 * Premium(); p.setBuildingName(b.getBuildingName());
+	 * p.setSumInsured(b.getSumInsured()); // Set default values for demo
+	 * 
+	 * p.setBasicPremiumPeriod(1.0); p.setBasicPremiumTerm(1.0);
+	 * p.setTotalPremiumPeriod(p.getSumInsured() * p.getPremiumRate()); // example
+	 * calculation premiumList.add(p);
+	 * 
+	 * }
+	 */
 
-        premiumList.add(p);
-    }
+	public boolean hasErrors() {
+		FacesContext context = FacesContext.getCurrentInstance();
+		return context.getMessages().hasNext(); // Returns true if any message exists (including errors)
+	}
 
-//end of building info
+	public void removeBuilding(BuildingInfo building) {
+		buildings.remove(building);
+		fireProposal.getBuildingList().remove(building);
+	}
 
-    public FireProposal getFireProposal() {
-        return fireProposal != null ? fireProposal : (fireProposal = new FireProposal());
-    }
+	public void setFireProposal(FireProposal fireProposal) {
+		this.fireProposal = fireProposal;
+	}
 
-    public BuildingInfo getBuildingInfo() {
-        return buildingInfo != null ? buildingInfo : (buildingInfo = new BuildingInfo());
-    }
+	public int getPeriodMin() {
+		return periodMin;
+	}
 
-    public Premium getNewPremium() {
-        return newPremium != null ? newPremium : (newPremium = new Premium());
-    }
+	public int getPeriodMax() {
+		return periodMax;
+	}
 
-    public List<Premium> getPremiumList() {
-        return premiumList != null ? premiumList : (premiumList = new ArrayList<>());
-    }
+	public FireProposal getFireProposal() {
+		return fireProposal != null ? fireProposal : (fireProposal = new FireProposal());
+	}
 
-    public List<FireProposal> getFireProposalList() {
-        return fireProposalList != null ? fireProposalList : (fireProposalList = new ArrayList<>());
-    }
+	public BuildingInfo getBuildingInfo() {
+		return buildingInfo != null ? buildingInfo : (buildingInfo = new BuildingInfo());
+	}
 
-    public Date getMinDate() {
-        return minDate;
-    }
+	public Premium getNewPremium() {
+		return newPremium != null ? newPremium : (newPremium = new Premium());
+	}
 
-    public Date getMaxDate() {
-        return maxDate;
-    }
+	public void setNewPremium(Premium newPremium) {
+		this.newPremium = newPremium;
+	}
 
-    public String getCurrentStep() {
-        return currentStep;
-    }
+	public List<Premium> getPremiumList() {
+		return premiumList != null ? premiumList : (premiumList = new ArrayList<>());
+	}
 
-    public SaleChannel[] getSaleChannels() {
-        return SaleChannel.values();
-    }
+	public List<FireProposal> getFireProposalList() {
+		return fireProposalList != null ? fireProposalList : (fireProposalList = new ArrayList<>());
+	}
 
-    public Branch[] getBranches() {
-        return Branch.values();
-    }
+	public Date getMinDate() {
+		return minDate;
+	}
 
-    public CurrencyType1[] getCurrencyTypes() {
-        return CurrencyType1.values();
-    }
+	public Date getMaxDate() {
+		return maxDate;
+	}
 
-    public PaymentType[] getPaymentTypes() {
-        return PaymentType.values();
-    }
+	public String getCurrentStep() {
+		return currentStep;
+	}
 
-    public void setFireProposalService(IFireProposalService fireProposalService) {
-        this.fireProposalService = fireProposalService;
-    }
+	public SaleChannel[] getSaleChannels() {
+		return SaleChannel.values();
+	}
+
+	public Branch[] getBranches() {
+		return Branch.values();
+	}
+
+	public CurrencyType1[] getCurrencyTypes() {
+		return CurrencyType1.values();
+	}
+
+	public PaymentType[] getPaymentTypes() {
+		return PaymentType.values();
+	}
+
+	public void setFireProposalService(IFireProposalService fireProposalService) {
+		this.fireProposalService = fireProposalService;
+	}
+
+	public List<BuildingInfo> getBuildings() {
+		return buildings;
+	}
+
+	public void setBuildings(List<BuildingInfo> buildings) {
+		this.buildings = buildings;
+	}
+
+	public void setBuildingInfo(BuildingInfo buildingInfo) {
+		this.buildingInfo = buildingInfo;
+	}
+
 }
