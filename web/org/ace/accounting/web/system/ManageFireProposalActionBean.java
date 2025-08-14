@@ -88,18 +88,19 @@ public class ManageFireProposalActionBean extends BaseBean {
     }
 
     public String onFlowProcess(FlowEvent event) {
+        String oldStep = event.getOldStep(); // current step
         String newStep = event.getNewStep();
 
-        if ("buildingInfo".equals(currentStep)) {
-            // Validate required fields
+        // Only block if going forward from buildingInfo to premiumInfo
+        if ("buildingInfo".equals(oldStep) && "premiumInfo".equals(newStep)) {
             if (buildingInfo == null || !buildingInfo.isValid()) {
                 addErrorMessage(null, "Please fill in all mandatory building info fields before proceeding.");
-                return currentStep; // prevent moving forward
+                return oldStep; // prevent moving forward
             }
 
             validateDates();
             if (hasErrors()) {
-                return currentStep; // prevent moving forward if errors exist
+                return oldStep; // prevent moving forward if errors exist
             }
         }
 
@@ -111,6 +112,7 @@ public class ManageFireProposalActionBean extends BaseBean {
         currentStep = newStep;
         return currentStep;
     }
+
 
     private void validateDates() {
         Date submittedDate = fireProposal.getSubmittedDate();
