@@ -22,6 +22,7 @@ import org.ace.accounting.system.fire.FireProposal;
 import org.ace.accounting.system.fire.service.interfaces.IFireProposalService;
 import org.ace.java.component.SystemException;
 import org.ace.java.web.common.BaseBean;
+import org.primefaces.PrimeFaces;
 import org.primefaces.event.FlowEvent;
 import org.primefaces.event.TabChangeEvent;
 import org.slf4j.Logger;
