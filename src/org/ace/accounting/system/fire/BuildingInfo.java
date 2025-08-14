@@ -87,6 +87,21 @@ public class BuildingInfo implements Serializable, Cloneable {
 
     @Column(name = "WarRisk")
     private Boolean warRisk;
+    
+    @Column(name = "BasicPremiumPeriod")
+    private Double basicPremiumPeriod;
+
+    @Column(name = "BasicPremiumTerm")
+    private Double basicPremiumTerm;
+
+    @Column(name = "AddOnPremiumPeriod")
+    private Double addOnPremiumPeriod;
+
+    @Column(name = "AddOnPremiumTerm")
+    private Double addOnPremiumTerm;
+
+    @Column(name = "TotalPremiumPeriod")
+    private Double totalPremiumPeriod;
 
     @ManyToOne
     @JoinColumn(name = "FIRE_PROPOSAL_ID")
@@ -147,41 +162,59 @@ public class BuildingInfo implements Serializable, Cloneable {
     public FireProposal getFireProposal() { return fireProposal; }
     public void setFireProposal(FireProposal fireProposal) { this.fireProposal = fireProposal; }
 
+    
+    public Double getBasicPremiumPeriod() { return basicPremiumPeriod; }
+    public void setBasicPremiumPeriod(Double basicPremiumPeriod) { this.basicPremiumPeriod = basicPremiumPeriod; }
+    public Double getBasicPremiumTerm() { return basicPremiumTerm; }
+    public void setBasicPremiumTerm(Double basicPremiumTerm) { this.basicPremiumTerm = basicPremiumTerm; }
+    public Double getAddOnPremiumPeriod() { return addOnPremiumPeriod; }
+    public void setAddOnPremiumPeriod(Double addOnPremiumPeriod) { this.addOnPremiumPeriod = addOnPremiumPeriod; }
+    public Double getAddOnPremiumTerm() { return addOnPremiumTerm; }
+    public void setAddOnPremiumTerm(Double addOnPremiumTerm) { this.addOnPremiumTerm = addOnPremiumTerm; }
+    public Double getTotalPremiumPeriod() { return totalPremiumPeriod; }
+    public void setTotalPremiumPeriod(Double totalPremiumPeriod) { this.totalPremiumPeriod = totalPremiumPeriod; }
     @Override
     public BuildingInfo clone() {
-        try {
-            BuildingInfo clone = (BuildingInfo) super.clone();
-            clone.setId(this.id);
-            clone.setBuildingName(this.buildingName);
-            clone.setFloor(this.floor);
-            clone.setWall(this.wall);
-            clone.setRoofing(this.roofing);
-            clone.setBuildingClass(this.buildingClass);
-            clone.setNatureOfBusiness(this.natureOfBusiness);
-            clone.setMainCover(this.mainCover);
-            clone.setFloorName(this.floorName);
-            clone.setSumInsured(this.sumInsured);
-            clone.setLength(this.length);
-            clone.setWidth(this.width);
-            clone.setHeight(this.height);
-            clone.setSquareFeet(this.squareFeet);
-            clone.setAirCraftDamage(this.airCraftDamage);
-            clone.setEarthQuakeFire(this.earthQuakeFire);
-            clone.setFloodAndInundation(this.floodAndInundation);
-            clone.setImpactDamage(this.impactDamage);
-            clone.setRiotStrike(this.riotStrike);
-            clone.setSpontaneousCombustion(this.spontaneousCombustion);
-            clone.setStormTyphoon(this.stormTyphoon);
-            clone.setWaterDamage(this.waterDamage);
-            clone.setSubsidenceAndLandslide(this.subsidenceAndLandslide);
-            clone.setWarRisk(this.warRisk);
-            clone.setFireProposal(this.fireProposal); // Handle relationship if needed
-            return clone;
-        } catch (CloneNotSupportedException e) {
-            throw new AssertionError("Cloning not supported", e); // Should never happen
-        }
+        BuildingInfo clone = new BuildingInfo();
+        clone.setId(this.id);
+        clone.setBuildingName(this.buildingName);
+        clone.setFloor(this.floor);
+        clone.setWall(this.wall);
+        clone.setRoofing(this.roofing);
+        clone.setBuildingClass(this.buildingClass);
+        clone.setNatureOfBusiness(this.natureOfBusiness);
+        clone.setMainCover(this.mainCover);
+        clone.setFloorName(this.floorName);
+        clone.setSumInsured(this.sumInsured);
+        clone.setLength(this.length);
+        clone.setWidth(this.width);
+        clone.setHeight(this.height);
+        clone.setSquareFeet(this.squareFeet);
+        clone.setAirCraftDamage(this.airCraftDamage);
+        clone.setEarthQuakeFire(this.earthQuakeFire);
+        clone.setFloodAndInundation(this.floodAndInundation);
+        clone.setImpactDamage(this.impactDamage);
+        clone.setRiotStrike(this.riotStrike);
+        clone.setSpontaneousCombustion(this.spontaneousCombustion);
+        clone.setStormTyphoon(this.stormTyphoon);
+        clone.setWaterDamage(this.waterDamage);
+        clone.setSubsidenceAndLandslide(this.subsidenceAndLandslide);
+        clone.setWarRisk(this.warRisk);
+        clone.setFireProposal(this.fireProposal);
+        clone.setBasicPremiumPeriod(this.basicPremiumPeriod);
+        clone.setBasicPremiumTerm(this.basicPremiumTerm);
+        clone.setAddOnPremiumPeriod(this.addOnPremiumPeriod);
+        clone.setAddOnPremiumTerm(this.addOnPremiumTerm);
+        clone.setTotalPremiumPeriod(this.totalPremiumPeriod);
+        return clone;
     }
-
+    
+    
+    
+    
+    
+ 
+ // Handle relationship if needed
     public boolean isValid() {
         return buildingName != null && !buildingName.trim().isEmpty() &&
                buildingClass != null && !buildingClass.trim().isEmpty() &&
