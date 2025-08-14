@@ -138,7 +138,7 @@
 									var="type" itemLabel="#{type.label}" itemValue="#{type}" />
 								<p:ajax event="change"
 									listener="#{ManageFireProposalActionBean.onPaymentTypeChange}"
-									update="@form" process="@this" />
+									process="@this" />
 							</p:selectOneMenu>
 
 							<p:outputLabel />
@@ -191,7 +191,7 @@
 										maximum="#{ManageFireProposalActionBean.periodMax}" />
 									<p:ajax event="change"
 										listener="#{ManageFireProposalActionBean.updatePeriodRange}"
-										update="@form" process="@this" />
+										 update="paymentType" process="@this" />
 								</p:inputText>
 
 								<p:selectOneMenu id="periodUnit"
@@ -205,7 +205,7 @@
 									<f:selectItem itemLabel="YEAR" itemValue="YEAR" />
 									<p:ajax event="change"
 										listener="#{ManageFireProposalActionBean.updatePeriodRange}"
-										update="@form" process="@this" />
+										update="paymentType"  process="@this" />
 								</p:selectOneMenu>
 							</p:panelGrid>
 
@@ -223,6 +223,7 @@
 					<p:commandButton value="Cancel"
 						action="#{ManageFireProposalActionBean.cancel}" immediate="true"
 						style="margin-right: 5px;" />
+
 				</p:tab>
 
 				<!-- Building Info Tab -->
@@ -393,113 +394,115 @@
 						style="margin-right: 5px;" />
 				</p:tab>
 				<!-- Premium Info Tab -->
-<p:tab id="premiumInfo" title="Premium Info">
-    <h:form id="premiumForm">
+				<p:tab id="premiumInfo" title="Premium Info">
+					<h:form id="premiumForm">
 
-        <h:outputText value="Premium Details" styleClass="section-title" />
+						<h:outputText value="Premium Details" styleClass="section-title" />
 
-        <!-- Add Premium Section -->
-        <p:panelGrid columns="4" styleClass="ui-fluid" style="margin-bottom:10px;">
-            <h:outputLabel value="Basic Premium (Period):" />
-            <p:inputText value="#{ManageFireProposalActionBean.newPremium.basicPremiumPeriod}">
-                <f:convertNumber minFractionDigits="2"/>
-                <p:ajax event="blur" listener="#{ManageFireProposalActionBean.tempCalcForNewPremium}" update="premiumTable totalPremiumOutput"/>
-            </p:inputText>
+						<!-- Add Premium Section -->
+						<p:panelGrid columns="4" styleClass="ui-fluid"
+							style="margin-bottom:10px;">
+							<h:outputLabel value="Basic Premium (Period):" />
+							<p:inputText
+								value="#{ManageFireProposalActionBean.newPremium.basicPremiumPeriod}">
+								<f:convertNumber minFractionDigits="2" />
+								<p:ajax event="blur"
+									listener="#{ManageFireProposalActionBean.tempCalcForNewPremium}"
+									update="premiumTable totalPremiumOutput" />
+							</p:inputText>
 
-            <h:outputLabel value="Add-On Premium (Period):" />
-            <p:inputText value="#{ManageFireProposalActionBean.newPremium.addOnPremiumPeriod}">
-                <f:convertNumber minFractionDigits="2"/>
-                <p:ajax event="blur" listener="#{ManageFireProposalActionBean.tempCalcForNewPremium}" update="premiumTable totalPremiumOutput"/>
-            </p:inputText>
+							<h:outputLabel value="Add-On Premium (Period):" />
+							<p:inputText
+								value="#{ManageFireProposalActionBean.newPremium.addOnPremiumPeriod}">
+								<f:convertNumber minFractionDigits="2" />
+								<p:ajax event="blur"
+									listener="#{ManageFireProposalActionBean.tempCalcForNewPremium}"
+									update="premiumTable totalPremiumOutput" />
+							</p:inputText>
 
-          <p:commandButton value="Add Premium"
-                 action="#{ManageFireProposalActionBean.addPremium}"
-                 update="premiumTable totalPremiumOutput"
-                 process="@form"
-                 icon="pi pi-plus"/>
+							<p:commandButton value="Add Premium"
+								action="#{ManageFireProposalActionBean.addPremium}"
+								update="premiumTable totalPremiumOutput" process="@form"
+								icon="pi pi-plus" />
 
-        </p:panelGrid>
+						</p:panelGrid>
 
-        <!-- Premium Data Table -->                                                   
-        <p:dataTable id="premiumTable"
-                     value="#{ManageFireProposalActionBean.premiumList}"
-                     var="premium"
-                     styleClass="ui-datatable"
-                     rowIndexVar="rowIndex"
-                     emptyMessage="No premiums added yet.">
+						<!-- Premium Data Table -->
+						<p:dataTable id="premiumTable"
+							value="#{ManageFireProposalActionBean.premiumList}" var="premium"
+							styleClass="ui-datatable" rowIndexVar="rowIndex"
+							emptyMessage="No premiums added yet.">
 
-            <p:column headerText="No." style="width:50px; text-align:center;">
-                <h:outputText value="#{rowIndex + 1}" />
-            </p:column>
+							<p:column headerText="No." style="width:50px; text-align:center;">
+								<h:outputText value="#{rowIndex + 1}" />
+							</p:column>
 
-            <p:column headerText="Building Name">
-                <h:outputText value="#{premium.buildingName}" />
-            </p:column>
+							<p:column headerText="Building Name">
+								<h:outputText value="#{premium.buildingName}" />
+							</p:column>
 
-            <p:column headerText="Sum Insured" style="text-align:right;">
-                <h:outputText value="#{premium.sumInsured}">
-                    <f:convertNumber minFractionDigits="2" />
-                </h:outputText>
-            </p:column>
+							<p:column headerText="Sum Insured" style="text-align:right;">
+								<h:outputText value="#{premium.sumInsured}">
+									<f:convertNumber minFractionDigits="2" />
+								</h:outputText>
+							</p:column>
 
-            <p:column headerText="Basic Premium (Period)" style="text-align:right;">
-                <h:outputText value="#{premium.basicPremiumPeriod}">
-                    <f:convertNumber minFractionDigits="2" />
-                </h:outputText>
-            </p:column>
+							<p:column headerText="Basic Premium (Period)"
+								style="text-align:right;">
+								<h:outputText value="#{premium.basicPremiumPeriod}">
+									<f:convertNumber minFractionDigits="2" />
+								</h:outputText>
+							</p:column>
 
-            <p:column headerText="Basic Premium (Term)" style="text-align:right;">
-                <h:outputText value="#{premium.basicPremiumTerm}">
-                    <f:convertNumber minFractionDigits="2" />
-                </h:outputText>
-            </p:column>
+							<p:column headerText="Basic Premium (Term)"
+								style="text-align:right;">
+								<h:outputText value="#{premium.basicPremiumTerm}">
+									<f:convertNumber minFractionDigits="2" />
+								</h:outputText>
+							</p:column>
 
-            <p:column headerText="Add-On Premium (Period)" style="text-align:right;">
-                <h:outputText value="#{premium.addOnPremiumPeriod}">
-                    <f:convertNumber minFractionDigits="2" />
-                </h:outputText>
-            </p:column>
+							<p:column headerText="Add-On Premium (Period)"
+								style="text-align:right;">
+								<h:outputText value="#{premium.addOnPremiumPeriod}">
+									<f:convertNumber minFractionDigits="2" />
+								</h:outputText>
+							</p:column>
 
-            <p:column headerText="Add-On Premium (Term)" style="text-align:right;">
-                <h:outputText value="#{premium.addOnPremiumTerm}">
-                    <f:convertNumber minFractionDigits="2" />
-                </h:outputText>
-            </p:column>
+							<p:column headerText="Add-On Premium (Term)"
+								style="text-align:right;">
+								<h:outputText value="#{premium.addOnPremiumTerm}">
+									<f:convertNumber minFractionDigits="2" />
+								</h:outputText>
+							</p:column>
 
-            <p:column headerText="Total Premium (Period)" style="text-align:right; font-weight:bold;">
-                <h:outputText value="#{premium.totalPremiumPeriod}">
-                    <f:convertNumber minFractionDigits="2" />
-                </h:outputText>
-            </p:column>
+							<p:column headerText="Total Premium (Period)"
+								style="text-align:right; font-weight:bold;">
+								<h:outputText value="#{premium.totalPremiumPeriod}">
+									<f:convertNumber minFractionDigits="2" />
+								</h:outputText>
+							</p:column>
 
-            <p:column headerText="Action" style="text-align:center; width:80px;">
-                <p:commandButton value="Remove"
-                                 action="#{ManageFireProposalActionBean.removePremium(premium)}"
-                                 update="@form" process="@this"
-                                 icon="pi pi-trash" />
-            </p:column>
+							<p:column headerText="Action"
+								style="text-align:center; width:80px;">
+								<p:commandButton value="Remove"
+									action="#{ManageFireProposalActionBean.removePremium(premium)}"
+									update="@form" process="@this" icon="pi pi-trash" />
+							</p:column>
 
-        </p:dataTable>
+						</p:dataTable>
 
-        <!-- Total Premium Summary -->
-        <p:panelGrid columns="2" styleClass="ui-fluid" style="margin-top: 10px;">
-            <h:outputText value="Total Premium (Period): " styleClass="input-label" />
-            <h:outputText id="totalPremiumOutput" value="#{ManageFireProposalActionBean.fireProposal.totalPremiumPeriod}">
-                <f:convertNumber minFractionDigits="2" />
-            </h:outputText>
-        </p:panelGrid>
-
-    </h:form>
-</p:tab>
-
-
-
-
-
-
-
-
-
+						<!-- Total Premium Summary -->
+						<p:panelGrid columns="2" styleClass="ui-fluid"
+							style="margin-top: 10px;">
+							<h:outputText value="Total Premium (Period): "
+								styleClass="input-label" />
+							<h:outputText id="totalPremiumOutput"
+								value="#{ManageFireProposalActionBean.fireProposal.totalPremiumPeriod}">
+								<f:convertNumber minFractionDigits="2" />
+							</h:outputText>
+						</p:panelGrid>
+					</h:form>
+				</p:tab>
 			</p:wizard>
 		</h:form>
 	</ui:define>
