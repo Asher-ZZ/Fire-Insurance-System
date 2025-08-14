@@ -21,11 +21,11 @@
         <class>org.ace.accounting.system.tlfhist.TLFCLONE</class>
         <class>org.ace.accounting.system.branch.Branch</class>
         
-           <class>org.ace.accounting.system.fire.Policy</class>
+<!--            <class>org.ace.accounting.system.fire.Policy</class> -->
         <class>org.ace.accounting.system.fire.BuildingInfo</class>
-        <class>org.ace.accounting.system.fire.Product</class>
+<!--         <class>org.ace.accounting.system.fire.Product</class> -->
         <class>org.ace.accounting.system.fire.FireProposal</class>
-         <class>org.ace.accounting.system.fire.Premium</class>
+<!--          <class>org.ace.accounting.system.fire.Premium</class> -->
 
         <class>org.ace.accounting.system.branch.Student</class> <!-- ✅ Added Student entity -->
         <class>org.ace.accounting.system.currency.Currency</class>
