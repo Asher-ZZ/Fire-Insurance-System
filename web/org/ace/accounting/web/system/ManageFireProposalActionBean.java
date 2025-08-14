@@ -278,9 +278,7 @@ public class ManageFireProposalActionBean extends BaseBean {
         }
     }
 
-    /**
-     * Recalculate all derived premium values for every row and overall total.
-     */
+//    RECALCUATE
     public void recalculatePremiums() {
         if (buildings == null) return;
 
@@ -306,10 +304,8 @@ public class ManageFireProposalActionBean extends BaseBean {
         fireProposal.setTotalSumInsured(totalSumInsured);
     }
 
-    /**
-     * Helper used while the user is typing in the Add new premium fields before
-     * adding (keeps preview consistent).
-     */
+    
+    
     public void tempCalcForNewPremium(AjaxBehaviorEvent evt) {
         PaymentType pt = fireProposal.getPaymentType();
         double divisor = getPaymentDivisor(pt);
@@ -325,10 +321,7 @@ public class ManageFireProposalActionBean extends BaseBean {
                 BigDecimal.valueOf(basicTerm + addonTerm).setScale(2, RoundingMode.HALF_UP).doubleValue());
     }
 
-    /**
-     * Update addPremium to compute terms for the new row before adding, then recalc
-     * totals.
-     */
+   
     public void addPremium() {
         if (buildings.isEmpty()) {
             addErrorMessage(null, "Please add at least one building before adding premium.");
