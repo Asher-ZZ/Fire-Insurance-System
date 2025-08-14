@@ -128,7 +128,7 @@ public class ManageFireProposalActionBean extends BaseBean {
         logger.debug("Validated dates: SubmittedDate={}, PolicyStartDate={}", submittedDate, policyStartDate);
     }
 
-    public void saveAll() {
+    public String saveAll() {
         try {
             // Set fireProposal reference in each building so FK can be persisted
             for (BuildingInfo b : buildings) {
@@ -138,6 +138,13 @@ public class ManageFireProposalActionBean extends BaseBean {
             calculatePolicyEndDate();
             logger.debug("Saving FireProposal with policyEndDate: {}", fireProposal.getPolicyEndDate());
 
+            if (fireProposal.getProposalNo() == null || fireProposal.getProposalNo().isEmpty()) {
+                LocalDate now = LocalDate.now();
+                String month = String.format("%02d", now.getMonthValue());
+                int year = now.getYear();
+                fireProposal.setProposalNo("FM/PO/"  + month + "-" + year);
+            }
+            
             if (createNew) {
                 fireProposalService.addNewFireProposal(fireProposal);
                 addInfoMessage(null, MessageId.INSERT_SUCCESS, fireProposal.getCustomer());
@@ -153,12 +160,14 @@ public class ManageFireProposalActionBean extends BaseBean {
             logger.error("Failed to save FireProposal", ex);
             handleSysException(ex);
         }
+        return "/ui/system/home.xhtml?faces-redirect=true";
     }
 
     public String cancel() {
-        createNewFireProposal();
-        return null;
-    }
+        //createNewFireProposal();
+            return "/ui/system/home.xhtml?faces-redirect=true";
+        }
+    
 
     private void calculatePolicyEndDate() {
         if (fireProposal.getPolicyStartDate() == null || fireProposal.getInsurancePeriodDays() == null
