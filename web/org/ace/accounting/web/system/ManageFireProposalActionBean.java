@@ -533,5 +533,11 @@ public class ManageFireProposalActionBean extends BaseBean {
 	public void setBuildingInfo(BuildingInfo buildingInfo) {
 		this.buildingInfo = buildingInfo;
 	}
+	   public void calculateSquareFeet(AjaxBehaviorEvent event) {
+	        double length = buildingInfo.getLength() != null ? buildingInfo.getLength() : 0.0;
+	        double width = buildingInfo.getWidth() != null ? buildingInfo.getWidth() : 0.0;
+	        buildingInfo.setSquareFeet(length * width); // Calculate area as length × width
+	    }
+	
 
 }
