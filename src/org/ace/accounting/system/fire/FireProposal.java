@@ -24,13 +24,10 @@ public class FireProposal implements Serializable, Cloneable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE, generator = "FIREPROPOSAL_GEN") // Changed to IDENTITY
+    @GeneratedValue(strategy = GenerationType.TABLE, generator = "FIREPROPOSAL_GEN")
     @Column(name = "ProposalID")
     private String id;
 
-    // Remove @TableGenerator and @EntityListeners(IDInterceptor.class)
-
-    // Existing fields, getters, and setters remain the same
     @Column(name = "CustomerType", length = 50)
     private String customerType;
 
@@ -59,7 +56,7 @@ public class FireProposal implements Serializable, Cloneable {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "PaymentType", length = 100)
-    private PaymentType paymentType; // Added mapping
+    private PaymentType paymentType;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "Branch", length = 100)
@@ -79,10 +76,6 @@ public class FireProposal implements Serializable, Cloneable {
     @OneToMany(mappedBy = "fireProposal", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<BuildingInfo> buildingList = new ArrayList<>();
 
-   
-    @OneToMany(mappedBy = "fireProposal", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Premium> premiumList = new ArrayList<>();
-
     @Temporal(TemporalType.DATE)
     @Column(name = "StartDateFrom")
     private Date startDateFrom;
@@ -95,24 +88,10 @@ public class FireProposal implements Serializable, Cloneable {
     @Column(name = "Version")
     private int version;
 
-    
     @Temporal(TemporalType.DATE)
     @Column(name = "PolicyEndDate")
     private Date policyEndDate;
 
-    public Date getPolicyEndDate() {
-        return policyEndDate;
-    }
-
-    public void setPolicyEndDate(Date policyEndDate) {
-        this.policyEndDate = policyEndDate;
-    }
-
-    
-    
-    
-    
-    
     @Embedded
     private BasicEntity basicEntity;
 
@@ -125,226 +104,99 @@ public class FireProposal implements Serializable, Cloneable {
     @Column(name = "TotalPremiumPeriod", precision = 15, scale = 2)
     private Double totalPremiumPeriod = 0.0;
 
-    // Getters and setters (as provided), including new fields
-
-
-    // --- Constructors ---
+    // Constructors
     public FireProposal() {}
 
-    // --- Getters & Setters ---
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getCustomerType() {
-        return customerType != null ? customerType : "";
-    }
-
-    public void setCustomerType(String customerType) {
-        this.customerType = customerType;
-    }
-
-    public String getCustomer() {
-        return customer != null ? customer : "";
-    }
-
-    public void setCustomer(String customer) {
-        this.customer = customer;
-    }
-
-    public String getPropertyInterest() {
-        return propertyInterest != null ? propertyInterest : "";
-    }
-
-    public void setPropertyInterest(String propertyInterest) {
-        this.propertyInterest = propertyInterest;
-    }
-
-    public String getPropertyLocation() {
-        return propertyLocation != null ? propertyLocation : "";
-    }
-
-    public void setPropertyLocation(String propertyLocation) {
-        this.propertyLocation = propertyLocation;
-    }
-
-    public String getTownship() {
-        return township != null ? township : "";
-    }
-
-    public void setTownship(String township) {
-        this.township = township;
-    }
-
-    public String getPolicyNumber() {
-        return policyNumber != null ? policyNumber : "";
-    }
-
-    public void setPolicyNumber(String policyNumber) {
-        this.policyNumber = policyNumber;
-    }
-
-    public Date getPolicyStartDate() {
-        return policyStartDate;
-    }
-
-    public void setPolicyStartDate(Date policyStartDate) {
-        this.policyStartDate = policyStartDate;
-    }
-
-    public SaleChannel getSaleChannel() {
-        return saleChannel;
-    }
-
-    public void setSaleChannel(SaleChannel saleChannel) {
-        this.saleChannel = saleChannel;
-    }
-
-    public PaymentType getPaymentType() {
-        return paymentType;
-    }
-
-    public void setPaymentType(PaymentType paymentType) {
-        this.paymentType = paymentType;
-    }
-
-    public Branch getBranch() {
-        return branch;
-    }
-
-    public void setBranch(Branch branch) {
-        this.branch = branch;
-    }
-
-    public Date getSubmittedDate() {
-        return submittedDate;
-    }
-
-    public void setSubmittedDate(Date submittedDate) {
-        this.submittedDate = submittedDate;
-    }
-
-    public CurrencyType1 getCurrencyType() {
-        return currencyType;
-    }
-
-    public void setCurrencyType(CurrencyType1 currencyType) {
-        this.currencyType = currencyType;
-    }
-
-    public Integer getInsurancePeriodDays() {
-        return insurancePeriodDays != null ? insurancePeriodDays : 0;
-    }
-
-    public void setInsurancePeriodDays(Integer insurancePeriodDays) {
-        this.insurancePeriodDays = insurancePeriodDays;
-    }
-
-
-public List<BuildingInfo> getBuildingList() {
-    return buildingList;
-}
-
-public void setBuildingList(List<BuildingInfo> buildingList) {
-    this.buildingList = buildingList;
-    if (buildingList != null) {
-        for (BuildingInfo b : buildingList) {
-            b.setFireProposal(this);
-        }
-    }
-}
-    public List<Premium> getPremiumList() {
-        return premiumList;
-    }
-
-    public void setPremiumList(List<Premium> premiumList) {
-        this.premiumList = premiumList;
-        if (premiumList != null) {
-            for (Premium premium : premiumList) {
-                premium.setFireProposal(this);
+    // Getters and Setters
+    public String getId() { return id; }
+    public void setId(String id) { this.id = id; }
+    public String getCustomerType() { return customerType != null ? customerType : ""; }
+    public void setCustomerType(String customerType) { this.customerType = customerType; }
+    public String getCustomer() { return customer != null ? customer : ""; }
+    public void setCustomer(String customer) { this.customer = customer; }
+    public String getPropertyInterest() { return propertyInterest != null ? propertyInterest : ""; }
+    public void setPropertyInterest(String propertyInterest) { this.propertyInterest = propertyInterest; }
+    public String getPropertyLocation() { return propertyLocation != null ? propertyLocation : ""; }
+    public void setPropertyLocation(String propertyLocation) { this.propertyLocation = propertyLocation; }
+    public String getTownship() { return township != null ? township : ""; }
+    public void setTownship(String township) { this.township = township; }
+    public String getPolicyNumber() { return policyNumber != null ? policyNumber : ""; }
+    public void setPolicyNumber(String policyNumber) { this.policyNumber = policyNumber; }
+    public Date getPolicyStartDate() { return policyStartDate; }
+    public void setPolicyStartDate(Date policyStartDate) { this.policyStartDate = policyStartDate; }
+    public SaleChannel getSaleChannel() { return saleChannel; }
+    public void setSaleChannel(SaleChannel saleChannel) { this.saleChannel = saleChannel; }
+    public PaymentType getPaymentType() { return paymentType; }
+    public void setPaymentType(PaymentType paymentType) { this.paymentType = paymentType; }
+    public Branch getBranch() { return branch; }
+    public void setBranch(Branch branch) { this.branch = branch; }
+    public Date getSubmittedDate() { return submittedDate; }
+    public void setSubmittedDate(Date submittedDate) { this.submittedDate = submittedDate; }
+    public CurrencyType1 getCurrencyType() { return currencyType; }
+    public void setCurrencyType(CurrencyType1 currencyType) { this.currencyType = currencyType; }
+    public Integer getInsurancePeriodDays() { return insurancePeriodDays != null ? insurancePeriodDays : 0; }
+    public void setInsurancePeriodDays(Integer insurancePeriodDays) { this.insurancePeriodDays = insurancePeriodDays; }
+    public List<BuildingInfo> getBuildingList() { return buildingList; }
+    public void setBuildingList(List<BuildingInfo> buildingList) {
+        this.buildingList = buildingList;
+        if (buildingList != null) {
+            for (BuildingInfo b : buildingList) {
+                b.setFireProposal(this);
             }
         }
     }
+    public Date getStartDateFrom() { return startDateFrom; }
+    public void setStartDateFrom(Date startDateFrom) { this.startDateFrom = startDateFrom; }
+    public Date getStartDateTo() { return startDateTo; }
+    public void setStartDateTo(Date startDateTo) { this.startDateTo = startDateTo; }
+    public int getVersion() { return version; }
+    public void setVersion(int version) { this.version = version; }
+    public Date getPolicyEndDate() { return policyEndDate; }
+    public void setPolicyEndDate(Date policyEndDate) { this.policyEndDate = policyEndDate; }
+    public BasicEntity getBasicEntity() { return basicEntity != null ? basicEntity : (basicEntity = new BasicEntity()); }
+    public void setBasicEntity(BasicEntity basicEntity) { this.basicEntity = basicEntity; }
+    public String getInsurancePeriodUnit() { return insurancePeriodUnit != null ? insurancePeriodUnit : "DAY"; }
+    public void setInsurancePeriodUnit(String insurancePeriodUnit) { this.insurancePeriodUnit = insurancePeriodUnit; }
+    public Double getTotalSumInsured() { return totalSumInsured != null ? totalSumInsured : 0.0; }
+    public void setTotalSumInsured(Double totalSumInsured) { this.totalSumInsured = totalSumInsured; }
+    public Double getTotalPremiumPeriod() { return totalPremiumPeriod != null ? totalPremiumPeriod : 0.0; }
+    public void setTotalPremiumPeriod(Double totalPremiumPeriod) { this.totalPremiumPeriod = totalPremiumPeriod; }
 
-    public Date getStartDateFrom() {
-        return startDateFrom;
-    }
-
-    public void setStartDateFrom(Date startDateFrom) {
-        this.startDateFrom = startDateFrom;
-    }
-
-    public Date getStartDateTo() {
-        return startDateTo;
-    }
-
-    public void setStartDateTo(Date startDateTo) {
-        this.startDateTo = startDateTo;
-    }
-
-    public int getVersion() {
-        return version;
-    }
-
-    public void setVersion(int version) {
-        this.version = version;
-    }
-
-    public BasicEntity getBasicEntity() {
-        if (basicEntity == null) {
-            basicEntity = new BasicEntity();
-        }
-        return basicEntity;
-    }
-
-    public void setBasicEntity(BasicEntity basicEntity) {
-        this.basicEntity = basicEntity;
-    }
-    
-    // You can add helper methods for calculating totals if needed
     public double calculateTotalSumInsured() {
-        return premiumList.stream()
-                .mapToDouble(p -> p.getSumInsured() != null ? p.getSumInsured() : 0.0)
+        return buildingList.stream()
+                .mapToDouble(b -> b.getSumInsured() != null ? b.getSumInsured() : 0.0)
                 .sum();
     }
-    
- // Add these fields inside your FireProposal class
 
-
-
-    public Double getTotalSumInsured() {
-        return totalSumInsured != null ? totalSumInsured : 0.0;
+    @Override
+    public FireProposal clone() {
+        FireProposal clone = new FireProposal();
+        clone.setId(this.id);
+        clone.setCustomerType(this.customerType);
+        clone.setCustomer(this.customer);
+        clone.setPropertyInterest(this.propertyInterest);
+        clone.setPropertyLocation(this.propertyLocation);
+        clone.setTownship(this.township);
+        clone.setPolicyNumber(this.policyNumber);
+        clone.setPolicyStartDate(this.policyStartDate);
+        clone.setSaleChannel(this.saleChannel);
+        clone.setPaymentType(this.paymentType);
+        clone.setBranch(this.branch);
+        clone.setSubmittedDate(this.submittedDate);
+        clone.setCurrencyType(this.currencyType);
+        clone.setInsurancePeriodDays(this.insurancePeriodDays);
+        clone.setBuildingList(new ArrayList<>(this.buildingList)); // Shallow copy, adjust if deep copy needed
+        clone.setStartDateFrom(this.startDateFrom);
+        clone.setStartDateTo(this.startDateTo);
+        clone.setVersion(this.version);
+        clone.setPolicyEndDate(this.policyEndDate);
+		/*
+		 * clone.setBasicEntity(this.basicEntity != null ? this.basicEntity.clone() :
+		 * null);
+		 */
+        clone.setInsurancePeriodUnit(this.insurancePeriodUnit);
+        clone.setTotalSumInsured(this.totalSumInsured);
+        clone.setTotalPremiumPeriod(this.totalPremiumPeriod);
+        return clone;
     }
-
-    public void setTotalSumInsured(Double totalSumInsured) {
-        this.totalSumInsured = totalSumInsured;
-    }
-
-    public Double getTotalPremiumPeriod() {
-        return totalPremiumPeriod != null ? totalPremiumPeriod : 0.0;
-    }
-
-    public void setTotalPremiumPeriod(Double totalPremiumPeriod) {
-        this.totalPremiumPeriod = totalPremiumPeriod;
-    }
-
-
-
-    // Getter
-    public String getInsurancePeriodUnit() {
-        return insurancePeriodUnit != null ? insurancePeriodUnit : "DAY"; // default value if you want
-    }
-
-    // Setter
-    public void setInsurancePeriodUnit(String insurancePeriodUnit) {
-        this.insurancePeriodUnit = insurancePeriodUnit;
-    }
-
-
-
-    
 }
