@@ -199,4 +199,14 @@ public class FireProposal implements Serializable, Cloneable {
         clone.setTotalPremiumPeriod(this.totalPremiumPeriod);
         return clone;
     }
+
+	public String getProposalNo() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public Object getSalePerson() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

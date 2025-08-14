@@ -1,5 +1,8 @@
 package org.ace.accounting.web.system;
+
+import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.application.FacesMessage;
@@ -9,215 +12,250 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import org.ace.accounting.system.fire.FireProposal;
+import org.ace.accounting.system.fire.service.interfaces.IFireProposalService;
+import org.ace.java.component.SystemException;
+
 @ManagedBean(name = "ManageFireEnquiryBean")
 @ViewScoped
 public class ManageFireEnquiryBean implements Serializable {
 
-    private Date startDateFrom;
-    private Date startDateTo;
-    private String policyNo;
-    private List<Policy> policies;
+	private Date startDateFrom;
+	private Date startDateTo;
+	private String policyNo;
+	private List<Policy> policies;
 
-    // Constructor
-    public ManageFireEnquiryBean() {
-        policies = new ArrayList<>();
-        setDefaultDates();
-    }
+	@ManagedProperty(value = "#{FireProposalService}")
+	private IFireProposalService fireProposalService;
 
-    private void setDefaultDates() {
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(new Date());
-        startDateTo = cal.getTime();
-        cal.add(Calendar.DAY_OF_MONTH, -7);
-        startDateFrom = cal.getTime();
-    }
+	// Constructor
+	public ManageFireEnquiryBean() {
+		policies = new ArrayList<>();
+	}
 
-    // Getters and Setters
-    public Date getStartDateFrom() {
-        return startDateFrom;
-    }
+	@PostConstruct
+	public void init() {
+		setDefaultDates();
+	}
 
-    public void setStartDateFrom(Date startDateFrom) {
-        this.startDateFrom = startDateFrom;
-    }
+	private void setDefaultDates() {
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(new Date());
+		startDateTo = cal.getTime();
+		cal.add(Calendar.DAY_OF_MONTH, -7);
+		startDateFrom = cal.getTime();
+	}
 
-    public Date getStartDateTo() {
-        return startDateTo;
-    }
+	// Getters and Setters
+	public Date getStartDateFrom() {
+		return startDateFrom;
+	}
 
-    public void setStartDateTo(Date startDateTo) {
-        this.startDateTo = startDateTo;
-    }
+	public void setStartDateFrom(Date startDateFrom) {
+		this.startDateFrom = startDateFrom;
+	}
 
-    public String getPolicyNo() {
-        return policyNo;
-    }
+	public Date getStartDateTo() {
+		return startDateTo;
+	}
 
-    public void setPolicyNo(String policyNo) {
-        this.policyNo = policyNo;
-    }
+	public void setStartDateTo(Date startDateTo) {
+		this.startDateTo = startDateTo;
+	}
 
-    public List<Policy> getPolicies() {
-        return policies;
-    }
+	public String getPolicyNo() {
+		return policyNo;
+	}
 
-    public void setPolicies(List<Policy> policies) {
-        this.policies = policies;
-    }
+	public void setPolicyNo(String policyNo) {
+		this.policyNo = policyNo;
+	}
 
-    // Search action
-    public void search() {
-        // Clear previous results
-        policies.clear();
+	public List<Policy> getPolicies() {
+		return policies;
+	}
 
-        // Simulate database query based on search criteria
-        try {
-            // Validate search criteria and query database
-            if (isValidSearchCriteria()) {
-                policies = fetchPoliciesFromDatabase();
-                if (policies.isEmpty()) {
-                    FacesContext.getCurrentInstance().addMessage(null,
-                            new FacesMessage(FacesMessage.SEVERITY_INFO, "No records found", null));
-                } else {
-                    FacesContext.getCurrentInstance().addMessage(null,
-                            new FacesMessage(FacesMessage.SEVERITY_INFO, "Search completed", policies.size() + " records found"));
-                }
-            } else {
-                FacesContext.getCurrentInstance().addMessage(null,
-                        new FacesMessage(FacesMessage.SEVERITY_WARN, "Invalid search criteria", "Please provide valid dates or policy number"));
-            }
-        } catch (Exception e) {
-            FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error during search", e.getMessage()));
-        }
-    }
+	public void setPolicies(List<Policy> policies) {
+		this.policies = policies;
+	}
 
-    // Reset action
-    public void reset() {
-        policyNo = null;
-        policies.clear();
-        FacesContext.getCurrentInstance().addMessage(null,
-                new FacesMessage(FacesMessage.SEVERITY_INFO, "Form reset", null));
-    }
+	public void setFireProposalService(IFireProposalService fireProposalService) {
+		this.fireProposalService = fireProposalService;
+	}
 
-    // Simulate database query
-    private List<Policy> fetchPoliciesFromDatabase() {
-        List<Policy> result = new ArrayList<>();
-        // Mock data for demonstration
-        if (policyNo != null && !policyNo.isEmpty()) {
-            result.add(new Policy(policyNo, "PROP001", "Direct", "John Doe", "Jane Smith", "Main Branch", 1500.00, 100000.00, "Credit Card"));
-        } else {
-            result.add(new Policy("POL001", "PROP002", "Agent", "Alice Brown", "Bob Wilson", "East Branch", 2000.00, 150000.00, "Bank Transfer"));
-            result.add(new Policy("POL002", "PROP003", "Broker", "Charlie Davis", "Emma Clark", "West Branch", 1800.00, 120000.00, "Cash"));
-        }
-        return result;
-    }
+	// Search action
+	public void search() {
+		// Clear previous results
+		policies.clear();
 
-    // Validate search criteria
-    private boolean isValidSearchCriteria() {
-        // Ensure dates are logical or policy number is provided
-        if (startDateFrom != null && startDateTo != null) {
-            return startDateFrom.before(startDateTo) || startDateFrom.equals(startDateTo);
-        }
-        return policyNo != null && !policyNo.isEmpty();
-    }
+		try {
+			// Validate search criteria and query database
+			if (isValidSearchCriteria()) {
+				List<FireProposal> fireProposals;
+				if (policyNo != null && !policyNo.trim().isEmpty()) {
+					FireProposal proposal = fireProposalService.findFireProposalByPolicyNo(policyNo);
+					if (proposal != null) {
+						policies.add(convertToPolicy(proposal));
+					}
+				} else {
+					fireProposals = fireProposalService.findFireProposalsByDateRange(startDateFrom, startDateTo);
+					for (FireProposal proposal : fireProposals) {
+						policies.add(convertToPolicy(proposal));
+					}
+				}
 
-    // Policy class to hold data
-    public static class Policy {
-        private String policyNo;
-        private String proposalNo;
-        private String saleChannel;
-        private String salePerson;
-        private String customer;
-        private String branch;
-        private double totalPremium;
-        private double totalSumInsured;
-        private String paymentType;
+				if (policies.isEmpty()) {
+					FacesContext.getCurrentInstance().addMessage(null,
+							new FacesMessage(FacesMessage.SEVERITY_INFO, "No records found", null));
+				} else {
+					FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO,
+							"Search completed", policies.size() + " records found"));
+				}
+			} else {
+				FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN,
+						"Invalid search criteria", "Please provide valid dates or policy number"));
+			}
+		} catch (SystemException e) {
+			FacesContext.getCurrentInstance().addMessage(null,
+					new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error during search", e.getMessage()));
+		}
+	}
 
-        public Policy(String policyNo, String proposalNo, String saleChannel, String salePerson,
-                      String customer, String branch, double totalPremium, double totalSumInsured, String paymentType) {
-            this.policyNo = policyNo;
-            this.proposalNo = proposalNo;
-            this.saleChannel = saleChannel;
-            this.salePerson = salePerson;
-            this.customer = customer;
-            this.branch = branch;
-            this.totalPremium = totalPremium;
-            this.totalSumInsured = totalSumInsured;
-            this.paymentType = paymentType;
-        }
+	// Reset action
+	public void reset() {
+		policyNo = null;
+		startDateFrom = null;
+		startDateTo = null;
+		policies.clear();
+		setDefaultDates();
+		FacesContext.getCurrentInstance().addMessage(null,
+				new FacesMessage(FacesMessage.SEVERITY_INFO, "Form reset", null));
+	}
 
-        // Getters and Setters
-        public String getPolicyNo() {
-            return policyNo;
-        }
+	// Convert FireProposal to Policy for display
+	private Policy convertToPolicy(FireProposal proposal) {
+		return new Policy(proposal.getPolicyNumber(), // Use getPolicyNumber instead of getPolicyNo
+				proposal.getProposalNo() != null ? proposal.getProposalNo() : proposal.getId(), // Fallback to ID if
+																								// proposalNo is null
+				proposal.getSaleChannel() != null ? proposal.getSaleChannel().toString() : "", // Convert enum to String
+				proposal.getSalePerson() != null ? proposal.getSalePerson().toString() : "", // Convert Object to
+																								// String, fallback to
+																								// empty
+				proposal.getCustomer(), // Use getCustomer instead of getCustomerName
+				proposal.getBranch() != null ? proposal.getBranch().toString() : "", // Convert enum to String
+				proposal.getTotalPremiumPeriod(), // Use getTotalPremiumPeriod instead of getTotalPremium
+				proposal.getTotalSumInsured(),
+				proposal.getPaymentType() != null ? proposal.getPaymentType().toString() : "" // Convert enum to String
+		);
+	}
 
-        public void setPolicyNo(String policyNo) {
-            this.policyNo = policyNo;
-        }
+	// Validate search criteria
+	private boolean isValidSearchCriteria() {
+		if (policyNo != null && !policyNo.trim().isEmpty()) {
+			return true;
+		}
+		if (startDateFrom != null && startDateTo != null) {
+			return startDateFrom.before(startDateTo) || startDateFrom.equals(startDateTo);
+		}
+		return false;
+	}
 
-        public String getProposalNo() {
-            return proposalNo;
-        }
+	// Policy class to hold data
+	public static class Policy {
+		private String policyNo;
+		private String proposalNo;
+		private String saleChannel;
+		private String salePerson;
+		private String customer;
+		private String branch;
+		private double totalPremium;
+		private double totalSumInsured;
+		private String paymentType;
 
-        public void setProposalNo(String proposalNo) {
-            this.proposalNo = proposalNo;
-        }
+		public Policy(String policyNo, String proposalNo, String saleChannel, String salePerson, String customer,
+				String branch, double totalPremium, double totalSumInsured, String paymentType) {
+			this.policyNo = policyNo;
+			this.proposalNo = proposalNo;
+			this.saleChannel = saleChannel;
+			this.salePerson = salePerson;
+			this.customer = customer;
+			this.branch = branch;
+			this.totalPremium = totalPremium;
+			this.totalSumInsured = totalSumInsured;
+			this.paymentType = paymentType;
+		}
 
-        public String getSaleChannel() {
-            return saleChannel;
-        }
+		// Getters and Setters
+		public String getPolicyNo() {
+			return policyNo;
+		}
 
-        public void setSaleChannel(String saleChannel) {
-            this.saleChannel = saleChannel;
-        }
+		public void setPolicyNo(String policyNo) {
+			this.policyNo = policyNo;
+		}
 
-        public String getSalePerson() {
-            return salePerson;
-        }
+		public String getProposalNo() {
+			return proposalNo;
+		}
 
-        public void setSalePerson(String salePerson) {
-            this.salePerson = salePerson;
-        }
+		public void setProposalNo(String proposalNo) {
+			this.proposalNo = proposalNo;
+		}
 
-        public String getCustomer() {
-            return customer;
-        }
+		public String getSaleChannel() {
+			return saleChannel;
+		}
 
-        public void setCustomer(String customer) {
-            this.customer = customer;
-        }
+		public void setSaleChannel(String saleChannel) {
+			this.saleChannel = saleChannel;
+		}
 
-        public String getBranch() {
-            return branch;
-        }
+		public String getSalePerson() {
+			return salePerson;
+		}
 
-        public void setBranch(String branch) {
-            this.branch = branch;
-        }
+		public void setSalePerson(String salePerson) {
+			this.salePerson = salePerson;
+		}
 
-        public double getTotalPremium() {
-            return totalPremium;
-        }
+		public String getCustomer() {
+			return customer;
+		}
 
-        public void setTotalPremium(double totalPremium) {
-            this.totalPremium = totalPremium;
-        }
+		public void setCustomer(String customer) {
+			this.customer = customer;
+		}
 
-        public double getTotalSumInsured() {
-            return totalSumInsured;
-        }
+		public String getBranch() {
+			return branch;
+		}
 
-        public void setTotalSumInsured(double totalSumInsured) {
-            this.totalSumInsured = totalSumInsured;
-        }
+		public void setBranch(String branch) {
+			this.branch = branch;
+		}
 
-        public String getPaymentType() {
-            return paymentType;
-        }
+		public double getTotalPremium() {
+			return totalPremium;
+		}
 
-        public void setPaymentType(String paymentType) {
-            this.paymentType = paymentType;
-        }
-    }
+		public void setTotalPremium(double totalPremium) {
+			this.totalPremium = totalPremium;
+		}
+
+		public double getTotalSumInsured() {
+			return totalSumInsured;
+		}
+
+		public void setTotalSumInsured(double totalSumInsured) {
+			this.totalSumInsured = totalSumInsured;
+		}
+
+		public String getPaymentType() {
+			return paymentType;
+		}
+
+		public void setPaymentType(String paymentType) {
+			this.paymentType = paymentType;
+		}
+	}
 }

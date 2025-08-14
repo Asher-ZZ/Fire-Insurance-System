@@ -1,5 +1,6 @@
 package org.ace.accounting.system.fire.service;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -56,12 +57,32 @@ public class FireProposalService extends BaseService implements IFireProposalSer
         }
     }
 
-	@Override
-	public FireProposal findById(String id) throws SystemException {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Transactional(propagation = Propagation.REQUIRED, readOnly = true)
+    public FireProposal findById(String id) throws SystemException {
+        try {
+            return fireProposalDAO.findById(id);
+        } catch (DAOException e) {
+            throw new SystemException(e.getErrorCode(), "Failed to find fire proposal by id: " + id, e);
+        }
+    }
 
+    @Transactional(propagation = Propagation.REQUIRED, readOnly = true)
+    public FireProposal findFireProposalByPolicyNo(String policyNo) throws SystemException {
+        try {
+            return fireProposalDAO.findByPolicyNo(policyNo);
+        } catch (DAOException e) {
+            throw new SystemException(e.getErrorCode(), "Failed to find fire proposal by policy number: " + policyNo, e);
+        }
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED, readOnly = true)
+    public List<FireProposal> findFireProposalsByDateRange(Date startDate, Date endDate) throws SystemException {
+        try {
+            return fireProposalDAO.findByDateRange(startDate, endDate);
+        } catch (DAOException e) {
+            throw new SystemException(e.getErrorCode(), "Failed to find fire proposals by date range: " + startDate + " to " + endDate, e);
+        }
+    }
 	/*
 	 * @Transactional(propagation = Propagation.REQUIRED, readOnly = true) public
 	 * FireProposal findById(String id) throws SystemException { try { return
