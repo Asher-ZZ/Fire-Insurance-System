@@ -88,19 +88,18 @@ public class ManageFireProposalActionBean extends BaseBean {
     }
 
     public String onFlowProcess(FlowEvent event) {
-        String oldStep = event.getOldStep(); // current step
         String newStep = event.getNewStep();
 
-        // Only block if going forward from buildingInfo to premiumInfo
-        if ("buildingInfo".equals(oldStep) && "premiumInfo".equals(newStep)) {
+        if ("buildingInfo".equals(currentStep)) {
+            // Validate required fields
             if (buildingInfo == null || !buildingInfo.isValid()) {
                 addErrorMessage(null, "Please fill in all mandatory building info fields before proceeding.");
-                return oldStep; // prevent moving forward
+                return currentStep; // prevent moving forward
             }
 
             validateDates();
             if (hasErrors()) {
-                return oldStep; // prevent moving forward if errors exist
+                return currentStep; // prevent moving forward if errors exist
             }
         }
 
@@ -113,7 +112,6 @@ public class ManageFireProposalActionBean extends BaseBean {
         return currentStep;
     }
 
-
     private void validateDates() {
         Date submittedDate = fireProposal.getSubmittedDate();
         Date policyStartDate = fireProposal.getPolicyStartDate();
@@ -125,10 +123,7 @@ public class ManageFireProposalActionBean extends BaseBean {
             addErrorMessage(null, "Policy start date must be between " + minDate + " and " + maxDate);
             return;
         }
-		/*
-		 * logger.debug("Validated dates: SubmittedDate={}, PolicyStartDate={}",
-		 * submittedDate, policyStartDate);
-		 */
+        logger.debug("Validated dates: SubmittedDate={}, PolicyStartDate={}", submittedDate, policyStartDate);
     }
 
     public String saveAll() {
@@ -139,10 +134,7 @@ public class ManageFireProposalActionBean extends BaseBean {
             }
             fireProposal.setBuildingList(buildings);
             calculatePolicyEndDate();
-			/*
-			 * logger.debug("Saving FireProposal with policyEndDate: {}",
-			 * fireProposal.getPolicyEndDate());
-			 */
+            logger.debug("Saving FireProposal with policyEndDate: {}", fireProposal.getPolicyEndDate());
 
             if (fireProposal.getProposalNo() == null || fireProposal.getProposalNo().isEmpty()) {
                 LocalDate now = LocalDate.now();
