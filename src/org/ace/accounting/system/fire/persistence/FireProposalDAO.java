@@ -1,6 +1,5 @@
 package org.ace.accounting.system.fire.persistence;
 
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -138,14 +137,8 @@ public class FireProposalDAO extends BasicDAO implements IFireProposalDAO {
     @Transactional(propagation = Propagation.REQUIRED, readOnly = true)
     public List<FireProposal> findByDateRange(Date startDate, Date endDate) throws DAOException {
         try {
-            if (startDate == null && endDate == null) {
-                // No policyStartDate criteria provided → return empty list
-                return Collections.emptyList();
-            }
-
-            StringBuilder hql = new StringBuilder("SELECT f FROM FireProposal f WHERE 1=1");
+            StringBuffer hql = new StringBuffer("SELECT f FROM FireProposal f WHERE 1=1");
             Map<String, Object> paramMap = new HashMap<>();
-
             if (startDate != null) {
                 hql.append(" AND f.policyStartDate >= :startDate");
                 paramMap.put("startDate", startDate);
@@ -154,26 +147,18 @@ public class FireProposalDAO extends BasicDAO implements IFireProposalDAO {
                 hql.append(" AND f.policyStartDate <= :endDate");
                 paramMap.put("endDate", endDate);
             }
-
             Query query = em.createQuery(hql.toString());
-            paramMap.forEach(query::setParameter);
-
+            for (Map.Entry<String, Object> entry : paramMap.entrySet()) {
+                query.setParameter(entry.getKey(), entry.getValue());
+            }
             List<FireProposal> result = query.getResultList();
-			/*
-			 * logger.debug("Found {} FireProposals between {} and {}", result.size(),
-			 * startDate, endDate);
-			 */
+            logger.debug("Found {} FireProposals between {} and {}", result.size(), startDate);
             return result;
         } catch (PersistenceException pe) {
-			/*
-			 * logger.error("Failed to find FireProposals by date range: {} to {}",
-			 * startDate, endDate);
-			 */
+            logger.error("Failed to find FireProposals by date range: {} to {}");
             throw translate("Failed to find FireProposals by date range: " + startDate + " to " + endDate, pe);
         }
     }
-
-    
     public String findLastProposalNoByMonthYear(String monthYear) {
         try {
             String jpql = "SELECT f.proposalNo FROM FireProposal f " +
@@ -206,7 +191,5 @@ public class FireProposalDAO extends BasicDAO implements IFireProposalDAO {
             throw new DAOException("Failed to find last proposal number for " + monthYear, monthYear, pe);
         }
     }
-
-
    
 }

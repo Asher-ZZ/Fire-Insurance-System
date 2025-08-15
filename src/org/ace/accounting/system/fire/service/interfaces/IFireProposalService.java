@@ -4,7 +4,6 @@ import java.util.Date;
 import java.util.List;
 import org.ace.accounting.system.fire.FireProposal;
 import org.ace.java.component.SystemException;
-import org.ace.java.component.persistence.exception.DAOException;
 
 public interface IFireProposalService {
 
@@ -19,14 +18,10 @@ public interface IFireProposalService {
     FireProposal findById(String id) throws SystemException;
     
 
-	
-	
-	  FireProposal findFireProposalByPolicyNo(String policyNo);
-	  
-	  List<FireProposal> findFireProposalsByDateRange(Date startDate, Date
-	  endDate);
-	  
-	  public String generateProposalNo() throws SystemException;
-	 
+    FireProposal findFireProposalByPolicyNo(String policyNo);
+    
+    List<FireProposal> findFireProposalsByDateRange(Date startDate, Date endDate);
+    
+    public String generateProposalNo() throws SystemException;
 
 }

@@ -9,15 +9,15 @@ import java.util.List;
 import javax.persistence.*;
 
 import org.ace.accounting.common.BasicEntity;
-import org.ace.accounting.common.Branch;
 import org.ace.accounting.common.CurrencyType1;
 import org.ace.accounting.common.PaymentType;
 import org.ace.accounting.common.SaleChannel;
 import org.ace.accounting.common.TableName;
+import org.ace.accounting.system.branch.Branch;
 import org.ace.java.component.idgen.service.IDInterceptor;
 
 @Entity
-@Table(name = TableName.FIREPOLICY)
+@Table(name = TableName.FIREPROPOSAL)
 @TableGenerator(name = "FIREPROPOSAL_GEN", table = "ID_GEN", pkColumnName = "GEN_NAME", valueColumnName = "GEN_VAL", pkColumnValue = "FIREPROPOSAL_GEN", allocationSize = 10)
 @EntityListeners(IDInterceptor.class)
 public class FireProposal implements Serializable, Cloneable {
@@ -62,8 +62,8 @@ public class FireProposal implements Serializable, Cloneable {
 	@Column(name = "PaymentType", length = 100)
 	private PaymentType paymentType;
 
-	@Enumerated(EnumType.STRING)
-	@Column(name = "Branch", length = 100)
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "BRANCHID", referencedColumnName = "ID")
 	private Branch branch;
 
 	@Temporal(TemporalType.DATE)

@@ -84,10 +84,8 @@ public class FireProposalService extends BaseService implements IFireProposalSer
             throw new SystemException(e.getErrorCode(), "Failed to find fire proposals by date range: " + startDate + " to " + endDate, e);
         }
     }
-	
-    
     @Override
-   
+    
     public String generateProposalNo() throws SystemException {
         LocalDate now = LocalDate.now();
         String monthYear = String.format("%02d-%d", now.getMonthValue(), now.getYear());
@@ -105,16 +103,4 @@ public class FireProposalService extends BaseService implements IFireProposalSer
 
         return String.format("%s%06d/%s", prefix, nextNumber, monthYear);
     }
-
-	
-    
-    
-    
-	/*
-	 * @Transactional(propagation = Propagation.REQUIRED, readOnly = true) public
-	 * FireProposal findById(String id) throws SystemException { try { return
-	 * fireProposalDAO.findById(id); } catch (DAOException e) { throw new
-	 * SystemException(e.getErrorCode(), "Failed to find fire proposal by id: " +
-	 * id, e); } }
-	 */
 }
