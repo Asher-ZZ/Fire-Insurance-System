@@ -209,10 +209,6 @@ public class BuildingInfo implements Serializable, Cloneable {
         return clone;
     }
     
-    
-    
-    
-    
  
  // Handle relationship if needed
     public boolean isValid() {

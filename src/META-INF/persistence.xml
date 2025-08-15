@@ -21,11 +21,11 @@
         <class>org.ace.accounting.system.tlfhist.TLFCLONE</class>
         <class>org.ace.accounting.system.branch.Branch</class>
         
-           <class>org.ace.accounting.system.fire.Policy</class>
+<!--            <class>org.ace.accounting.system.fire.Policy</class> -->
         <class>org.ace.accounting.system.fire.BuildingInfo</class>
-        <class>org.ace.accounting.system.fire.Product</class>
+<!--         <class>org.ace.accounting.system.fire.Product</class> -->
         <class>org.ace.accounting.system.fire.FireProposal</class>
-         <class>org.ace.accounting.system.fire.Premium</class>
+<!--          <class>org.ace.accounting.system.fire.Premium</class> -->
 
         <class>org.ace.accounting.system.branch.Student</class> <!-- ✅ Added Student entity -->
         <class>org.ace.accounting.system.currency.Currency</class>
@@ -57,12 +57,13 @@
         <class>org.ace.accounting.system.gainloss.ExchangeConfig</class>
 
         <shared-cache-mode>NONE</shared-cache-mode>
+        
 
         <properties>
-            <property name="javax.persistence.jdbc.url" value="jdbc:sqlserver://localhost;databaseName=FNIGP-ACC;selectMethod=cursor" />
+            <property name="javax.persistence.jdbc.url" value="jdbc:sqlserver://localhost;databaseName=FNIGP;selectMethod=cursor" />
             <property name="javax.persistence.jdbc.driver" value="com.microsoft.sqlserver.jdbc.SQLServerDriver"/>
-            <property name="javax.persistence.jdbc.user" value="sa"/>
-            <property name="javax.persistence.jdbc.password" value="1234"/>
+            <property name="javax.persistence.jdbc.user" value="TBH"/>
+            <property name="javax.persistence.jdbc.password" value="342005"/>
 
             <!-- Performance Tuning -->
             <property name="eclipselink.orm.throw.exceptions" value="true"/>
