@@ -55,7 +55,7 @@
                 <p:dataTable id="resultsTable" var="policy"
                     value="#{ManageFireEnquiryBean.policies}"
                     emptyMessage="No records found" rows="10" paginator="true"
-                    paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                    paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                     currentPageReportTemplate="( {currentPage} of {totalPages} )"
                     rowsPerPageTemplate="5,10,20" styleClass="policy-table"
                     style="margin-top:20px;">
@@ -78,12 +78,12 @@
                     </p:column>
                     <p:column headerText="Total Premium" style="width:120px;">
                         <h:outputText value="#{policy.totalPremium}">
-                            <f:convertNumber type="currency" currencySymbol="$" />
+                            <f:convertNumber type="currency" currencySymbol="" />
                         </h:outputText>
                     </p:column>
                     <p:column headerText="Total Sum Insured" style="width:150px;">
                         <h:outputText value="#{policy.totalSumInsured}">
-                            <f:convertNumber type="currency" currencySymbol="$" />
+                            <f:convertNumber type="currency" currencySymbol="" />
                         </h:outputText>
                     </p:column>
                     <p:column headerText="Payment Type" style="width:120px;">

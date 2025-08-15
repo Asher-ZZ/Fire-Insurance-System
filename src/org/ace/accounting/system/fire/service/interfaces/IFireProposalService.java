@@ -21,5 +21,7 @@ public interface IFireProposalService {
     FireProposal findFireProposalByPolicyNo(String policyNo);
     
     List<FireProposal> findFireProposalsByDateRange(Date startDate, Date endDate);
+    
+    public String generateProposalNo() throws SystemException;
 
 }
