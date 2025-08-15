@@ -19,6 +19,9 @@ import org.ace.accounting.common.SaleChannel;
 import org.ace.accounting.common.validation.MessageId;
 import org.ace.accounting.system.fire.BuildingInfo;
 import org.ace.accounting.system.fire.FireProposal;
+import org.ace.accounting.system.fire.enumTypes.Floor;
+import org.ace.accounting.system.fire.enumTypes.Roofing;
+import org.ace.accounting.system.fire.enumTypes.Wall;
 import org.ace.accounting.system.fire.service.interfaces.IFireProposalService;
 import org.ace.java.component.SystemException;
 import org.ace.java.web.common.BaseBean;
@@ -51,7 +54,10 @@ public class ManageFireProposalActionBean extends BaseBean {
     private List<FireProposal> fireProposalList;
     private int periodMin;
     private int periodMax;
-
+	/*
+	 * private Wall[] walls = Wall.values(); private Floor[] floors=Floor.values();
+	 * private Roofing[] roofings = Roofing.values();
+	 */
     private String currentStep = "proposalInfo";
 
     private Date minDate = toDate(LocalDate.of(1990, 1, 1));
@@ -250,8 +256,7 @@ public class ManageFireProposalActionBean extends BaseBean {
             return new PaymentType[] { PaymentType.LUMPSUM, PaymentType.SEMI_ANNUAL, PaymentType.QUARTER,
                     PaymentType.MONTHLY };
         } else {
-            // only lumpsum
-            // ensure selected payment type is valid
+            
             if (fireProposal.getPaymentType() != PaymentType.LUMPSUM) {
                 fireProposal.setPaymentType(PaymentType.LUMPSUM);
             }
@@ -259,13 +264,13 @@ public class ManageFireProposalActionBean extends BaseBean {
         }
     }
 
-    // Called when user changes period unit/value (wired in XHTML)
+    
     public void updatePeriodRange() {
-        updatePeriodRange((AjaxBehaviorEvent) null); // reuse your existing method that sets periodMin/periodMax
+        updatePeriodRange((AjaxBehaviorEvent) null); 
         recalculatePremiums();
     }
 
-    // Called when PaymentType changes (via p:ajax)
+
     public void onPaymentTypeChange(AjaxBehaviorEvent event) {
         recalculatePremiums();
     }
@@ -427,6 +432,17 @@ public class ManageFireProposalActionBean extends BaseBean {
         return Branch.values();
     }
 
+    public Floor[] getFloors() {
+    	return Floor.values();
+    }
+
+    public Wall[] getWalls() {
+        return Wall.values();
+    }
+    
+    public Roofing[] getRoofings() {
+        return Roofing.values();
+    }
     public CurrencyType1[] getCurrencyTypes() {
         return CurrencyType1.values();
     }

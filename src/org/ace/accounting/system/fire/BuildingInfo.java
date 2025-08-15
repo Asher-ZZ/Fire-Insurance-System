@@ -4,6 +4,9 @@ import java.io.Serializable;
 
 import javax.persistence.*;
 
+import org.ace.accounting.system.fire.enumTypes.Floor;
+import org.ace.accounting.system.fire.enumTypes.Roofing;
+import org.ace.accounting.system.fire.enumTypes.Wall;
 import org.ace.java.component.idgen.service.IDInterceptor;
 
 @Entity
@@ -22,14 +25,17 @@ public class BuildingInfo implements Serializable, Cloneable {
     @Column(name = "BuildingName", length = 100)
     private String buildingName;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "Floor", length = 50)
-    private String floor;
+    private Floor floor;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "Wall", length = 50)
-    private String wall;
+    private Wall wall;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "Roofing", length = 50)
-    private String roofing;
+    private Roofing roofing;
 
     @Column(name = "BuildingClass", length = 100)
     private String buildingClass;
@@ -110,17 +116,20 @@ public class BuildingInfo implements Serializable, Cloneable {
     // Default constructor
     public BuildingInfo() {}
 
+    
     // Getters and Setters
+    
+    
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
     public String getBuildingName() { return buildingName != null ? buildingName : ""; }
     public void setBuildingName(String buildingName) { this.buildingName = buildingName; }
-    public String getFloor() { return floor != null ? floor : ""; }
-    public void setFloor(String floor) { this.floor = floor; }
-    public String getWall() { return wall != null ? wall : ""; }
-    public void setWall(String wall) { this.wall = wall; }
-    public String getRoofing() { return roofing != null ? roofing : ""; }
-    public void setRoofing(String roofing) { this.roofing = roofing; }
+    public Floor getFloor() { return floor != null ? floor : null; }
+    public void setFloor(Floor floor) { this.floor = floor; }
+    public Wall getWall() {return wall != null ? wall : null; }
+    public void setWall(Wall wall) { this.wall = wall; }
+    public Roofing getRoofing() { return roofing != null ? roofing : null; }
+    public void setRoofing(Roofing roofing) { this.roofing = roofing; }
     public String getBuildingClass() { return buildingClass != null ? buildingClass : ""; }
     public void setBuildingClass(String buildingClass) { this.buildingClass = buildingClass; }
     public String getNatureOfBusiness() { return natureOfBusiness != null ? natureOfBusiness : ""; }

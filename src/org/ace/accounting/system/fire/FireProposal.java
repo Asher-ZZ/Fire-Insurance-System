@@ -34,8 +34,6 @@ public class FireProposal implements Serializable, Cloneable {
 	@Column(name = "Customer", length = 100)
 	private String customer;
 	
-	
-
 	@Column(name = "PropertyInterest", length = 255)
 	private String propertyInterest;
 
@@ -342,7 +340,7 @@ public class FireProposal implements Serializable, Cloneable {
 	 * public String getProposalNo() { return proposalNo; }
 	 * 
 	 * public void setProposalNo(String proposalNo) { this.proposalNo = proposalNo;
-	 * }
+	 * } 
 	 */
 
 	
