@@ -8,6 +8,7 @@ import java.util.Map;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 
 import org.ace.accounting.system.fire.BuildingInfo;
 import org.ace.accounting.system.fire.FireProposal;
@@ -156,6 +157,38 @@ public class FireProposalDAO extends BasicDAO implements IFireProposalDAO {
         } catch (PersistenceException pe) {
             logger.error("Failed to find FireProposals by date range: {} to {}");
             throw translate("Failed to find FireProposals by date range: " + startDate + " to " + endDate, pe);
+        }
+    }
+    public String findLastProposalNoByMonthYear(String monthYear) {
+        try {
+            String jpql = "SELECT f.proposalNo FROM FireProposal f " +
+                          "WHERE f.proposalNo LIKE :monthYearPattern";
+            TypedQuery<String> query = em.createQuery(jpql, String.class);
+            query.setParameter("monthYearPattern", "%/" + monthYear);
+            List<String> result = query.getResultList();
+
+            int maxNumber = 0;
+            String prefix = "FM/PO/";
+
+            for (String proposalNo : result) {
+                if (proposalNo.startsWith(prefix)) {
+                    String[] parts = proposalNo.split("/");
+                    if (parts.length == 4) {
+                        try {
+                            int num = Integer.parseInt(parts[2]);
+                            if (num > maxNumber) {
+                                maxNumber = num;
+                            }
+                        } catch (NumberFormatException ignored) {
+                            // skip invalid formats
+                        }
+                    }
+                }
+            }
+
+            return maxNumber == 0 ? null : String.format("%s%06d/%s", prefix, maxNumber, monthYear);
+        } catch (PersistenceException pe) {
+            throw new DAOException("Failed to find last proposal number for " + monthYear, monthYear, pe);
         }
     }
    
