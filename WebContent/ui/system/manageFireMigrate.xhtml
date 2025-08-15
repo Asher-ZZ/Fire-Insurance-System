@@ -41,7 +41,10 @@
         <h:form id="fireProposalEntry">
             <p:growl escape="false" globalOnly="true" life="5000" showDetail="true" />
             <h:outputText value="Add New Fire Proposal" styleClass="title" />
-            <p:wizard flowListener="#{ManageFireProposalActionBean.onFlowProcess}">
+            <p:wizard flowListener="#{ManageFireProposalActionBean.onFlowProcess}"
+             showNavBar="true"
+          nextLabel="Next"
+          backLabel="Back" >
                 <!-- Proposal Info Tab -->
                 <p:tab id="proposalInfo" title="Proposal Info">
                     <p:panelGrid columns="2" columnClasses="ui-grid-col-6,ui-grid-col-6" layout="grid" styleClass="ui-panelgrid-blank ui-fluid">

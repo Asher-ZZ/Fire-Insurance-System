@@ -88,18 +88,6 @@ public class ManageFireProposalActionBean extends BaseBean {
     }
 
     public String onFlowProcess(FlowEvent event) {
-<<<<<<< HEAD
-        String oldStep = event.getOldStep(); // Current step user is leaving
-        String newStep = event.getNewStep();  // Next step user wants to enter
-
-        // ===== VALIDATION: Only when moving from buildingInfo → premiumInfo =====
-        if ("buildingInfo".equals(oldStep) && "premiumInfo".equals(newStep)) {
-            
-            // 1. Check if buildingInfo is null or invalid
-            if (buildingInfo == null || !buildingInfo.isValid()) {
-                addErrorMessage(null, "Please fill all mandatory fields (address, area, etc.)");
-                return oldStep; // Block navigation
-=======
         String oldStep = event.getOldStep(); // current step
         String newStep = event.getNewStep();
 
@@ -108,36 +96,22 @@ public class ManageFireProposalActionBean extends BaseBean {
             if (buildingInfo == null || !buildingInfo.isValid()) {
                 addErrorMessage(null, "Please fill in all mandatory building info fields before proceeding.");
                 return oldStep; // prevent moving forward
->>>>>>> f8173529a0c87159bdcfbcca9c54be8383f6d3ab
             }
 
-            // 2. Validate date logic
             validateDates();
             if (hasErrors()) {
-<<<<<<< HEAD
-                return oldStep; // Block if date validation failed
-=======
                 return oldStep; // prevent moving forward if errors exist
->>>>>>> f8173529a0c87159bdcfbcca9c54be8383f6d3ab
             }
         }
 
-        // ===== PREMIUM CALCULATION: When entering premiumInfo step =====
         if ("premiumInfo".equals(newStep)) {
-            try {
-                fireProposal.setBuildingList(buildings); // Update proposal data
-                recalculatePremiums();                  // Run calculations
-            } catch (Exception e) {
-                addErrorMessage(null, "Premium calculation failed: " + e.getMessage());
-                return oldStep; // Block on calculation errors
-            }
+            fireProposal.setBuildingList(buildings);
+            recalculatePremiums();
         }
 
-        // ===== SUCCESSFUL NAVIGATION =====
-        currentStep = newStep; // Update current step tracker
-        return newStep;        // Allow navigation to proceed
+        currentStep = newStep;
+        return currentStep;
     }
-
 
     private void validateDates() {
         Date submittedDate = fireProposal.getSubmittedDate();
@@ -163,12 +137,12 @@ public class ManageFireProposalActionBean extends BaseBean {
             calculatePolicyEndDate();
             logger.debug("Saving FireProposal with policyEndDate: {}", fireProposal.getPolicyEndDate());
 
-            if (fireProposal.getProposalNo() == null || fireProposal.getProposalNo().isEmpty()) {
-                LocalDate now = LocalDate.now();
-                String month = String.format("%02d", now.getMonthValue());
-                int year = now.getYear();
-                fireProposal.setProposalNo("FM/PO/"  + month + "-" + year);
-            }
+			/*
+			 * if (fireProposal.getProposalNo() == null ||
+			 * fireProposal.getProposalNo().isEmpty()) { LocalDate now = LocalDate.now();
+			 * String month = String.format("%02d", now.getMonthValue()); int year =
+			 * now.getYear(); fireProposal.setProposalNo("FM/PO/" + month + "-" + year); }
+			 */
             
             if (createNew) {
                 fireProposalService.addNewFireProposal(fireProposal);
