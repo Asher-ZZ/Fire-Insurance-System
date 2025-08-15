@@ -1,0 +1,100 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/common/commonLayout.xhtml">     
+    <ui:param name="header" value="Fire Policy Enquiry" />
+    <ui:param name="headerRendered" value="true" />
+
+    <ui:define name="content">
+        <!-- Custom CSS -->
+        <h:outputStylesheet library="css" name="custom-styles.css" />
+        <h:outputStylesheet>
+            .no-border td, .no-border tr, .no-border {
+                border: none !important;
+            }
+        </h:outputStylesheet>
+
+        <h:form id="policySearchForm">
+            <h:panelGroup layout="block" styleClass="policy-container">
+
+                <!-- Search Panel -->
+                <p:panelGrid columns="2" styleClass="search-panel no-border"
+                    columnClasses="label,value" style="margin-bottom:20px;">
+                    <h:outputLabel for="startDateFrom" value="Policy Start Date From:" />
+                    <p:calendar id="startDateFrom"
+                        value="#{ManageFireEnquiryBean.startDateFrom}"
+                        pattern="dd-MM-yyyy" navigator="true" showOn="button"
+                        yearRange="c-10:c+10" style="width:150px;" />
+
+                    <h:outputLabel for="startDateTo" value="Policy Start Date To:" />
+                    <p:calendar id="startDateTo"
+                        value="#{ManageFireEnquiryBean.startDateTo}"
+                        pattern="dd-MM-yyyy" navigator="true" showOn="button"
+                        yearRange="c-10:c+10" style="width:150px;" />
+
+                    <h:outputLabel for="product" value="Product:" />
+                    <p:inputText id="product" value="FirePolicy" readonly="true"
+                        style="width:200px;" />
+
+                    <h:outputLabel for="policyNo" value="Policy No.:" />
+                    <p:inputText id="policyNo"
+                        value="#{ManageFireEnquiryBean.policyNo}" style="width:200px;" />
+                </p:panelGrid>
+
+                <!-- Action Buttons -->
+                <p:commandButton value="Search"
+                    action="#{ManageFireEnquiryBean.search}"
+                    update="resultsTable growl" icon="pi pi-search" />
+                <p:commandButton value="Reset"
+                    action="#{ManageFireEnquiryBean.reset}" update="@form"
+                    style="margin-left:10px;" icon="pi pi-refresh" />
+
+                <!-- Results Table -->
+                <p:dataTable id="resultsTable" var="policy"
+                    value="#{ManageFireEnquiryBean.policies}"
+                    emptyMessage="No records found" rows="10" paginator="true"
+                    paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                    currentPageReportTemplate="( {currentPage} of {totalPages} )"
+                    rowsPerPageTemplate="5,10,20" styleClass="policy-table"
+                    style="margin-top:20px;">
+
+                    <p:column headerText="Policy No." style="width:120px;">
+                        <h:outputText value="#{policy.policyNo}" />
+                    </p:column>
+                    <p:column headerText="Proposal No." style="width:120px;">
+                        <h:outputText value="#{policy.proposalNo}" />
+                    </p:column>
+                    <p:column headerText="Sale Channel" style="width:120px;">
+                        <h:outputText value="#{policy.saleChannel}" />
+                    </p:column>
+                  
+                    <p:column headerText="Customer" style="width:150px;">
+                        <h:outputText value="#{policy.customer}" />
+                    </p:column>
+                    <p:column headerText="Branch" style="width:120px;">
+                        <h:outputText value="#{policy.branch}" />
+                    </p:column>
+                    <p:column headerText="Total Premium" style="width:120px;">
+                        <h:outputText value="#{policy.totalPremium}">
+                            <f:convertNumber type="currency" currencySymbol="$" />
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Total Sum Insured" style="width:150px;">
+                        <h:outputText value="#{policy.totalSumInsured}">
+                            <f:convertNumber type="currency" currencySymbol="$" />
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Payment Type" style="width:120px;">
+                        <h:outputText value="#{policy.paymentType}" />
+                    </p:column>
+                </p:dataTable>
+
+                <!-- Growl -->
+                <p:growl id="growl" showDetail="true" life="3000" />
+            </h:panelGroup>
+        </h:form>
+    </ui:define>
+</ui:composition>
+

@@ -1,7 +1,11 @@
 package org.ace.accounting.system.fire.persistence;
 
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 
@@ -26,7 +30,7 @@ public class FireProposalDAO extends BasicDAO implements IFireProposalDAO {
     public List<FireProposal> findAll() throws DAOException {
         List<FireProposal> result = null;
         try {
-            Query q = em.createQuery("SELECT f FROM FireProposal f"); // JPQL query
+            Query q = em.createQuery("SELECT f FROM FireProposal f");
             result = q.getResultList();
             em.flush();
             logger.debug("Found {} fire proposals", result.size());
@@ -102,4 +106,57 @@ public class FireProposalDAO extends BasicDAO implements IFireProposalDAO {
             throw translate("Failed to find FireProposal by id: " + id, pe);
         }
     }
+
+    @Transactional(propagation = Propagation.REQUIRED, readOnly = true)
+    public FireProposal findByPolicyNo(String policyNo) throws DAOException {
+        try {
+            StringBuffer hql = new StringBuffer("SELECT f FROM FireProposal f WHERE 1=1");
+            Map<String, Object> paramMap = new HashMap<>();
+            if (policyNo != null && !policyNo.isEmpty()) {
+                hql.append(" AND f.policyNumber = :policyNo");
+                paramMap.put("policyNo", policyNo);
+            }
+            Query query = em.createQuery(hql.toString());
+            for (Map.Entry<String, Object> entry : paramMap.entrySet()) {
+                query.setParameter(entry.getKey(), entry.getValue());
+            }
+            FireProposal result = (FireProposal) query.getSingleResult();
+            logger.debug("Found FireProposal with policy number: {}", policyNo);
+            return result;
+        } catch (NoResultException e) {
+            logger.debug("No FireProposal found with policy number: {}", policyNo);
+            return null;
+        } catch (PersistenceException pe) {
+            logger.error("Failed to find FireProposal by policy number: {}", policyNo, pe);
+            throw translate("Failed to find FireProposal by policy number: " + policyNo, pe);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Transactional(propagation = Propagation.REQUIRED, readOnly = true)
+    public List<FireProposal> findByDateRange(Date startDate, Date endDate) throws DAOException {
+        try {
+            StringBuffer hql = new StringBuffer("SELECT f FROM FireProposal f WHERE 1=1");
+            Map<String, Object> paramMap = new HashMap<>();
+            if (startDate != null) {
+                hql.append(" AND f.policyStartDate >= :startDate");
+                paramMap.put("startDate", startDate);
+            }
+            if (endDate != null) {
+                hql.append(" AND f.policyStartDate <= :endDate");
+                paramMap.put("endDate", endDate);
+            }
+            Query query = em.createQuery(hql.toString());
+            for (Map.Entry<String, Object> entry : paramMap.entrySet()) {
+                query.setParameter(entry.getKey(), entry.getValue());
+            }
+            List<FireProposal> result = query.getResultList();
+            logger.debug("Found {} FireProposals between {} and {}", result.size(), startDate);
+            return result;
+        } catch (PersistenceException pe) {
+            logger.error("Failed to find FireProposals by date range: {} to {}");
+            throw translate("Failed to find FireProposals by date range: " + startDate + " to " + endDate, pe);
+        }
+    }
+   
 }

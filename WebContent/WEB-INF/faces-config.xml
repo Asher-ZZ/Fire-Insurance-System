@@ -148,18 +148,20 @@
    <to-view-id>/ui/system/manageBranch.xhtml</to-view-id>
    <redirect/>
   </navigation-case>
-  <!-- 
-		<navigation-case>
-			<from-outcome>studentEntry</from-outcome>
-			<to-view-id>/ui/system/manageStudent.xhtml</to-view-id>
-			<redirect />
-		</navigation-case>
-		 -->
+  
   <navigation-case>
    <from-outcome>fireProposalEntry</from-outcome>
    <to-view-id>/ui/system/manageFireMigrate.xhtml</to-view-id>
    <redirect/>
   </navigation-case>
+  
+    <navigation-case>
+   <from-outcome>policySearchForm</from-outcome>
+   <to-view-id>/ui/system/manageFirePolicyEnquiryForm.xhtml</to-view-id>
+   <redirect/>
+  </navigation-case>
+  
+  
   <navigation-case>
    <from-outcome>userEntry</from-outcome>
    <to-view-id>/ui/system/manageUser.xhtml</to-view-id>

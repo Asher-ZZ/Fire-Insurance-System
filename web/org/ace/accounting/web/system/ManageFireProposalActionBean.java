@@ -22,6 +22,7 @@ import org.ace.accounting.system.fire.FireProposal;
 import org.ace.accounting.system.fire.service.interfaces.IFireProposalService;
 import org.ace.java.component.SystemException;
 import org.ace.java.web.common.BaseBean;
+import org.primefaces.PrimeFaces;
 import org.primefaces.event.FlowEvent;
 import org.primefaces.event.TabChangeEvent;
 import org.slf4j.Logger;
@@ -130,7 +131,7 @@ public class ManageFireProposalActionBean extends BaseBean {
 		 */
     }
 
-    public void saveAll() {
+    public String saveAll() {
         try {
             // Set fireProposal reference in each building so FK can be persisted
             for (BuildingInfo b : buildings) {
@@ -143,6 +144,13 @@ public class ManageFireProposalActionBean extends BaseBean {
 			 * fireProposal.getPolicyEndDate());
 			 */
 
+            if (fireProposal.getProposalNo() == null || fireProposal.getProposalNo().isEmpty()) {
+                LocalDate now = LocalDate.now();
+                String month = String.format("%02d", now.getMonthValue());
+                int year = now.getYear();
+                fireProposal.setProposalNo("FM/PO/"  + month + "-" + year);
+            }
+            
             if (createNew) {
                 fireProposalService.addNewFireProposal(fireProposal);
                 addInfoMessage(null, MessageId.INSERT_SUCCESS, fireProposal.getCustomer());
@@ -158,12 +166,14 @@ public class ManageFireProposalActionBean extends BaseBean {
             logger.error("Failed to save FireProposal", ex);
             handleSysException(ex);
         }
+        return "/ui/system/home.xhtml?faces-redirect=true";
     }
 
     public String cancel() {
-        createNewFireProposal();
-        return null;
-    }
+        //createNewFireProposal();
+            return "/ui/system/home.xhtml?faces-redirect=true";
+        }
+    
 
     private void calculatePolicyEndDate() {
         if (fireProposal.getPolicyStartDate() == null || fireProposal.getInsurancePeriodDays() == null
@@ -285,9 +295,7 @@ public class ManageFireProposalActionBean extends BaseBean {
         }
     }
 
-    /**
-     * Recalculate all derived premium values for every row and overall total.
-     */
+//    RECALCUATE
     public void recalculatePremiums() {
         if (buildings == null) return;
 
@@ -313,10 +321,8 @@ public class ManageFireProposalActionBean extends BaseBean {
         fireProposal.setTotalSumInsured(totalSumInsured);
     }
 
-    /**
-     * Helper used while the user is typing in the Add new premium fields before
-     * adding (keeps preview consistent).
-     */
+    
+    
     public void tempCalcForNewPremium(AjaxBehaviorEvent evt) {
         PaymentType pt = fireProposal.getPaymentType();
         double divisor = getPaymentDivisor(pt);
@@ -332,10 +338,7 @@ public class ManageFireProposalActionBean extends BaseBean {
                 BigDecimal.valueOf(basicTerm + addonTerm).setScale(2, RoundingMode.HALF_UP).doubleValue());
     }
 
-    /**
-     * Update addPremium to compute terms for the new row before adding, then recalc
-     * totals.
-     */
+   
     public void addPremium() {
         if (buildings.isEmpty()) {
             addErrorMessage(null, "Please add at least one building before adding premium.");
