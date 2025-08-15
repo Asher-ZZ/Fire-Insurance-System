@@ -9,6 +9,7 @@ import java.util.List;
 import javax.persistence.*;
 
 import org.ace.accounting.common.BasicEntity;
+import org.ace.accounting.common.BuildingClassType;
 import org.ace.accounting.common.CurrencyType1;
 import org.ace.accounting.common.PaymentType;
 import org.ace.accounting.common.SaleChannel;
@@ -69,6 +70,9 @@ public class FireProposal implements Serializable, Cloneable {
 	@Temporal(TemporalType.DATE)
 	@Column(name = "SubmittedDate")
 	private Date submittedDate;
+	
+	@Enumerated(EnumType.STRING)	
+	private BuildingClassType buildingClass;
 
 	@Enumerated(EnumType.STRING)
 	@Column(name = "CurrencyType", length = 50)

@@ -154,8 +154,7 @@
 							</p:selectOneMenu> -->
 							<p:outputLabel />
 							<p:message display="text" for="branchId" />
-							<h:outputText styleClass="input-label"
-								value="BRANCH" />
+							<h:outputText styleClass="input-label" value="BRANCH" />
 							<p:panelGrid styleClass="ui-panelgrid-blank"
 								id="branchPanelGroup">
 								<div style="margin-top: -5px; margin-left: -5px;"
@@ -259,6 +258,7 @@
 							columnClasses="ui-grid-col-3,ui-grid-col-9" layout="grid"
 							styleClass="ui-panelgrid-blank ui-fluid">
 							<p:outputLabel />
+							
 							<p:message display="text" for="buildingName" />
 							<h:outputText value="Building Name"
 								styleClass="input-label mandatory" />
@@ -282,14 +282,27 @@
 								<f:selectItem itemLabel="Option 1" itemValue="Option1" />
 								<f:selectItem itemLabel="Option 2" itemValue="Option2" />
 							</p:selectOneMenu>
+
 							<p:outputLabel />
-							<p:message display="text" for="buildingClass" />
-							<h:outputText value="Building Class"
-								styleClass="mandatory input-label" />
-							<p:inputText id="buildingClass"
-								value="#{ManageFireProposalActionBean.buildingInfo.buildingClass}"
-								required="true" requiredMessage="Building Class is required." />
-							<p:outputLabel />
+							<p:panelGrid columns="2"
+							columnClasses="ui-grid-col-3,ui-grid-col-9" layout="grid"
+							styleClass="ui-panelgrid-blank ui-fluid">
+								<p:message for="buildingClass" display="text" />
+								<h:outputText value="Building Class"
+									styleClass="mandatory input-label" />
+								<p:selectOneMenu id="buildingClass"
+									value="#{ManageFireProposalActionBean.buildingClass}"
+									required="true" requiredMessage="Building Class is required.">
+									<f:selectItem itemLabel="Select" itemValue="Select Building Class"
+									 />
+									<f:selectItems
+										value="#{ManageFireProposalActionBean.buildingClassTypes}"
+										var="buildingClass" itemValue="#{buildingClass.label}" itemLabel="#{buildingClass}" />
+								</p:selectOneMenu>							
+								</p:panelGrid>
+							
+
+							<p:outputLabel/>
 							<p:message display="text" for="natureOfBusiness" />
 							<h:outputText value="Nature of Business"
 								styleClass="mandatory input-label" />

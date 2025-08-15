@@ -12,6 +12,7 @@ import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 import javax.faces.event.AjaxBehaviorEvent;
 
+import org.ace.accounting.common.BuildingClassType;
 import org.ace.accounting.common.CurrencyType1;
 import org.ace.accounting.common.PaymentType;
 import org.ace.accounting.common.SaleChannel;
@@ -51,7 +52,22 @@ public class ManageFireProposalActionBean extends BaseBean {
 	private List<FireProposal> fireProposalList;
 	private int periodMin;
 	private int periodMax;
+	
+	 private BuildingClassType buildingClass;
 
+	    public BuildingClassType getBuildingClass() {
+	        return buildingClass;
+	    }
+
+	    public void setBuildingClass(BuildingClassType buildingClass) {
+	        this.buildingClass = buildingClass;
+	    }
+
+	    public BuildingClassType[] getBuildingClassTypes() {
+	        return BuildingClassType.values();
+	    }
+
+	 
 	private String currentStep = "proposalInfo";
 
 	private Date minDate = toDate(LocalDate.of(1990, 1, 1));
