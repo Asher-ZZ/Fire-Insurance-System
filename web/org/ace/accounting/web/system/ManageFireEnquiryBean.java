@@ -137,7 +137,7 @@ public class ManageFireEnquiryBean implements Serializable {
 		return new Policy(proposal.getPolicyNumber(),
 				proposal.getProposalNo() != null ? proposal.getProposalNo() : proposal.getId(),
 				proposal.getSaleChannel() != null ? proposal.getSaleChannel().toString() : "", proposal.getCustomer(),
-				proposal.getBranch() != null ? proposal.getBranch().toString() : "", proposal.getTotalPremiumPeriod(),
+				proposal.getBranch() != null ? proposal.getBranch().getName() : "", proposal.getTotalPremiumPeriod(),
 				proposal.getTotalSumInsured(),
 				proposal.getPaymentType() != null ? proposal.getPaymentType().toString() : "");
 	}
@@ -155,43 +155,90 @@ public class ManageFireEnquiryBean implements Serializable {
 
 	// Policy class to hold data
 	public static class Policy {
-        private String policyNo;
-        private String proposalNo;
-        private String saleChannel;
-        private String customer;
-        private String branch;
-        private double totalPremium;
-        private double totalSumInsured;
-        private String paymentType;
+		private String policyNo;
+		private String proposalNo;
+		private String saleChannel;
+		private String customer;
+		private String branch;
+		private double totalPremium;
+		private double totalSumInsured;
+		private String paymentType;
 
-        public Policy(String policyNo, String proposalNo, String saleChannel, String customer,
-                      String branch, double totalPremium, double totalSumInsured, String paymentType) {
-            this.policyNo = policyNo;
-            this.proposalNo = proposalNo;
-            this.saleChannel = saleChannel;
-            this.customer = customer;
-            this.branch = branch;
-            this.totalPremium = totalPremium;
-            this.totalSumInsured = totalSumInsured;
-            this.paymentType = paymentType;
-        }
+		public Policy(String policyNo, String proposalNo, String saleChannel, String customer, String branch,
+				double totalPremium, double totalSumInsured, String paymentType) {
+			this.policyNo = policyNo;
+			this.proposalNo = proposalNo;
+			this.saleChannel = saleChannel;
+			this.customer = customer;
+			this.branch = branch;
+			this.totalPremium = totalPremium;
+			this.totalSumInsured = totalSumInsured;
+			this.paymentType = paymentType;
+		}
 
-        // Getters and Setters
-        public String getPolicyNo() { return policyNo; }
-        public void setPolicyNo(String policyNo) { this.policyNo = policyNo; }
-        public String getProposalNo() { return proposalNo; }
-        public void setProposalNo(String proposalNo) { this.proposalNo = proposalNo; }
-        public String getSaleChannel() { return saleChannel; }
-        public void setSaleChannel(String saleChannel) { this.saleChannel = saleChannel; }
-        public String getCustomer() { return customer; }
-        public void setCustomer(String customer) { this.customer = customer; }
-        public String getBranch() { return branch; }
-        public void setBranch(String branch) { this.branch = branch; }
-        public double getTotalPremium() { return totalPremium; }
-        public void setTotalPremium(double totalPremium) { this.totalPremium = totalPremium; }
-        public double getTotalSumInsured() { return totalSumInsured; }
-        public void setTotalSumInsured(double totalSumInsured) { this.totalSumInsured = totalSumInsured; }
-        public String getPaymentType() { return paymentType; }
-        public void setPaymentType(String paymentType) { this.paymentType = paymentType; }
-    }
+		// Getters and Setters
+		public String getPolicyNo() {
+			return policyNo;
+		}
+
+		public void setPolicyNo(String policyNo) {
+			this.policyNo = policyNo;
+		}
+
+		public String getProposalNo() {
+			return proposalNo;
+		}
+
+		public void setProposalNo(String proposalNo) {
+			this.proposalNo = proposalNo;
+		}
+
+		public String getSaleChannel() {
+			return saleChannel;
+		}
+
+		public void setSaleChannel(String saleChannel) {
+			this.saleChannel = saleChannel;
+		}
+
+		public String getCustomer() {
+			return customer;
+		}
+
+		public void setCustomer(String customer) {
+			this.customer = customer;
+		}
+
+		public String getBranch() {
+			return branch;
+		}
+
+		public void setBranch(String branch) {
+			this.branch = branch;
+		}
+
+		public double getTotalPremium() {
+			return totalPremium;
+		}
+
+		public void setTotalPremium(double totalPremium) {
+			this.totalPremium = totalPremium;
+		}
+
+		public double getTotalSumInsured() {
+			return totalSumInsured;
+		}
+
+		public void setTotalSumInsured(double totalSumInsured) {
+			this.totalSumInsured = totalSumInsured;
+		}
+
+		public String getPaymentType() {
+			return paymentType;
+		}
+
+		public void setPaymentType(String paymentType) {
+			this.paymentType = paymentType;
+		}
+	}
 }
