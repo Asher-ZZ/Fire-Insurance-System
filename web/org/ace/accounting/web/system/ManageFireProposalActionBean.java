@@ -128,7 +128,6 @@ public class ManageFireProposalActionBean extends BaseBean {
 
     public String saveAll() {
         try {
-            // Set fireProposal reference in each building so FK can be persisted
             for (BuildingInfo b : buildings) {
                 b.setFireProposal(fireProposal);
             }
@@ -137,12 +136,10 @@ public class ManageFireProposalActionBean extends BaseBean {
             logger.debug("Saving FireProposal with policyEndDate: {}", fireProposal.getPolicyEndDate());
 
             if (fireProposal.getProposalNo() == null || fireProposal.getProposalNo().isEmpty()) {
-                LocalDate now = LocalDate.now();
-                String month = String.format("%02d", now.getMonthValue());
-                int year = now.getYear();
-                fireProposal.setProposalNo("FM/PO/"  + month + "-" + year);
+                String generatedNo = fireProposalService.generateProposalNo();
+                fireProposal.setProposalNo(generatedNo);
             }
-            
+
             if (createNew) {
                 fireProposalService.addNewFireProposal(fireProposal);
                 addInfoMessage(null, MessageId.INSERT_SUCCESS, fireProposal.getCustomer());

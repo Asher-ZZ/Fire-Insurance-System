@@ -85,41 +85,50 @@ public class ManageFireEnquiryBean implements Serializable {
 
 	// Search action
 	public void search() {
-		// Clear previous results
-		policies.clear();
+	    // Normalize empty dates to null
+	    if (startDateFrom != null && startDateFrom.toString().trim().isEmpty()) {
+	        startDateFrom = null;
+	    }
+	    if (startDateTo != null && startDateTo.toString().trim().isEmpty()) {
+	        startDateTo = null;
+	    }
 
-		try {
-			// Validate search criteria and query database
-			if (isValidSearchCriteria()) {
-				List<FireProposal> fireProposals;
-				if (policyNo != null && !policyNo.trim().isEmpty()) {
-					FireProposal proposal = fireProposalService.findFireProposalByPolicyNo(policyNo);
-					if (proposal != null) {
-						policies.add(convertToPolicy(proposal));
-					}
-				} else {
-					fireProposals = fireProposalService.findFireProposalsByDateRange(startDateFrom, startDateTo);
-					for (FireProposal proposal : fireProposals) {
-						policies.add(convertToPolicy(proposal));
-					}
-				}
+	    // Clear previous results
+	    policies.clear();
 
-				if (policies.isEmpty()) {
-					FacesContext.getCurrentInstance().addMessage(null,
-							new FacesMessage(FacesMessage.SEVERITY_INFO, "No records found", null));
-				} else {
-					FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO,
-							"Search completed", policies.size() + " records found"));
-				}
-			} else {
-				FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN,
-						"Invalid search criteria", "Please provide valid dates or policy number"));
-			}
-		} catch (SystemException e) {
-			FacesContext.getCurrentInstance().addMessage(null,
-					new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error during search", e.getMessage()));
-		}
+	    try {
+	        if (isValidSearchCriteria()) {
+	            List<FireProposal> fireProposals = new ArrayList<>();
+
+	            if (policyNo != null && !policyNo.trim().isEmpty()) {
+	                FireProposal proposal = fireProposalService.findFireProposalByPolicyNo(policyNo);
+	                if (proposal != null) {
+	                    policies.add(convertToPolicy(proposal));
+	                }
+	            } else {
+	                fireProposals = fireProposalService.findFireProposalsByDateRange(startDateFrom, startDateTo);
+	                for (FireProposal proposal : fireProposals) {
+	                    policies.add(convertToPolicy(proposal));
+	                }
+	            }
+
+	            if (policies.isEmpty()) {
+	                FacesContext.getCurrentInstance().addMessage(null,
+	                        new FacesMessage(FacesMessage.SEVERITY_INFO, "No records found", null));
+	            } else {
+	                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO,
+	                        "Search completed", policies.size() + " records found"));
+	            }
+	        } else {
+	            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN,
+	                    "Invalid search criteria", "Please provide valid dates or policy number"));
+	        }
+	    } catch (SystemException e) {
+	        FacesContext.getCurrentInstance().addMessage(null,
+	                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error during search", e.getMessage()));
+	    }
 	}
+
 
 	// Reset action
 	public void reset() {
@@ -143,15 +152,21 @@ public class ManageFireEnquiryBean implements Serializable {
 	}
 
 	// Validate search criteria
+	// Validate search criteria
 	private boolean isValidSearchCriteria() {
-		if (policyNo != null && !policyNo.trim().isEmpty()) {
-			return true;
-		}
-		if (startDateFrom != null && startDateTo != null) {
-			return startDateFrom.before(startDateTo) || startDateFrom.equals(startDateTo);
-		}
-		return false;
+	    if (policyNo != null && !policyNo.trim().isEmpty()) {
+	        return true;
+	    }
+	    if (startDateFrom != null && startDateTo != null) {
+	        return !startDateFrom.after(startDateTo);
+	    }
+	    if (startDateFrom != null && startDateTo == null) {
+	        // allow searching only with start date
+	        return true;
+	    }
+	    return false;
 	}
+
 
 	// Policy class to hold data
 	public static class Policy {

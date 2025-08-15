@@ -21,5 +21,12 @@ public interface IFireProposalDAO {
     FireProposal findByPolicyNo(String policyNo) throws DAOException;
 
     List<FireProposal> findByDateRange(Date startDate, Date endDate) throws DAOException;
-
+/*    * Used for generating the next sequential proposal number.
+    * @param monthYear the month/year string in format MM-yyyy
+    * @return the last proposal number string, or null if none exists
+    * @throws DAOException if database access fails
+    */
+   String findLastProposalNoByMonthYear(String monthYear) ;
+   
+	/* public String findAndLockLastProposalNoByMonthYear(String monthYear) ; */
 }

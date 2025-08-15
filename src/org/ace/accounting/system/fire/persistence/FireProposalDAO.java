@@ -1,5 +1,6 @@
 package org.ace.accounting.system.fire.persistence;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -8,6 +9,7 @@ import java.util.Map;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 
 import org.ace.accounting.system.fire.BuildingInfo;
 import org.ace.accounting.system.fire.FireProposal;
@@ -136,8 +138,14 @@ public class FireProposalDAO extends BasicDAO implements IFireProposalDAO {
     @Transactional(propagation = Propagation.REQUIRED, readOnly = true)
     public List<FireProposal> findByDateRange(Date startDate, Date endDate) throws DAOException {
         try {
-            StringBuffer hql = new StringBuffer("SELECT f FROM FireProposal f WHERE 1=1");
+            if (startDate == null && endDate == null) {
+                // No policyStartDate criteria provided → return empty list
+                return Collections.emptyList();
+            }
+
+            StringBuilder hql = new StringBuilder("SELECT f FROM FireProposal f WHERE 1=1");
             Map<String, Object> paramMap = new HashMap<>();
+
             if (startDate != null) {
                 hql.append(" AND f.policyStartDate >= :startDate");
                 paramMap.put("startDate", startDate);
@@ -146,17 +154,59 @@ public class FireProposalDAO extends BasicDAO implements IFireProposalDAO {
                 hql.append(" AND f.policyStartDate <= :endDate");
                 paramMap.put("endDate", endDate);
             }
+
             Query query = em.createQuery(hql.toString());
-            for (Map.Entry<String, Object> entry : paramMap.entrySet()) {
-                query.setParameter(entry.getKey(), entry.getValue());
-            }
+            paramMap.forEach(query::setParameter);
+
             List<FireProposal> result = query.getResultList();
-            logger.debug("Found {} FireProposals between {} and {}", result.size(), startDate);
+			/*
+			 * logger.debug("Found {} FireProposals between {} and {}", result.size(),
+			 * startDate, endDate);
+			 */
             return result;
         } catch (PersistenceException pe) {
-            logger.error("Failed to find FireProposals by date range: {} to {}");
+			/*
+			 * logger.error("Failed to find FireProposals by date range: {} to {}",
+			 * startDate, endDate);
+			 */
             throw translate("Failed to find FireProposals by date range: " + startDate + " to " + endDate, pe);
         }
     }
+
+    
+    public String findLastProposalNoByMonthYear(String monthYear) {
+        try {
+            String jpql = "SELECT f.proposalNo FROM FireProposal f " +
+                          "WHERE f.proposalNo LIKE :monthYearPattern";
+            TypedQuery<String> query = em.createQuery(jpql, String.class);
+            query.setParameter("monthYearPattern", "%/" + monthYear);
+            List<String> result = query.getResultList();
+
+            int maxNumber = 0;
+            String prefix = "FM/PO/";
+
+            for (String proposalNo : result) {
+                if (proposalNo.startsWith(prefix)) {
+                    String[] parts = proposalNo.split("/");
+                    if (parts.length == 4) {
+                        try {
+                            int num = Integer.parseInt(parts[2]);
+                            if (num > maxNumber) {
+                                maxNumber = num;
+                            }
+                        } catch (NumberFormatException ignored) {
+                            // skip invalid formats
+                        }
+                    }
+                }
+            }
+
+            return maxNumber == 0 ? null : String.format("%s%06d/%s", prefix, maxNumber, monthYear);
+        } catch (PersistenceException pe) {
+            throw new DAOException("Failed to find last proposal number for " + monthYear, monthYear, pe);
+        }
+    }
+
+
    
 }
