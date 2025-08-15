@@ -2,6 +2,7 @@ package org.ace.accounting.system.fire;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -33,8 +34,6 @@ public class FireProposal implements Serializable, Cloneable {
 
 	@Column(name = "Customer", length = 100)
 	private String customer;
-	
-	private String proposalNo;
 
 	@Column(name = "PropertyInterest", length = 255)
 	private String propertyInterest;
@@ -47,6 +46,9 @@ public class FireProposal implements Serializable, Cloneable {
 
 	@Column(name = "PolicyNumber", length = 50)
 	private String policyNumber;
+
+	@Column(name = "ProposalNo", length = 50)
+	private String proposalNo; // New field for sequential number
 
 	@Temporal(TemporalType.DATE)
 	@Column(name = "PolicyStartDate")
@@ -160,11 +162,25 @@ public class FireProposal implements Serializable, Cloneable {
 	}
 
 	public String getPolicyNumber() {
+		if (policyNumber == null && proposalNo != null && policyStartDate != null) {
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(policyStartDate);
+			int year = cal.get(Calendar.YEAR);
+			return String.format("FM/PO/%s/FM-%d", proposalNo, year);
+		}
 		return policyNumber != null ? policyNumber : "";
 	}
 
 	public void setPolicyNumber(String policyNumber) {
 		this.policyNumber = policyNumber;
+	}
+
+	public String getProposalNo() {
+		return proposalNo != null ? proposalNo : id;
+	}
+
+	public void setProposalNo(String proposalNo) {
+		this.proposalNo = proposalNo;
 	}
 
 	public Date getPolicyStartDate() {
@@ -251,9 +267,7 @@ public class FireProposal implements Serializable, Cloneable {
 	public void setStartDateTo(Date startDateTo) {
 		this.startDateTo = startDateTo;
 	}
-	
 
-	
 	public int getVersion() {
 		return version;
 	}
@@ -316,6 +330,7 @@ public class FireProposal implements Serializable, Cloneable {
 		clone.setPropertyLocation(this.propertyLocation);
 		clone.setTownship(this.township);
 		clone.setPolicyNumber(this.policyNumber);
+		clone.setProposalNo(this.proposalNo);
 		clone.setPolicyStartDate(this.policyStartDate);
 		clone.setSaleChannel(this.saleChannel);
 		clone.setPaymentType(this.paymentType);
@@ -323,29 +338,14 @@ public class FireProposal implements Serializable, Cloneable {
 		clone.setSubmittedDate(this.submittedDate);
 		clone.setCurrencyType(this.currencyType);
 		clone.setInsurancePeriodDays(this.insurancePeriodDays);
-		clone.setBuildingList(new ArrayList<>(this.buildingList)); // Shallow copy, adjust if deep copy needed
+		clone.setBuildingList(new ArrayList<>(this.buildingList));
 		clone.setStartDateFrom(this.startDateFrom);
 		clone.setStartDateTo(this.startDateTo);
 		clone.setVersion(this.version);
 		clone.setPolicyEndDate(this.policyEndDate);
-		/*
-		 * clone.setBasicEntity(this.basicEntity != null ? this.basicEntity.clone() :
-		 * null);
-		 */
 		clone.setInsurancePeriodUnit(this.insurancePeriodUnit);
 		clone.setTotalSumInsured(this.totalSumInsured);
 		clone.setTotalPremiumPeriod(this.totalPremiumPeriod);
 		return clone;
 	}
-
-	public String getProposalNo() {
-		return proposalNo;
-	}
-
-	public void setProposalNo(String proposalNo) {
-		this.proposalNo = proposalNo;
-	}
-
-	
-
 }
