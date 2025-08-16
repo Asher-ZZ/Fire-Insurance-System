@@ -1,5 +1,6 @@
 package org.ace.accounting.system.fire.service;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -83,11 +84,23 @@ public class FireProposalService extends BaseService implements IFireProposalSer
             throw new SystemException(e.getErrorCode(), "Failed to find fire proposals by date range: " + startDate + " to " + endDate, e);
         }
     }
-	/*
-	 * @Transactional(propagation = Propagation.REQUIRED, readOnly = true) public
-	 * FireProposal findById(String id) throws SystemException { try { return
-	 * fireProposalDAO.findById(id); } catch (DAOException e) { throw new
-	 * SystemException(e.getErrorCode(), "Failed to find fire proposal by id: " +
-	 * id, e); } }
-	 */
+    @Override
+    
+    public String generateProposalNo() throws SystemException {
+        LocalDate now = LocalDate.now();
+        String monthYear = String.format("%02d-%d", now.getMonthValue(), now.getYear());
+        String prefix = "FM/PO/";
+
+        String lastProposalNo = fireProposalDAO.findLastProposalNoByMonthYear(monthYear);
+
+        int nextNumber = 1;
+        if (lastProposalNo != null && lastProposalNo.startsWith(prefix)) {
+            String[] parts = lastProposalNo.split("/");
+            if (parts.length == 4) {
+                nextNumber = Integer.parseInt(parts[2]) + 1;
+            }
+        }
+
+        return String.format("%s%06d/%s", prefix, nextNumber, monthYear);
+    }
 }

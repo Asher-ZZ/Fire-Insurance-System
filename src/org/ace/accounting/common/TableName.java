@@ -19,6 +19,8 @@ public class TableName {
 	 * Branch Table Name
 	 */
 	public static final String BRANCH = "BRANCH";
+	
+	public static final String FIREPROPOSAL = "FIREPROPOSAL";
 
 	public static final String FIREPOLICY = "FIREPOLICY";
 

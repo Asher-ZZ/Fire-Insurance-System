@@ -2,21 +2,22 @@ package org.ace.accounting.system.fire;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
 import javax.persistence.*;
 
 import org.ace.accounting.common.BasicEntity;
-import org.ace.accounting.common.Branch;
 import org.ace.accounting.common.CurrencyType1;
 import org.ace.accounting.common.PaymentType;
 import org.ace.accounting.common.SaleChannel;
 import org.ace.accounting.common.TableName;
+import org.ace.accounting.system.branch.Branch;
 import org.ace.java.component.idgen.service.IDInterceptor;
 
 @Entity
-@Table(name = TableName.FIREPOLICY)
+@Table(name = TableName.FIREPROPOSAL)
 @TableGenerator(name = "FIREPROPOSAL_GEN", table = "ID_GEN", pkColumnName = "GEN_NAME", valueColumnName = "GEN_VAL", pkColumnValue = "FIREPROPOSAL_GEN", allocationSize = 10)
 @EntityListeners(IDInterceptor.class)
 public class FireProposal implements Serializable, Cloneable {
@@ -33,8 +34,6 @@ public class FireProposal implements Serializable, Cloneable {
 
 	@Column(name = "Customer", length = 100)
 	private String customer;
-	
-	private String proposalNo;
 
 	@Column(name = "PropertyInterest", length = 255)
 	private String propertyInterest;
@@ -48,6 +47,9 @@ public class FireProposal implements Serializable, Cloneable {
 	@Column(name = "PolicyNumber", length = 50)
 	private String policyNumber;
 
+	@Column(name = "ProposalNo", length = 50)
+	private String proposalNo; // New field for sequential number
+
 	@Temporal(TemporalType.DATE)
 	@Column(name = "PolicyStartDate")
 	private Date policyStartDate;
@@ -60,8 +62,8 @@ public class FireProposal implements Serializable, Cloneable {
 	@Column(name = "PaymentType", length = 100)
 	private PaymentType paymentType;
 
-	@Enumerated(EnumType.STRING)
-	@Column(name = "Branch", length = 100)
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "BRANCHID", referencedColumnName = "ID")
 	private Branch branch;
 
 	@Temporal(TemporalType.DATE)
@@ -160,11 +162,25 @@ public class FireProposal implements Serializable, Cloneable {
 	}
 
 	public String getPolicyNumber() {
+		if (policyNumber == null && proposalNo != null && policyStartDate != null) {
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(policyStartDate);
+			int year = cal.get(Calendar.YEAR);
+			return String.format("FM/PO/%s/FM-%d", proposalNo, year);
+		}
 		return policyNumber != null ? policyNumber : "";
 	}
 
 	public void setPolicyNumber(String policyNumber) {
 		this.policyNumber = policyNumber;
+	}
+
+	public String getProposalNo() {
+		return proposalNo != null ? proposalNo : id;
+	}
+
+	public void setProposalNo(String proposalNo) {
+		this.proposalNo = proposalNo;
 	}
 
 	public Date getPolicyStartDate() {
@@ -251,9 +267,7 @@ public class FireProposal implements Serializable, Cloneable {
 	public void setStartDateTo(Date startDateTo) {
 		this.startDateTo = startDateTo;
 	}
-	
 
-	
 	public int getVersion() {
 		return version;
 	}
@@ -316,6 +330,7 @@ public class FireProposal implements Serializable, Cloneable {
 		clone.setPropertyLocation(this.propertyLocation);
 		clone.setTownship(this.township);
 		clone.setPolicyNumber(this.policyNumber);
+		clone.setProposalNo(this.proposalNo);
 		clone.setPolicyStartDate(this.policyStartDate);
 		clone.setSaleChannel(this.saleChannel);
 		clone.setPaymentType(this.paymentType);
@@ -323,29 +338,14 @@ public class FireProposal implements Serializable, Cloneable {
 		clone.setSubmittedDate(this.submittedDate);
 		clone.setCurrencyType(this.currencyType);
 		clone.setInsurancePeriodDays(this.insurancePeriodDays);
-		clone.setBuildingList(new ArrayList<>(this.buildingList)); // Shallow copy, adjust if deep copy needed
+		clone.setBuildingList(new ArrayList<>(this.buildingList));
 		clone.setStartDateFrom(this.startDateFrom);
 		clone.setStartDateTo(this.startDateTo);
 		clone.setVersion(this.version);
 		clone.setPolicyEndDate(this.policyEndDate);
-		/*
-		 * clone.setBasicEntity(this.basicEntity != null ? this.basicEntity.clone() :
-		 * null);
-		 */
 		clone.setInsurancePeriodUnit(this.insurancePeriodUnit);
 		clone.setTotalSumInsured(this.totalSumInsured);
 		clone.setTotalPremiumPeriod(this.totalPremiumPeriod);
 		return clone;
 	}
-
-	public String getProposalNo() {
-		return proposalNo;
-	}
-
-	public void setProposalNo(String proposalNo) {
-		this.proposalNo = proposalNo;
-	}
-
-	
-
 }
