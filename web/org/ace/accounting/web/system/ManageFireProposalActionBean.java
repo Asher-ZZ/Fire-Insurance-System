@@ -56,6 +56,7 @@ public class ManageFireProposalActionBean extends BaseBean {
 
 	private Date minDate = toDate(LocalDate.of(1990, 1, 1));
 	private Date maxDate = toDate(LocalDate.now(ZoneId.of("Australia/Sydney")));
+	private Double totalSumInsured;
 
 	private Date toDate(LocalDate localDate) {
 		return Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
@@ -309,8 +310,8 @@ public class ManageFireProposalActionBean extends BaseBean {
 			totalSumInsured += (b.getSumInsured() != null) ? b.getSumInsured() : 0.0;
 		}
 
-		fireProposal.setTotalPremiumPeriod(round(grandTotal));
-		fireProposal.setTotalSumInsured(totalSumInsured);
+		buildingInfo.setTotalPremiumPeriod(round(grandTotal));
+		buildingInfo.setTotalSumInsured(totalSumInsured);
 	}
 
 	/**
@@ -470,5 +471,12 @@ public class ManageFireProposalActionBean extends BaseBean {
 
 	public void setBuildingInfo(BuildingInfo buildingInfo) {
 		this.buildingInfo = buildingInfo;
+	}
+	public Double getTotalSumInsured() {
+		return getTotalSumInsured();
+	}
+
+	public void setTotalSumInsured(Double totalSumInsured) {
+		this.totalSumInsured = totalSumInsured;
 	}
 }

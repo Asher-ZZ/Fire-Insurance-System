@@ -449,7 +449,7 @@
 								<f:convertNumber minFractionDigits="2" />
 								<p:ajax event="blur"
 									listener="#{ManageFireProposalActionBean.recalculatePremiums}"
-									update="@form :fireProposalEntry:totalPremiumOutput" />
+									update="@form" />
 							</p:inputText>
 						</p:column>
 
@@ -467,7 +467,7 @@
 								<f:convertNumber minFractionDigits="2" />
 								<p:ajax event="blur"
 									listener="#{ManageFireProposalActionBean.recalculatePremiums}"
-									update="@form :fireProposalEntry:totalPremiumOutput" />
+									update="@form" />
 							</p:inputText>
 						</p:column>
 
@@ -494,7 +494,7 @@
 					</p:dataTable>
 
 					<!-- Total Premium Summary -->
-					<p:panelGrid columns="2" styleClass="ui-fluid"
+			<!-- 		<p:panelGrid columns="2" styleClass="ui-fluid"
 						style="margin-top: 10px;">
 						<h:outputText value="Total Premium (Period): "
 							styleClass="input-label" />
@@ -502,7 +502,7 @@
 							value="#{ManageFireProposalActionBean.fireProposal.totalPremiumPeriod}">
 							<f:convertNumber minFractionDigits="2" />
 						</h:outputText>
-					</p:panelGrid>
+					</p:panelGrid> -->
 
 					<!-- Buttons -->
 					<p:panelGrid columns="2" styleClass="ui-fluid"
