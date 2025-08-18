@@ -19,10 +19,6 @@ import org.ace.accounting.common.validation.MessageId;
 import org.ace.accounting.system.branch.Branch;
 import org.ace.accounting.system.fire.BuildingInfo;
 import org.ace.accounting.system.fire.FireProposal;
-import org.ace.accounting.system.fire.enumTypes.BuildingClass;
-import org.ace.accounting.system.fire.enumTypes.FloorType;
-import org.ace.accounting.system.fire.enumTypes.RoofingType;
-import org.ace.accounting.system.fire.enumTypes.WallType;
 import org.ace.accounting.system.fire.service.interfaces.IFireProposalService;
 import org.ace.java.component.SystemException;
 import org.ace.java.web.common.BaseBean;
@@ -61,6 +57,7 @@ public class ManageFireProposalActionBean extends BaseBean {
 	private Date minDate = toDate(LocalDate.of(1990, 1, 1));
 	private Date maxDate = toDate(LocalDate.now(ZoneId.of("Australia/Sydney")));
 
+	/* private Double totalSumInsured; */
 	private Date toDate(LocalDate localDate) {
 		return Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
 	}
@@ -90,8 +87,6 @@ public class ManageFireProposalActionBean extends BaseBean {
 			logger.warn("FireProposalService is null, initialized empty fire proposal list");
 		}
 	}
-	
-	
 
 	public String onFlowProcess(FlowEvent event) {
         String oldStep = event.getOldStep(); // current step
@@ -99,16 +94,7 @@ public class ManageFireProposalActionBean extends BaseBean {
 
         // Only block if going forward from buildingInfo to premiumInfo
         if ("buildingInfo".equals(oldStep) && "premiumInfo".equals(newStep)) {
-            if (buildingInfo == null || !buildingInfo.isValid()) {
-                addErrorMessage(null, "Please fill in all mandatory building info fields before proceeding.");
-                return oldStep; // prevent moving forward
-            }
             
-
-            validateDates();
-            if (hasErrors()) {
-                return oldStep; // prevent moving forward if errors exist
-            }
         }
 
         if ("premiumInfo".equals(newStep)) {
@@ -119,20 +105,20 @@ public class ManageFireProposalActionBean extends BaseBean {
         currentStep = newStep;
         return currentStep;
     }
-	
-	private void validateDates() {
-		Date submittedDate = fireProposal.getSubmittedDate();
-		Date policyStartDate = fireProposal.getPolicyStartDate();
-		if (submittedDate != null && (submittedDate.before(minDate) || submittedDate.after(maxDate))) {
-			addErrorMessage(null, "Submitted date must be between " + minDate + " and " + maxDate);
-			return;
-		}
-		if (policyStartDate != null && (policyStartDate.before(minDate) || policyStartDate.after(maxDate))) {
-			addErrorMessage(null, "Policy start date must be between " + minDate + " and " + maxDate);
-			return;
-		}
-		logger.debug("Validated dates: SubmittedDate={}, PolicyStartDate={}", submittedDate, policyStartDate);
-	}
+
+	/*
+	 * private void validateDates() { Date submittedDate =
+	 * fireProposal.getSubmittedDate(); Date policyStartDate =
+	 * fireProposal.getPolicyStartDate(); if (submittedDate != null &&
+	 * (submittedDate.before(minDate) || submittedDate.after(maxDate))) {
+	 * addErrorMessage(null, "Submitted date must be between " + minDate + " and " +
+	 * maxDate); return; } if (policyStartDate != null &&
+	 * (policyStartDate.before(minDate) || policyStartDate.after(maxDate))) {
+	 * addErrorMessage(null, "Policy start date must be between " + minDate +
+	 * " and " + maxDate); return; }
+	 * logger.debug("Validated dates: SubmittedDate={}, PolicyStartDate={}",
+	 * submittedDate, policyStartDate); }
+	 */
 
 	public String saveAll() {
 		try {
@@ -168,9 +154,8 @@ public class ManageFireProposalActionBean extends BaseBean {
 	}
 
 	public String cancel() {
-		createNewFireProposal();
-		return null;
-		
+		// createNewFireProposal();
+		return "/ui/system/home.xhtml?faces-redirect=true";
 	}
 
 	private void calculatePolicyEndDate() {
@@ -229,14 +214,13 @@ public class ManageFireProposalActionBean extends BaseBean {
 	}
 
 	public void addBuilding() {
-	    if (!buildingInfo.isValid()) {
-	        addErrorMessage("Please fill all required fields");
-	        return;
-	    }
-	    
-	    buildings.add(buildingInfo.clone());
-	    buildingInfo = new BuildingInfo();
-	    addErrorMessage("Building added successfully");
+		if (buildingInfo != null && buildingInfo.isValid()) {
+			BuildingInfo cloned = buildingInfo.clone();
+			buildings.add(cloned);
+			buildingInfo = new BuildingInfo(); // reset input
+		} else {
+			addErrorMessage(null, "Please fill building details before adding.");
+		}
 	}
 
 	// Return available payment types based on current insurance period
@@ -256,7 +240,8 @@ public class ManageFireProposalActionBean extends BaseBean {
 			return new PaymentType[] { PaymentType.LUMPSUM, PaymentType.SEMI_ANNUAL, PaymentType.QUARTER,
 					PaymentType.MONTHLY };
 		} else {
-			 
+			// only lumpsum
+			// ensure selected payment type is valid
 			if (fireProposal.getPaymentType() != PaymentType.LUMPSUM) {
 				fireProposal.setPaymentType(PaymentType.LUMPSUM);
 			}
@@ -303,7 +288,7 @@ public class ManageFireProposalActionBean extends BaseBean {
 		PaymentType pt = fireProposal.getPaymentType();
 		double divisor = getPaymentDivisor(pt);
 		double grandTotal = 0.0;
-		double totalSumInsured = 0.0;
+		/* double totalSumInsured = 0.0; */
 
 		for (BuildingInfo b : buildings) {
 			double basicPeriod = (b.getBasicPremiumPeriod() != null) ? b.getBasicPremiumPeriod() : 0.0;
@@ -315,11 +300,11 @@ public class ManageFireProposalActionBean extends BaseBean {
 			b.setAddOnPremiumTerm(round(addonTerm));
 			b.setTotalPremiumPeriod(round(basicTerm + addonTerm));
 			grandTotal += b.getTotalPremiumPeriod();
-			totalSumInsured += (b.getSumInsured() != null) ? b.getSumInsured() : 0.0;
+			/* totalSumInsured += (b.getSumInsured() != null) ? b.getSumInsured() : 0.0; */
 		}
 
-		fireProposal.setTotalPremiumPeriod(round(grandTotal));
-		fireProposal.setTotalSumInsured(totalSumInsured);
+		buildingInfo.setTotalPremiumPeriod(round(grandTotal));
+		/* buildingInfo.setTotalSumInsured(totalSumInsured); */
 	}
 
 	/**
@@ -456,20 +441,7 @@ public class ManageFireProposalActionBean extends BaseBean {
 	public SaleChannel[] getSaleChannels() {
 		return SaleChannel.values();
 	}
-	
-	 public WallType[] getWallTypes() {
-	        return WallType.values();
-	    }
-	 
-	 public RoofingType[] getRoofingTypes() {
-		    return RoofingType.values();
-		}
-	 public BuildingClass[] getBuildingClasses() {
-		    return BuildingClass.values();
-		}
-	 public FloorType[] getFloorTypes() {
-		    return FloorType.values();
-		}
+
 	public CurrencyType1[] getCurrencyTypes() {
 		return CurrencyType1.values();
 	}
@@ -493,4 +465,12 @@ public class ManageFireProposalActionBean extends BaseBean {
 	public void setBuildingInfo(BuildingInfo buildingInfo) {
 		this.buildingInfo = buildingInfo;
 	}
+
+	/*
+	 * public Double getTotalSumInsured() { return getTotalSumInsured(); }
+	 */
+	/*
+	 * public void setTotalSumInsured(Double totalSumInsured) { this.totalSumInsured
+	 * = totalSumInsured; }
+	 */
 }
