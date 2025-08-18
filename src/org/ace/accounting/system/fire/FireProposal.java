@@ -74,6 +74,7 @@ public class FireProposal implements Serializable, Cloneable {
 	@Enumerated(EnumType.STRING)	
 	private BuildingClassType buildingClass;
 
+	
 	@Enumerated(EnumType.STRING)
 	@Column(name = "CurrencyType", length = 50)
 	private CurrencyType1 currencyType;
@@ -123,6 +124,14 @@ public class FireProposal implements Serializable, Cloneable {
 
 	public void setId(String id) {
 		this.id = id;
+	}
+
+	public BuildingClassType getBuildingClass() {
+		return buildingClass;
+	}
+
+	public void setBuildingClass(BuildingClassType buildingClass) {
+		this.buildingClass = buildingClass;
 	}
 
 	public String getCustomerType() {

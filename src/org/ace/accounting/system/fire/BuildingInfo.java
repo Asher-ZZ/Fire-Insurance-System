@@ -4,6 +4,9 @@ import java.io.Serializable;
 
 import javax.persistence.*;
 
+import org.ace.accounting.common.FloorType;
+import org.ace.accounting.common.RoofingType;
+import org.ace.accounting.common.WallType;
 import org.ace.java.component.idgen.service.IDInterceptor;
 
 @Entity
@@ -21,15 +24,6 @@ public class BuildingInfo implements Serializable, Cloneable {
 
 	@Column(name = "BuildingName", length = 100)
 	private String buildingName;
-
-	@Column(name = "Floor", length = 50)
-	private String floor;
-
-	@Column(name = "Wall", length = 50)
-	private String wall;
-
-	@Column(name = "Roofing", length = 50)
-	private String roofing;
 
 	@Column(name = "BuildingClass", length = 100)
 	private String buildingClass;
@@ -106,6 +100,45 @@ public class BuildingInfo implements Serializable, Cloneable {
 	@ManyToOne
 	@JoinColumn(name = "FIREPROPOSALID")
 	private FireProposal fireProposal;
+	
+	
+
+
+@Enumerated(EnumType.STRING)
+  @Column(name = "Floor", length = 50)
+  private FloorType floor;
+
+  @Enumerated(EnumType.STRING)
+    @Column(name = "Wall", length = 50)
+    private WallType wall;
+
+  public FloorType getFloor() {
+	return floor;
+}
+
+public WallType getWall() {
+	return wall;
+}
+
+public RoofingType getRoofing() {
+	return roofing;
+}
+
+@Enumerated(EnumType.STRING)
+  @Column(name = "Roofing", length = 50)
+  private RoofingType roofing;
+
+	public void setFloor(FloorType floor) {
+	this.floor = floor;
+}
+
+public void setWall(WallType wall) {
+	this.wall = wall;
+}
+
+public void setRoofing(RoofingType roofing) {
+	this.roofing = roofing;
+}
 
 	// Default constructor
 	public BuildingInfo() {
@@ -128,30 +161,7 @@ public class BuildingInfo implements Serializable, Cloneable {
 		this.buildingName = buildingName;
 	}
 
-	public String getFloor() {
-		return floor != null ? floor : "";
-	}
-
-	public void setFloor(String floor) {
-		this.floor = floor;
-	}
-
-	public String getWall() {
-		return wall != null ? wall : "";
-	}
-
-	public void setWall(String wall) {
-		this.wall = wall;
-	}
-
-	public String getRoofing() {
-		return roofing != null ? roofing : "";
-	}
-
-	public void setRoofing(String roofing) {
-		this.roofing = roofing;
-	}
-
+	
 	public String getBuildingClass() {
 		return buildingClass != null ? buildingClass : "";
 	}
