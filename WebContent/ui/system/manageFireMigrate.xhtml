@@ -141,17 +141,6 @@
 									update="paymentType" process="@this" />
 							</p:selectOneMenu>
 
-							<!-- <p:outputLabel />
-							<p:message for="branch" display="text" />
-							<h:outputText value="Branch" styleClass="mandatory input-label" />
-							<p:selectOneMenu id="branch"
-								value="#{ManageFireProposalActionBean.fireProposal.branch}"
-								required="true" requiredMessage="Branch is required.">
-								<f:selectItem itemLabel="Select Branch" itemValue=""
-									noSelectionOption="true" />
-								<f:selectItems value="#{ManageFireProposalActionBean.branches}"
-									var="branch" itemLabel="#{branch}" itemValue="#{branch}" />
-							</p:selectOneMenu> -->
 							<p:outputLabel />
 							<p:message display="text" for="branchId" />
 							<h:outputText styleClass="input-label" value="BRANCH" />
@@ -264,7 +253,8 @@
 							<p:inputText id="buildingName"
 								value="#{ManageFireProposalActionBean.buildingInfo.buildingName}"
 								required="true" requiredMessage="Building Name is required." />
-								
+							
+							
 							<h:outputText value="Floor" styleClass="input-label" />
 							<p:selectOneMenu id="floor"
 								value="#{ManageFireProposalActionBean.buildingInfo.floor}"
@@ -276,7 +266,7 @@
 									itemLabel="#{type}" itemValue="#{type}" />
 							</p:selectOneMenu>
 							
-							<p:outputLabel />
+							
 							<h:outputText value="Wall" styleClass="input-label" />
 							<p:selectOneMenu id="wall"
 								value="#{ManageFireProposalActionBean.buildingInfo.wall}"
@@ -297,6 +287,7 @@
 									value="#{ManageFireProposalActionBean.roofingTypes}" var="type"
 									itemLabel="#{type}" itemValue="#{type}" />
 							</p:selectOneMenu>
+							
 							<p:outputLabel />
 							<p:message display="text" for="buildingClass" />
 							<h:outputText value="Building Class"
@@ -310,6 +301,7 @@
 									value="#{ManageFireProposalActionBean.buildingClasses}"
 									var="cls" itemLabel="#{cls}" itemValue="#{cls}" />
 							</p:selectOneMenu>
+							
 							<p:outputLabel />
 							<p:message display="text" for="natureOfBusiness" />
 							<h:outputText value="Nature of Business"
@@ -435,8 +427,11 @@
 						</p:column>
 					</p:dataTable>
 
-					<p:commandButton value="Cancel" action="cancel"
-						style="margin-right: 5px;" />
+					<p:commandButton value="Cancel"
+    action="#{ManageFireProposalActionBean.cancel()}"
+    process="@this"
+    update="@form"
+    style="margin-right: 5px;" />
 				</p:tab>
 
 				<!-- Premium Info Tab -->

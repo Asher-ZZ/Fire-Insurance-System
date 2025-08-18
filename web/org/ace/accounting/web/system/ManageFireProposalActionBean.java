@@ -165,8 +165,9 @@ public class ManageFireProposalActionBean extends BaseBean {
 	}
 
 	public String cancel() {
-		// createNewFireProposal();
-		return "/ui/system/home.xhtml?faces-redirect=true";
+		createNewFireProposal();
+		return null;
+		
 	}
 
 	private void calculatePolicyEndDate() {
