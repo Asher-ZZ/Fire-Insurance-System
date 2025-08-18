@@ -233,7 +233,6 @@ public class ManageFireProposalActionBean extends BaseBean {
 	        addErrorMessage("Please fill all required fields");
 	        return;
 	    }
-	    
 	    buildings.add(buildingInfo.clone());
 	    buildingInfo = new BuildingInfo();
 	    addErrorMessage("Building added successfully");
