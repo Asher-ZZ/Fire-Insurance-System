@@ -154,8 +154,7 @@
 							</p:selectOneMenu> -->
 							<p:outputLabel />
 							<p:message display="text" for="branchId" />
-							<h:outputText styleClass="input-label"
-								value="BRANCH" />
+							<h:outputText styleClass="input-label" value="BRANCH" />
 							<p:panelGrid styleClass="ui-panelgrid-blank"
 								id="branchPanelGroup">
 								<div style="margin-top: -5px; margin-left: -5px;"
@@ -211,9 +210,9 @@
 									value="#{ManageFireProposalActionBean.fireProposal.insurancePeriodDays}"
 									required="true" requiredMessage="Insurance period is required."
 									styleClass="spinner-input">
-									<!-- <f:validateLongRange
+									<f:validateLongRange
 										minimum="#{ManageFireProposalActionBean.periodMin}"
-										maximum="#{ManageFireProposalActionBean.periodMax}" /> -->
+										maximum="#{ManageFireProposalActionBean.periodMax}" />
 									<p:ajax event="change"
 										listener="#{ManageFireProposalActionBean.updatePeriodRange}"
 										update="paymentType" process="@this" />
@@ -252,6 +251,11 @@
 
 				<!-- Building Info Tab -->
 				<p:tab id="buildingInfo" title="Building Info">
+				
+				 <h:form id="buildingForm"> <!-- wrap everything in a form -->
+
+        <!-- Global messages -->
+        <p:messages id="messages" showDetail="true" autoUpdate="true" />
 					<p:panelGrid columns="2"
 						columnClasses="ui-grid-col-6,ui-grid-col-6" layout="grid"
 						styleClass="ui-panelgrid-blank ui-fluid">
@@ -262,9 +266,12 @@
 							<p:message display="text" for="buildingName" />
 							<h:outputText value="Building Name"
 								styleClass="input-label mandatory" />
-							<p:inputText id="buildingName"
-								value="#{ManageFireProposalActionBean.buildingInfo.buildingName}"
-								required="true" requiredMessage="Building Name is required." />
+						<p:inputText id="buildingName" 
+    value="#{ManageFireProposalActionBean.buildingInfo.buildingName}" 
+    required="true"
+    requiredMessage="Building name is required." />
+  
+
 							<h:outputText value="Floor" styleClass="input-label" />
 							<p:inputText id="floor"
 								value="#{ManageFireProposalActionBean.buildingInfo.floor}" />
@@ -383,9 +390,9 @@
 					</h:panelGrid>
 
 					<!-- Add Button and Data Table -->
-					<p:commandButton value="Add"
+		<p:commandButton value="Add"
 						action="#{ManageFireProposalActionBean.addBuilding}"
-						update="buildingTable" process="@form" icon="pi pi-plus"
+						  process="buildingForm" update="buildingForm messages" icon="pi pi-plus"
 						style="margin-right: 5px;" onstart="this.disabled=true;"
 						oncomplete="this.disabled=false;" />
 
@@ -416,6 +423,7 @@
 
 					<p:commandButton value="Cancel" action="cancel"
 						style="margin-right: 5px;" />
+						   </h:form>
 				</p:tab>
 
 				<!-- Premium Info Tab -->
@@ -494,7 +502,7 @@
 					</p:dataTable>
 
 					<!-- Total Premium Summary -->
-			<!-- 		<p:panelGrid columns="2" styleClass="ui-fluid"
+					<!-- 		<p:panelGrid columns="2" styleClass="ui-fluid"
 						style="margin-top: 10px;">
 						<h:outputText value="Total Premium (Period): "
 							styleClass="input-label" />
