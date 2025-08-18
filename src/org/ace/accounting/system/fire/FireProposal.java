@@ -55,6 +55,7 @@ public class FireProposal implements Serializable, Cloneable {
 	private Date policyStartDate;
 
 	@Enumerated(EnumType.STRING)
+	@Column(name = "SaleChannel", length = 100)
 	private SaleChannel saleChannel;
 
 	@Enumerated(EnumType.STRING)
