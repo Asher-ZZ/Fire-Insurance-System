@@ -55,24 +55,21 @@ public class ManageFireProposalActionBean extends BaseBean {
 	private List<FireProposal> fireProposalList;
 	private int periodMin;
 	private int periodMax;
-	
-	
-	
-	 private BuildingClassType buildingClass;
 
-	    public BuildingClassType getBuildingClass() {
-	        return buildingClass;
-	    }
+	private BuildingClassType buildingClass;
 
-	    public void setBuildingClass(BuildingClassType buildingClass) {
-	        this.buildingClass = buildingClass;
-	    }
+	public BuildingClassType getBuildingClass() {
+		return buildingClass;
+	}
 
-	    public BuildingClassType[] getBuildingClassTypes() {
-	        return BuildingClassType.values();
-	    }
+	public void setBuildingClass(BuildingClassType buildingClass) {
+		this.buildingClass = buildingClass;
+	}
 
-	 
+	public BuildingClassType[] getBuildingClassTypes() {
+		return BuildingClassType.values();
+	}
+
 	private String currentStep = "proposalInfo";
 
 	private Date minDate = toDate(LocalDate.of(1990, 1, 1));
@@ -163,25 +160,29 @@ public class ManageFireProposalActionBean extends BaseBean {
 
 			if (createNew) {
 				fireProposalService.addNewFireProposal(fireProposal);
-				addInfoMessage(null, MessageId.INSERT_SUCCESS, fireProposal.getCustomer());
+				FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO,
+						"Success", "Fire Proposal added successfully for " + fireProposal.getCustomer()));
 			} else {
 				fireProposalService.updateFireProposal(fireProposal);
-				addInfoMessage(null, MessageId.UPDATE_SUCCESS, fireProposal.getCustomer());
+				FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO,
+						"Success", "Fire Proposal updated successfully for " + fireProposal.getCustomer()));
 			}
 
 			createNewFireProposal();
 			loadFireProposals();
 
+			return "/ui/system/home.xhtml?faces-redirect=true";
+
 		} catch (SystemException ex) {
 			logger.error("Failed to save FireProposal", ex);
+			FacesContext.getCurrentInstance().addMessage(null,
+					new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Failed to save Fire Proposal"));
 			handleSysException(ex);
+			return null; // Stay on same page if error occurs
 		}
-		return "/ui/system/home.xhtml?faces-redirect=true";
-
 	}
 
 	public String cancel() {
-		// createNewFireProposal();
 		return "/ui/system/home.xhtml?faces-redirect=true";
 	}
 
@@ -241,20 +242,14 @@ public class ManageFireProposalActionBean extends BaseBean {
 	}
 
 	public void addBuilding() {
-	    if (buildingInfo != null && buildingInfo.isValid()) {
-	        BuildingInfo cloned = buildingInfo.clone();
-	        buildings.add(cloned);
-	        buildingInfo = new BuildingInfo(); // reset input
-	    } else {
-	        FacesContext.getCurrentInstance().addMessage(
-	            null,
-	            new FacesMessage(
-	                FacesMessage.SEVERITY_ERROR,
-	                "Validation Error",
-	                "Please fill building details before adding."
-	            )
-	        );
-	    }
+		if (buildingInfo != null && buildingInfo.isValid()) {
+			BuildingInfo cloned = buildingInfo.clone();
+			buildings.add(cloned);
+			buildingInfo = new BuildingInfo(); // reset input
+		} else {
+			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
+					"Validation Error", "Please fill building details before adding."));
+		}
 	}
 
 	// Return available payment types based on current insurance period
@@ -483,18 +478,18 @@ public class ManageFireProposalActionBean extends BaseBean {
 	public PaymentType[] getPaymentTypes() {
 		return PaymentType.values();
 	}
-	
-	 public WallType[] getWallTypes() {
-	          return WallType.values();
-	      }
-	   
-	   public RoofingType[] getRoofingTypes() {
-	        return RoofingType.values();
-	    }
-	 
-	   public FloorType[] getFloorTypes() {
-	        return FloorType.values();
-	    }
+
+	public WallType[] getWallTypes() {
+		return WallType.values();
+	}
+
+	public RoofingType[] getRoofingTypes() {
+		return RoofingType.values();
+	}
+
+	public FloorType[] getFloorTypes() {
+		return FloorType.values();
+	}
 
 	public void setFireProposalService(IFireProposalService fireProposalService) {
 		this.fireProposalService = fireProposalService;
@@ -511,10 +506,11 @@ public class ManageFireProposalActionBean extends BaseBean {
 	public void setBuildingInfo(BuildingInfo buildingInfo) {
 		this.buildingInfo = buildingInfo;
 	}
+
 	public void calculateSquareFeet(AjaxBehaviorEvent event) {
-	    double length = buildingInfo.getLength() != null ? buildingInfo.getLength() : 0.0;
-	    double width = buildingInfo.getWidth() != null ? buildingInfo.getWidth() : 0.0;
-	    buildingInfo.setSquareFeet(length * width);
+		double length = buildingInfo.getLength() != null ? buildingInfo.getLength() : 0.0;
+		double width = buildingInfo.getWidth() != null ? buildingInfo.getWidth() : 0.0;
+		buildingInfo.setSquareFeet(length * width);
 	}
 
 }

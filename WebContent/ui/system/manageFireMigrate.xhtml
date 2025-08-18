@@ -193,8 +193,8 @@
 							<p:selectOneMenu id="currency"
 								value="#{ManageFireProposalActionBean.fireProposal.currencyType}"
 								required="true" requiredMessage="Currency type is required.">
-								<f:selectItem itemLabel="---Select Currency Type---" itemValue=""
-									noSelectionOption="true" />
+								<f:selectItem itemLabel="---Select Currency Type---"
+									itemValue="" noSelectionOption="true" />
 								<f:selectItems
 									value="#{ManageFireProposalActionBean.currencyTypes}"
 									var="currency" itemLabel="#{currency}" itemValue="#{currency}" />
@@ -244,9 +244,30 @@
 						</p:panelGrid>
 					</p:panelGrid>
 
+
 					<p:commandButton value="Cancel"
-						action="#{ManageFireProposalActionBean.cancel}" immediate="true"
-						style="margin-right: 5px;" />
+						onclick="PF('cancelConfirmDlg').show(); return false;"
+						style="margin-right: 5px;" styleClass="red-button" />
+
+					<p:confirmDialog widgetVar="cancelConfirmDlg" header="Confirmation"
+						message="Are you sure you want to cancel?" appendTo="@(body)"
+						closable="true" closeOnEscape="true" showEffect="fade"
+						style="width: 350px">
+
+						<p:commandButton value="Yes"
+							action="#{ManageFireProposalActionBean.cancel}" process="@this"
+							update="@form"
+							oncomplete="if(!args.validationFailed) {PF('cancelConfirmDlg').hide();}"
+							icon="pi pi-check" styleClass="ui-button-danger" />
+						<!-- Red color for destructive action -->
+
+						<p:commandButton value="No"
+							onclick="PF('cancelConfirmDlg').hide()" type="button"
+							icon="pi pi-times" styleClass="ui-button-secondary" />
+						<!-- Gray color for secondary action -->
+					</p:confirmDialog>
+
+
 				</p:tab>
 				<p:tab id="buildingInfo" title="Building Info">
 
@@ -317,8 +338,8 @@
 							<p:selectOneMenu id="buildingClass"
 								value="#{ManageFireProposalActionBean.buildingInfo.buildingClass}"
 								required="true" requiredMessage="Building Class is required.">
-								<f:selectItem itemLabel="---Select Building Class---" itemValue="#{null}"
-									noSelectionOption="true" />
+								<f:selectItem itemLabel="---Select Building Class---"
+									itemValue="#{null}" noSelectionOption="true" />
 								<f:selectItems
 									value="#{ManageFireProposalActionBean.buildingClassTypes}"
 									var="buildingClass" itemValue="#{buildingClass}"
@@ -487,9 +508,23 @@
 					</p:dataTable>
 
 					<p:commandButton value="Cancel"
-						action="#{ManageFireProposalActionBean.cancel}" immediate="true"
+						onclick="PF('cancelConfirmDlg').show(); return false;"
 						style="margin-right: 5px;" />
 
+					<p:confirmDialog widgetVar="cancelConfirmDlg" header="Confirmation"
+						message="Are you sure you want to cancel?" appendTo="@(body)"
+						closable="true" closeOnEscape="true">
+
+						<p:commandButton value="Yes"
+							action="#{ManageFireProposalActionBean.cancel}" process="@this"
+							update="@form"
+							oncomplete="if(!args.validationFailed) {PF('cancelConfirmDlg').hide();}"
+							icon="pi pi-check" />
+
+						<p:commandButton value="No"
+							onclick="PF('cancelConfirmDlg').hide()" type="button"
+							icon="pi pi-times" />
+					</p:confirmDialog>
 				</p:tab>
 
 				<!-- Premium Info Tab -->
@@ -573,17 +608,52 @@
 						</h:outputText>
 					</p:panelGrid>
 
-					<!-- Buttons -->
-					<p:panelGrid columns="2" styleClass="ui-fluid"
-						style="margin-top: 10px;">
-						<p:commandButton value="Cancel"
-							action="#{ManageFireProposalActionBean.cancel}" immediate="true"
-							style="margin-right: 5px;" />
-						<p:commandButton value="Policy Submit"
-							action="#{ManageFireProposalActionBean.saveAll}"
-							update=":fireProposalEntry" process="@form"
+					<p:commandButton value="Cancel"
+						onclick="PF('cancelConfirmDlg').show(); return false;"
+						style="margin-right: 5px;" />
+
+					<p:confirmDialog widgetVar="cancelConfirmDlg" header="Confirmation"
+						message="Are you sure you want to cancel?" appendTo="@(body)"
+						closable="true" closeOnEscape="true">
+
+						<p:commandButton value="Yes"
+							action="#{ManageFireProposalActionBean.cancel}" process="@this"
+							update="@form"
+							oncomplete="if(!args.validationFailed) {PF('cancelConfirmDlg').hide();}"
+							icon="pi pi-check" />
+
+						<p:commandButton value="No"
+							onclick="PF('cancelConfirmDlg').hide()" type="button"
+							icon="pi pi-times" />
+					</p:confirmDialog>
+
+
+					<p:growl id="messages" showDetail="true" sticky="false" life="5000" />
+
+
+					<!-- Submit Confirmation Dialog -->
+					<p:commandButton value="Policy Submit"
+						onclick="PF('submitConfirmDlg').show(); return false;"
+						styleClass="green-button" />
+
+					<p:confirmDialog widgetVar="submitConfirmDlg"
+						header="Confirm Submit"
+						message="Are you sure you want to submit this policy?"
+						appendTo="@(body)">
+
+						<p:commandButton value="Yes"
+							action="#{ManageFireProposalActionBean.saveAll}" process="@form"
+							update=":fireProposalEntry:msgs"
+							oncomplete="if (!args.validationFailed) PF('submitConfirmDlg').hide();"
 							styleClass="green-button" />
-					</p:panelGrid>
+
+						<p:commandButton value="No"
+							onclick="PF('submitConfirmDlg').hide()" type="button" />
+					</p:confirmDialog>
+
+					<p:growl id="msgs" autoUpdate="true" sticky="true" />
+
+
 				</p:tab>
 			</p:wizard>
 		</h:form>
