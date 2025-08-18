@@ -19,6 +19,10 @@ import org.ace.accounting.common.validation.MessageId;
 import org.ace.accounting.system.branch.Branch;
 import org.ace.accounting.system.fire.BuildingInfo;
 import org.ace.accounting.system.fire.FireProposal;
+import org.ace.accounting.system.fire.enumTypes.BuildingClass;
+import org.ace.accounting.system.fire.enumTypes.FloorType;
+import org.ace.accounting.system.fire.enumTypes.RoofingType;
+import org.ace.accounting.system.fire.enumTypes.WallType;
 import org.ace.accounting.system.fire.service.interfaces.IFireProposalService;
 import org.ace.java.component.SystemException;
 import org.ace.java.web.common.BaseBean;
@@ -448,7 +452,20 @@ public class ManageFireProposalActionBean extends BaseBean {
 	public SaleChannel[] getSaleChannels() {
 		return SaleChannel.values();
 	}
-
+	
+	 public WallType[] getWallTypes() {
+	        return WallType.values();
+	    }
+	 
+	 public RoofingType[] getRoofingTypes() {
+		    return RoofingType.values();
+		}
+	 public BuildingClass[] getBuildingClasses() {
+		    return BuildingClass.values();
+		}
+	 public FloorType[] getFloorTypes() {
+		    return FloorType.values();
+		}
 	public CurrencyType1[] getCurrencyTypes() {
 		return CurrencyType1.values();
 	}

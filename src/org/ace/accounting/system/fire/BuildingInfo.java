@@ -4,6 +4,10 @@ import java.io.Serializable;
 
 import javax.persistence.*;
 
+import org.ace.accounting.system.fire.enumTypes.BuildingClass;
+import org.ace.accounting.system.fire.enumTypes.FloorType;
+import org.ace.accounting.system.fire.enumTypes.RoofingType;
+import org.ace.accounting.system.fire.enumTypes.WallType;
 import org.ace.java.component.idgen.service.IDInterceptor;
 
 @Entity
@@ -22,17 +26,21 @@ public class BuildingInfo implements Serializable, Cloneable {
 	@Column(name = "BuildingName", length = 100)
 	private String buildingName;
 
+	@Enumerated(EnumType.STRING)
 	@Column(name = "Floor", length = 50)
-	private String floor;
+	private FloorType floor;
 
-	@Column(name = "Wall", length = 50)
-	private String wall;
+	@Enumerated(EnumType.STRING)
+    @Column(name = "Wall", length = 50)
+    private WallType wall;
 
+	@Enumerated(EnumType.STRING)
 	@Column(name = "Roofing", length = 50)
-	private String roofing;
+	private RoofingType roofing;
 
-	@Column(name = "BuildingClass", length = 100)
-	private String buildingClass;
+	@Enumerated(EnumType.STRING)
+	@Column(name = "BuildingClass", length = 50)
+	private BuildingClass buildingClass;
 
 	@Column(name = "NatureOfBusiness", length = 255)
 	private String natureOfBusiness;
@@ -128,36 +136,37 @@ public class BuildingInfo implements Serializable, Cloneable {
 		this.buildingName = buildingName;
 	}
 
-	public String getFloor() {
-		return floor != null ? floor : "";
+	public FloorType getFloor() {
+	    return floor;
 	}
 
-	public void setFloor(String floor) {
-		this.floor = floor;
+	public void setFloor(FloorType floor) {
+	    this.floor = floor;
 	}
 
-	public String getWall() {
-		return wall != null ? wall : "";
+	public WallType getWall() {
+        return wall;
+    }
+
+    public void setWall(WallType wall) {
+        this.wall = wall;
+    }
+	
+
+    public RoofingType getRoofing() {
+        return roofing;
+    }
+
+    public void setRoofing(RoofingType roofing) {
+        this.roofing = roofing;
+    }
+
+	public BuildingClass getBuildingClass() {
+	    return buildingClass;
 	}
 
-	public void setWall(String wall) {
-		this.wall = wall;
-	}
-
-	public String getRoofing() {
-		return roofing != null ? roofing : "";
-	}
-
-	public void setRoofing(String roofing) {
-		this.roofing = roofing;
-	}
-
-	public String getBuildingClass() {
-		return buildingClass != null ? buildingClass : "";
-	}
-
-	public void setBuildingClass(String buildingClass) {
-		this.buildingClass = buildingClass;
+	public void setBuildingClass(BuildingClass buildingClass) {
+	    this.buildingClass = buildingClass;
 	}
 
 	public String getNatureOfBusiness() {
@@ -391,7 +400,7 @@ public class BuildingInfo implements Serializable, Cloneable {
 	// Handle relationship if needed
 	public boolean isValid() {
 		return buildingName != null && !buildingName.trim().isEmpty() && buildingClass != null
-				&& !buildingClass.trim().isEmpty() && natureOfBusiness != null && !natureOfBusiness.trim().isEmpty()
+				&& natureOfBusiness != null && !natureOfBusiness.trim().isEmpty()
 				&& sumInsured != null && sumInsured > 0 && squareFeet != null && squareFeet > 0;
 	}
 }

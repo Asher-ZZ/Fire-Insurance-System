@@ -1,10 +1,10 @@
 package org.ace.accounting.common;
 
 public enum SaleChannel {
+    AGENT,
+    BANK,
     ONLINE,
-    WHOLESALE,
-    PARTNER,
-    DIRECT,
-    AGENT; // Added to match the default in FireProposal
+    DIRECT;
+     // Added to match the default in FireProposal
     // Add more as needed
 }
