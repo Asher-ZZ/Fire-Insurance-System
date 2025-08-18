@@ -39,8 +39,8 @@
 </style>
 		</h:head>
 		<h:form id="fireProposalEntry">
-			<p:growl escape="false" globalOnly="true" life="5000"
-				showDetail="true" />
+		<!-- 	<p:growl escape="false" globalOnly="true" life="5000"
+				showDetail="true" /> -->
 			<h:outputText value="Add New Fire Proposal" styleClass="title" />
 			<p:wizard
 				flowListener="#{ManageFireProposalActionBean.onFlowProcess}">
@@ -255,7 +255,7 @@
 				 <h:form id="buildingForm"> <!-- wrap everything in a form -->
 
         <!-- Global messages -->
-        <p:messages id="messages" showDetail="true" autoUpdate="true" />
+     <!--    <p:messages id="message1" showDetail="true" autoUpdate="true" /> -->
 					<p:panelGrid columns="2"
 						columnClasses="ui-grid-col-6,ui-grid-col-6" layout="grid"
 						styleClass="ui-panelgrid-blank ui-fluid">
@@ -392,7 +392,7 @@
 					<!-- Add Button and Data Table -->
 		<p:commandButton value="Add"
 						action="#{ManageFireProposalActionBean.addBuilding}"
-						  process="buildingForm" update="buildingForm messages" icon="pi pi-plus"
+						  process="buildingForm" update="buildingForm" icon="pi pi-plus"
 						style="margin-right: 5px;" onstart="this.disabled=true;"
 						oncomplete="this.disabled=false;" />
 
@@ -493,12 +493,12 @@
 							</h:outputText>
 						</p:column>
 
-						<p:column headerText="Action"
+					<!-- 	<p:column headerText="Action"
 							style="text-align:center; width:80px;">
 							<p:commandButton value="Remove"
 								action="#{ManageFireProposalActionBean.removeBuilding(building)}"
 								update="@form" process="@this" icon="pi pi-trash" />
-						</p:column>
+						</p:column> -->
 					</p:dataTable>
 
 					<!-- Total Premium Summary -->
