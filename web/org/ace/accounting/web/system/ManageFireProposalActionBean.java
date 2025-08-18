@@ -241,13 +241,20 @@ public class ManageFireProposalActionBean extends BaseBean {
 	}
 
 	public void addBuilding() {
-		if (buildingInfo != null && buildingInfo.isValid()) {
-			BuildingInfo cloned = buildingInfo.clone();
-			buildings.add(cloned);
-			buildingInfo = new BuildingInfo(); // reset input
-		} else {
-			addErrorMessage(null, "Please fill building details before adding.");
-		}
+	    if (buildingInfo != null && buildingInfo.isValid()) {
+	        BuildingInfo cloned = buildingInfo.clone();
+	        buildings.add(cloned);
+	        buildingInfo = new BuildingInfo(); // reset input
+	    } else {
+	        FacesContext.getCurrentInstance().addMessage(
+	            null,
+	            new FacesMessage(
+	                FacesMessage.SEVERITY_ERROR,
+	                "Validation Error",
+	                "Please fill building details before adding."
+	            )
+	        );
+	    }
 	}
 
 	// Return available payment types based on current insurance period

@@ -117,7 +117,7 @@
 							<p:selectOneMenu id="saleChannel"
 								value="#{ManageFireProposalActionBean.fireProposal.saleChannel}"
 								required="true" requiredMessage="Sale channel is required.">
-								<f:selectItem itemLabel="Select Sale Channel" itemValue=""
+								<f:selectItem itemLabel="---Select Sale Channel---" itemValue=""
 									noSelectionOption="true" />
 								<f:selectItems
 									value="#{ManageFireProposalActionBean.saleChannels}"
@@ -131,7 +131,7 @@
 							<p:selectOneMenu id="paymentType"
 								value="#{ManageFireProposalActionBean.fireProposal.paymentType}"
 								required="true" requiredMessage="Please select a payment type">
-								<f:selectItem itemLabel="Select Payment Type" itemValue=""
+								<f:selectItem itemLabel="---Select Payment Type---" itemValue=""
 									noSelectionOption="true" />
 								<f:selectItems
 									value="#{ManageFireProposalActionBean.availablePaymentTypes}"
@@ -193,7 +193,7 @@
 							<p:selectOneMenu id="currency"
 								value="#{ManageFireProposalActionBean.fireProposal.currencyType}"
 								required="true" requiredMessage="Currency type is required.">
-								<f:selectItem itemLabel="Select Currency Type" itemValue=""
+								<f:selectItem itemLabel="---Select Currency Type---" itemValue=""
 									noSelectionOption="true" />
 								<f:selectItems
 									value="#{ManageFireProposalActionBean.currencyTypes}"
@@ -275,7 +275,7 @@
 							<p:selectOneMenu id="floor"
 								value="#{ManageFireProposalActionBean.buildingInfo.floor}"
 								required="true" requiredMessage="Floor type is required.">
-								<f:selectItem itemLabel="Select Floor Type" itemValue=""
+								<f:selectItem itemLabel="---Select Floor Type---" itemValue=""
 									noSelectionOption="true" />
 								<f:selectItems
 									value="#{ManageFireProposalActionBean.floorTypes}" var="type"
@@ -289,7 +289,7 @@
 							<p:selectOneMenu id="wall"
 								value="#{ManageFireProposalActionBean.buildingInfo.wall}"
 								required="true" requiredMessage="Wall Type is required.">
-								<f:selectItem itemLabel="Select Wall Type" itemValue=""
+								<f:selectItem itemLabel="---Select Wall Type---" itemValue=""
 									noSelectionOption="true" />
 								<f:selectItems value="#{ManageFireProposalActionBean.wallTypes}"
 									var="w" itemLabel="#{w}" itemValue="#{w}" />
@@ -302,7 +302,7 @@
 							<p:selectOneMenu id="roofing"
 								value="#{ManageFireProposalActionBean.buildingInfo.roofing}"
 								required="true" requiredMessage="Roofing type is required.">
-								<f:selectItem itemLabel="Select Roofing Type" itemValue=""
+								<f:selectItem itemLabel="---Select Roofing Type---" itemValue=""
 									noSelectionOption="true" />
 								<f:selectItems
 									value="#{ManageFireProposalActionBean.roofingTypes}" var="type"
@@ -317,7 +317,7 @@
 							<p:selectOneMenu id="buildingClass"
 								value="#{ManageFireProposalActionBean.buildingInfo.buildingClass}"
 								required="true" requiredMessage="Building Class is required.">
-								<f:selectItem itemLabel="Select" itemValue="#{null}"
+								<f:selectItem itemLabel="---Select Building Class---" itemValue="#{null}"
 									noSelectionOption="true" />
 								<f:selectItems
 									value="#{ManageFireProposalActionBean.buildingClassTypes}"
