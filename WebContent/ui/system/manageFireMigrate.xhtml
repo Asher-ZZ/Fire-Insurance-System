@@ -101,9 +101,9 @@
 							<p:message for="policyNo" display="text" />
 							<h:outputText value="Policy No."
 								styleClass="input-label mandatory" />
-							<p:inputText id="policyNo"
-								value="#{ManageFireProposalActionBean.fireProposal.policyNumber}"
-								required="true" requiredMessage="Policy No. is required." />
+							<p:inputText id="policyNo" value="#{ManageFireProposalActionBean.fireProposal.policyNumber}"
+                         required="true" requiredMessage="Policy Number is required"
+                         validator="#{ManageFireProposalActionBean.validatePolicyNumber}" />
 						</p:panelGrid>
 
 						<!-- Right Section -->
@@ -397,10 +397,11 @@
 
 					<!-- Add Button and Data Table -->
 					<p:commandButton value="Add"
-						action="#{ManageFireProposalActionBean.addBuilding}"
-						update="buildingTable" process="@form" icon="pi pi-plus"
-						style="margin-right: 5px;" onstart="this.disabled=true;"
-						oncomplete="this.disabled=false;" />
+    actionListener="#{ManageFireProposalActionBean.addBuilding}"
+    update="buildingTable buildingName buildingClass natureOfBusiness mainCover sumInsured squareFeet"
+    process="@form"
+    icon="pi pi-plus"
+    style="margin-right: 5px;" />
 
 					<p:dataTable id="buildingTable"
 						value="#{ManageFireProposalActionBean.buildings}" var="building"

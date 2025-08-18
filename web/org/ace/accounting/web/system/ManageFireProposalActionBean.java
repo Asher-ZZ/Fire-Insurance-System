@@ -90,6 +90,8 @@ public class ManageFireProposalActionBean extends BaseBean {
 			logger.warn("FireProposalService is null, initialized empty fire proposal list");
 		}
 	}
+	
+	
 
 	public String onFlowProcess(FlowEvent event) {
         String oldStep = event.getOldStep(); // current step
@@ -101,6 +103,7 @@ public class ManageFireProposalActionBean extends BaseBean {
                 addErrorMessage(null, "Please fill in all mandatory building info fields before proceeding.");
                 return oldStep; // prevent moving forward
             }
+            
 
             validateDates();
             if (hasErrors()) {
@@ -226,13 +229,14 @@ public class ManageFireProposalActionBean extends BaseBean {
 	}
 
 	public void addBuilding() {
-		if (buildingInfo != null && buildingInfo.isValid()) {
-			BuildingInfo cloned = buildingInfo.clone();
-			buildings.add(cloned);
-			buildingInfo = new BuildingInfo(); // reset input
-		} else {
-			addErrorMessage(null, "Please fill building details before adding.");
-		}
+	    if (!buildingInfo.isValid()) {
+	        addErrorMessage("Please fill all required fields");
+	        return;
+	    }
+	    
+	    buildings.add(buildingInfo.clone());
+	    buildingInfo = new BuildingInfo();
+	    addErrorMessage("Building added successfully");
 	}
 
 	// Return available payment types based on current insurance period
@@ -252,8 +256,7 @@ public class ManageFireProposalActionBean extends BaseBean {
 			return new PaymentType[] { PaymentType.LUMPSUM, PaymentType.SEMI_ANNUAL, PaymentType.QUARTER,
 					PaymentType.MONTHLY };
 		} else {
-			// only lumpsum
-			// ensure selected payment type is valid
+			 
 			if (fireProposal.getPaymentType() != PaymentType.LUMPSUM) {
 				fireProposal.setPaymentType(PaymentType.LUMPSUM);
 			}

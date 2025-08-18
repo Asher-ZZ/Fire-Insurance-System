@@ -194,7 +194,7 @@ public class BuildingInfo implements Serializable, Cloneable {
 	}
 
 	public Double getSumInsured() {
-		return sumInsured != null ? sumInsured : 0.0;
+		return sumInsured != null ? sumInsured : 0;
 	}
 
 	public void setSumInsured(Double sumInsured) {
@@ -202,7 +202,7 @@ public class BuildingInfo implements Serializable, Cloneable {
 	}
 
 	public Double getLength() {
-		return length != null ? length : 0.0;
+		return length != null ? length : 0;
 	}
 
 	public void setLength(Double length) {
@@ -210,7 +210,7 @@ public class BuildingInfo implements Serializable, Cloneable {
 	}
 
 	public Double getWidth() {
-		return width != null ? width : 0.0;
+		return width != null ? width : 0;
 	}
 
 	public void setWidth(Double width) {
@@ -218,7 +218,7 @@ public class BuildingInfo implements Serializable, Cloneable {
 	}
 
 	public Double getHeight() {
-		return height != null ? height : 0.0;
+		return height != null ? height : 0;
 	}
 
 	public void setHeight(Double height) {
@@ -226,7 +226,7 @@ public class BuildingInfo implements Serializable, Cloneable {
 	}
 
 	public Double getSquareFeet() {
-		return squareFeet != null ? squareFeet : 0.0;
+		return squareFeet != null ? squareFeet : 0;
 	}
 
 	public void setSquareFeet(Double squareFeet) {

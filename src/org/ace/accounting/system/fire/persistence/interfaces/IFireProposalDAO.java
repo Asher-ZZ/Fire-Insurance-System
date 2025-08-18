@@ -23,5 +23,7 @@ public interface IFireProposalDAO {
     List<FireProposal> findByDateRange(Date startDate, Date endDate) throws DAOException;
     
     String findLastProposalNoByMonthYear(String monthYear) throws DAOException;
+    
+    
 
 }
