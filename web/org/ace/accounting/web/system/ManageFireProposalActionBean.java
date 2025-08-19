@@ -281,9 +281,7 @@ public class ManageFireProposalActionBean extends BaseBean {
 		}
 	}
 
-	/**
-	 * Recalculate all derived premium values for every row and overall total.
-	 */
+
 	public void recalculatePremiums() {
 	    if (buildings == null)
 	        return;
@@ -308,7 +306,7 @@ public class ManageFireProposalActionBean extends BaseBean {
 	        totalSumInsured += (b.getSumInsured() != null) ? b.getSumInsured() : 0.0;
 	    }
 
-	    // update FireProposal fields for UI
+	 
 	    fireProposal.setTotalPremiumPeriod(round(grandTotal));
 	    fireProposal.setTotalSumInsured(totalSumInsured);
 	}

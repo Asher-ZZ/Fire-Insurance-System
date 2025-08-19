@@ -270,7 +270,7 @@
 
 				</p:tab>
 				<p:tab id="buildingInfo" title="Building Info">
-
+<h:form id="buildingForm">
 					<p:panelGrid columns="2"
 						columnClasses="ui-grid-col-6,ui-grid-col-6" layout="grid"
 						styleClass="ui-panelgrid-blank ui-fluid">
@@ -474,11 +474,11 @@
 					</h:panelGrid>
 
 					<!-- Action Buttons -->
-					<p:commandButton value="Add"
-						action="#{ManageFireProposalActionBean.addBuilding}"
-						update="buildingTable" process="@form" icon="pi pi-plus"
-						style="margin-right: 5px;" onstart="this.disabled=true;"
-						oncomplete="this.disabled=false;" />
+				<p:commandButton value="Add"
+							action="#{ManageFireProposalActionBean.addBuilding}"
+							process="buildingForm" update="buildingForm" icon="pi pi-plus"
+							style="margin-right: 5px;" onstart="this.disabled=true;"
+							oncomplete="this.disabled=false;" />
 
 					<!-- Data Table -->
 					<p:dataTable id="buildingTable"
@@ -525,6 +525,7 @@
 							onclick="PF('cancelConfirmDlg').hide()" type="button"
 							icon="pi pi-times" />
 					</p:confirmDialog>
+						</h:form>
 				</p:tab>
 
 				<!-- Premium Info Tab -->
