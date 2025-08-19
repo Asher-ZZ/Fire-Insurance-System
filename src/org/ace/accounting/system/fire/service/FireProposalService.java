@@ -104,6 +104,10 @@ public class FireProposalService extends BaseService implements IFireProposalSer
         return String.format("%s%06d/%s", prefix, nextNumber, monthYear);
     }
     
+    @Override
+    public boolean existsByPolicyNumber(String policyNumber) {
+        return fireProposalDAO.existsByPolicyNumber(policyNumber);
+    }
 
 
 }

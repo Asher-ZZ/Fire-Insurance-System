@@ -98,12 +98,15 @@
 								required="true" requiredMessage="Township is required." />
 
 							<p:outputLabel />
-							<p:message for="policyNo" display="text" />
+							<p:message id="policyNoMessage" for="policyNo" display="text" />
 							<h:outputText value="Policy No."
 								styleClass="input-label mandatory" />
 							<p:inputText id="policyNo"
 								value="#{ManageFireProposalActionBean.fireProposal.policyNumber}"
-								required="true" requiredMessage="Policy No. is required." />
+								required="true" requiredMessage="Policy No. is required."
+								validator="#{ManageFireProposalActionBean.validatePolicyNo}">
+								<p:ajax event="blur" update="policyNoMessage" />
+							</p:inputText>
 						</p:panelGrid>
 
 						<!-- Right Section -->
@@ -348,10 +351,19 @@
 								</p:inputText>
 								<h:outputText value="Length (ft)" styleClass="input-label" />
 								<p:inputText id="length"
-									value="#{ManageFireProposalActionBean.buildingInfo.length}" />
+									value="#{ManageFireProposalActionBean.buildingInfo.length}" >
+									<p:ajax event="keyup"
+                        listener="#{ManageFireProposalActionBean.calculateSquareFeet}"
+                        update="squareFeet" process="@this length" />
+                        </p:inputText>
+                        
 								<h:outputText value="Width (ft)" styleClass="input-label" />
 								<p:inputText id="width"
-									value="#{ManageFireProposalActionBean.buildingInfo.width}" />
+									value="#{ManageFireProposalActionBean.buildingInfo.width}" >
+									<p:ajax event="keyup"
+                        listener="#{ManageFireProposalActionBean.calculateSquareFeet}"
+                        update="squareFeet" process="@this width" />
+                        </p:inputText>
 								<h:outputText value="Height (ft)" styleClass="input-label" />
 								<p:inputText id="height"
 									value="#{ManageFireProposalActionBean.buildingInfo.height}" />
@@ -361,7 +373,7 @@
 									styleClass="mandatory input-label" />
 								<p:inputText id="squareFeet"
 									value="#{ManageFireProposalActionBean.buildingInfo.squareFeet}"
-									required="true" requiredMessage="Square Feet is required" />
+									required="true" readonly="true" requiredMessage="Square Feet is required" />
 							</p:panelGrid>
 						</p:panelGrid>
 						<!-- Additional Cover -->

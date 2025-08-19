@@ -10,7 +10,9 @@ import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
+import javax.faces.component.UIComponent;
 import javax.faces.event.AjaxBehaviorEvent;
+import javax.faces.validator.ValidatorException;
 
 import org.ace.accounting.common.CurrencyType1;
 import org.ace.accounting.common.PaymentType;
@@ -123,6 +125,22 @@ public class ManageFireProposalActionBean extends BaseBean {
 	 * logger.debug("Validated dates: SubmittedDate={}, PolicyStartDate={}",
 	 * submittedDate, policyStartDate); }
 	 */
+	
+	public void validatePolicyNo(FacesContext context, UIComponent component, Object value) {
+        String policyNo = (String) value;
+        if (policyNo != null && fireProposalService.existsByPolicyNumber(policyNo)) {
+            FacesMessage msg = new FacesMessage("Policy No. already exists.");
+            msg.setSeverity(FacesMessage.SEVERITY_ERROR);
+            throw new ValidatorException(msg);
+        }
+    }
+	
+	public void calculateSquareFeet(AjaxBehaviorEvent event) {
+        double length = buildingInfo.getLength() != null ? buildingInfo.getLength() : 0.0;
+        double width = buildingInfo.getWidth() != null ? buildingInfo.getWidth() : 0.0;
+        buildingInfo.setSquareFeet(length * width); // Calculate area as length × width
+    }
+	
 
 	public String saveAll() {
 		try {
