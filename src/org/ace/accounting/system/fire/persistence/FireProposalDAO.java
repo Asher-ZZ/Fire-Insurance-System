@@ -133,32 +133,30 @@ public class FireProposalDAO extends BasicDAO implements IFireProposalDAO {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    @Transactional(propagation = Propagation.REQUIRED, readOnly = true)
     public List<FireProposal> findByDateRange(Date startDate, Date endDate) throws DAOException {
-        try {
-            StringBuffer hql = new StringBuffer("SELECT f FROM FireProposal f WHERE 1=1");
-            Map<String, Object> paramMap = new HashMap<>();
-            if (startDate != null) {
-                hql.append(" AND f.policyStartDate >= :startDate");
-                paramMap.put("startDate", startDate);
-            }
-            if (endDate != null) {
-                hql.append(" AND f.policyStartDate <= :endDate");
-                paramMap.put("endDate", endDate);
-            }
-            Query query = em.createQuery(hql.toString());
-            for (Map.Entry<String, Object> entry : paramMap.entrySet()) {
-                query.setParameter(entry.getKey(), entry.getValue());
-            }
-            List<FireProposal> result = query.getResultList();
-            logger.debug("Found {} FireProposals between {} and {}", result.size(), startDate);
-            return result;
-        } catch (PersistenceException pe) {
-            logger.error("Failed to find FireProposals by date range: {} to {}");
-            throw translate("Failed to find FireProposals by date range: " + startDate + " to " + endDate, pe);
+        StringBuffer hql = new StringBuffer("SELECT f FROM FireProposal f WHERE 1=1");
+        Map<String, Object> paramMap = new HashMap<>();
+
+        if (startDate != null) {
+            hql.append(" AND f.policyStartDate >= :startDate");
+            paramMap.put("startDate", startDate);
         }
+        if (endDate != null) {
+            hql.append(" AND f.policyStartDate <= :endDate");
+            paramMap.put("endDate", endDate);
+        }
+
+        Query query = em.createQuery(hql.toString());
+        for (Map.Entry<String, Object> entry : paramMap.entrySet()) {
+            query.setParameter(entry.getKey(), entry.getValue());
+        }
+
+        return query.getResultList();
     }
+
+    
+    
+
     public String findLastProposalNoByMonthYear(String monthYear) {
         try {
             String jpql = "SELECT f.proposalNo FROM FireProposal f " +
