@@ -404,4 +404,9 @@ public void setRoofing(RoofingType roofing) {
 				&& !buildingClass.trim().isEmpty() && natureOfBusiness != null && !natureOfBusiness.trim().isEmpty()
 				&& sumInsured != null && sumInsured > 0 && squareFeet != null && squareFeet > 0;
 	}
+
+	public void setTotalSumInsured(double totalSumInsured) {
+		// TODO Auto-generated method stub
+		
+	}
 }
