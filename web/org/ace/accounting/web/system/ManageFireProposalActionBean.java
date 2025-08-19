@@ -12,9 +12,13 @@ import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 import javax.faces.event.AjaxBehaviorEvent;
 
+import org.ace.accounting.common.BuildingClass;
 import org.ace.accounting.common.CurrencyType1;
+import org.ace.accounting.common.FloorType;
 import org.ace.accounting.common.PaymentType;
+import org.ace.accounting.common.RoofingType;
 import org.ace.accounting.common.SaleChannel;
+import org.ace.accounting.common.WallType;
 import org.ace.accounting.common.validation.MessageId;
 import org.ace.accounting.system.branch.Branch;
 import org.ace.accounting.system.fire.BuildingInfo;
@@ -450,6 +454,20 @@ public class ManageFireProposalActionBean extends BaseBean {
 		return PaymentType.values();
 	}
 
+	 public WallType[] getWallTypes() {
+	          return WallType.values();
+	      }
+	   
+	   public RoofingType[] getRoofingTypes() {
+	        return RoofingType.values();
+	    }
+	   public BuildingClass[] getBuildingClasses() {
+	        return BuildingClass.values();
+	    }
+	   public FloorType[] getFloorTypes() {
+	        return FloorType.values();
+	    }
+
 	public void setFireProposalService(IFireProposalService fireProposalService) {
 		this.fireProposalService = fireProposalService;
 	}
@@ -473,4 +491,11 @@ public class ManageFireProposalActionBean extends BaseBean {
 	 * public void setTotalSumInsured(Double totalSumInsured) { this.totalSumInsured
 	 * = totalSumInsured; }
 	 */
+	public void calculateSquareFeet(AjaxBehaviorEvent event) {
+        double length = buildingInfo.getLength() != null ? buildingInfo.getLength() : 0.0;
+        double width = buildingInfo.getWidth() != null ? buildingInfo.getWidth() : 0.0;
+        buildingInfo.setSquareFeet(length * width); // Calculate area as length × width
+    }
+	
+	
 }

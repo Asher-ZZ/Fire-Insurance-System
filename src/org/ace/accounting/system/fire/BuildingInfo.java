@@ -1,9 +1,11 @@
 package org.ace.accounting.system.fire;
 
 import java.io.Serializable;
+import java.util.List;
 
 import javax.persistence.*;
 
+import org.ace.accounting.common.BuildingClass;
 import org.ace.accounting.common.FloorType;
 import org.ace.accounting.common.RoofingType;
 import org.ace.accounting.common.WallType;
@@ -25,8 +27,9 @@ public class BuildingInfo implements Serializable, Cloneable {
 	@Column(name = "BuildingName", length = 100)
 	private String buildingName;
 
-	@Column(name = "BuildingClass", length = 100)
-	private String buildingClass;
+	@Enumerated(EnumType.STRING)
+	@Column(name = "BuildingClass", length = 50)
+	private BuildingClass buildingClass;
 
 	@Column(name = "NatureOfBusiness", length = 255)
 	private String natureOfBusiness;
@@ -100,45 +103,42 @@ public class BuildingInfo implements Serializable, Cloneable {
 	@ManyToOne
 	@JoinColumn(name = "FIREPROPOSALID")
 	private FireProposal fireProposal;
-	
-	
 
+	@Enumerated(EnumType.STRING)
+	@Column(name = "Floor", length = 50)
+	private FloorType floor;
 
-@Enumerated(EnumType.STRING)
-  @Column(name = "Floor", length = 50)
-  private FloorType floor;
+	@Enumerated(EnumType.STRING)
+	@Column(name = "Wall", length = 50)
+	private WallType wall;
 
-  @Enumerated(EnumType.STRING)
-    @Column(name = "Wall", length = 50)
-    private WallType wall;
+	public FloorType getFloor() {
+		return floor;
+	}
 
-  public FloorType getFloor() {
-	return floor;
-}
+	public WallType getWall() {
+		return wall;
+	}
 
-public WallType getWall() {
-	return wall;
-}
+	public RoofingType getRoofing() {
+		return roofing;
+	}
 
-public RoofingType getRoofing() {
-	return roofing;
-}
-
-@Enumerated(EnumType.STRING)
-  @Column(name = "Roofing", length = 50)
-  private RoofingType roofing;
+	@Enumerated(EnumType.STRING)
+	@Column(name = "Roofing", length = 50)
+	private RoofingType roofing;
 
 	public void setFloor(FloorType floor) {
-	this.floor = floor;
-}
+		this.floor = floor;
+	}
 
-public void setWall(WallType wall) {
-	this.wall = wall;
-}
+	public void setWall(WallType wall) {
+		this.wall = wall;
+	}
 
-public void setRoofing(RoofingType roofing) {
-	this.roofing = roofing;
-}
+	public void setRoofing(RoofingType roofing) {
+		this.roofing = roofing;
+	}
 
 	// Default constructor
 	public BuildingInfo() {
@@ -159,15 +159,6 @@ public void setRoofing(RoofingType roofing) {
 
 	public void setBuildingName(String buildingName) {
 		this.buildingName = buildingName;
-	}
-
-	
-	public String getBuildingClass() {
-		return buildingClass != null ? buildingClass : "";
-	}
-
-	public void setBuildingClass(String buildingClass) {
-		this.buildingClass = buildingClass;
 	}
 
 	public String getNatureOfBusiness() {
@@ -398,15 +389,29 @@ public void setRoofing(RoofingType roofing) {
 		return clone;
 	}
 
+	public BuildingClass getBuildingClass() {
+		return buildingClass;
+	}
+
+	public void setBuildingClass(BuildingClass buildingClass) {
+		this.buildingClass = buildingClass;
+	}
+
 	// Handle relationship if needed
 	public boolean isValid() {
 		return buildingName != null && !buildingName.trim().isEmpty() && buildingClass != null
-				&& !buildingClass.trim().isEmpty() && natureOfBusiness != null && !natureOfBusiness.trim().isEmpty()
+		/* && !buildingClass.trim().isEmpty() */ && natureOfBusiness != null && !natureOfBusiness.trim().isEmpty()
 				&& sumInsured != null && sumInsured > 0 && squareFeet != null && squareFeet > 0;
 	}
 
 	public void setTotalSumInsured(double totalSumInsured) {
 		// TODO Auto-generated method stub
-		
+
 	}
+
+	// Inside FireProposal.java
+
+
+
+
 }
