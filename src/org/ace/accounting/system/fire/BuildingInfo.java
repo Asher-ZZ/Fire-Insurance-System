@@ -18,86 +18,85 @@ import org.ace.java.component.idgen.service.IDInterceptor;
 public class BuildingInfo implements Serializable, Cloneable {
 
 	private static final long serialVersionUID = 1L;
-
 	@Id
 	@GeneratedValue(strategy = GenerationType.TABLE, generator = "BUILDING_INFO_GEN") // Changed to IDENTITY
-	@Column(name = "BuildingInfoID")
+	@Column(name = "BUILDINGINFOID")
 	private String id;
 
-	@Column(name = "BuildingName", length = 100)
+	@Column(name = "BUILDINGNAME", length = 100)
 	private String buildingName;
 
 	@Enumerated(EnumType.STRING)
-	@Column(name = "BuildingClass", length = 50)
+	@Column(name = "BUILDINGCLASS", length = 50)
 	private BuildingClass buildingClass;
 
-	@Column(name = "NatureOfBusiness", length = 255)
+	@Column(name = "NATUREOFBUSINESS", length = 255)
 	private String natureOfBusiness;
 
-	@Column(name = "MainCover", length = 255)
+	@Column(name = "MAINCOVER", length = 255)
 	private String mainCover;
 
-	@Column(name = "FloorName", length = 100)
+	@Column(name = "FLOORNAME", length = 100)
 	private String floorName;
 
-	@Column(name = "SumInsured", precision = 18, scale = 2)
+	@Column(name = "SUMINSURED", precision = 18, scale = 2)
 	private Double sumInsured;
 
-	@Column(name = "Length", precision = 10, scale = 2)
+	@Column(name = "LENGTH", precision = 10, scale = 2)
 	private Double length;
 
-	@Column(name = "Width", precision = 10, scale = 2)
+	@Column(name = "WIDTH", precision = 10, scale = 2)
 	private Double width;
 
-	@Column(name = "Height", precision = 10, scale = 2)
+	@Column(name = "HEIGHT", precision = 10, scale = 2)
 	private Double height;
 
-	@Column(name = "SquareFeet", precision = 10, scale = 2)
+	@Column(name = "SQUAREFEET", precision = 10, scale = 2)
 	private Double squareFeet;
 
-	@Column(name = "AirCraftDamage")
+	@Column(name = "AIRCRAFTDAMAGE")
 	private Boolean airCraftDamage;
 
-	@Column(name = "EarthQuakeFire")
+	@Column(name = "EARTHQUAKEFIRE")
 	private Boolean earthQuakeFire;
 
-	@Column(name = "FloodAndInundation")
+	@Column(name = "FLOODANDINUNDATION")
 	private Boolean floodAndInundation;
 
-	@Column(name = "ImpactDamage")
+	@Column(name = "IMPACTDAMAGE")
 	private Boolean impactDamage;
 
-	@Column(name = "RiotStrike")
+	@Column(name = "RIOTSTRIKE")
 	private Boolean riotStrike;
 
-	@Column(name = "SpontaneousCombustion")
+	@Column(name = "SPONTANEOUSCOMBUSTION")
 	private Boolean spontaneousCombustion;
 
-	@Column(name = "StormTyphoon")
+	@Column(name = "STORMTYPHOON")
 	private Boolean stormTyphoon;
 
-	@Column(name = "WaterDamage")
+	@Column(name = "WATERDAMAGE")
 	private Boolean waterDamage;
 
-	@Column(name = "SubsidenceAndLandslide")
+	@Column(name = "SUBSIDENCEANDLANDSLIDE")
 	private Boolean subsidenceAndLandslide;
 
-	@Column(name = "WarRisk")
+	@Column(name = "WARRISK")
 	private Boolean warRisk;
 
-	@Column(name = "BasicPremiumPeriod")
+	@Column(name = "BASICPREMIUMPERIOD")
 	private Double basicPremiumPeriod;
 
-	@Column(name = "BasicPremiumTerm")
+	@Column(name = "BASICPREMIUMTERM")
 	private Double basicPremiumTerm;
 
-	@Column(name = "AddOnPremiumPeriod")
+	@Column(name = "ADDONPREMIUMPERIOD")
 	private Double addOnPremiumPeriod;
 
-	@Column(name = "AddOnPremiumTerm")
+	@Column(name = "ADDONPREMIUMTERM")
 	private Double addOnPremiumTerm;
 
-	@Column(name = "TotalPremiumPeriod")
+	@Column(name = "TOTALPREMIUMPERIOD")
 	private Double totalPremiumPeriod;
 
 	@ManyToOne
@@ -105,28 +104,29 @@ public class BuildingInfo implements Serializable, Cloneable {
 	private FireProposal fireProposal;
 
 	@Enumerated(EnumType.STRING)
-	@Column(name = "Floor", length = 50)
+	@Column(name = "FLOOR", length = 50)
 	private FloorType floor;
 
 	@Enumerated(EnumType.STRING)
-	@Column(name = "Wall", length = 50)
+	@Column(name = "WALL", length = 50)
 	private WallType wall;
 
 	public FloorType getFloor() {
-		return floor;
+	    return floor;
 	}
 
 	public WallType getWall() {
-		return wall;
+	    return wall;
 	}
 
 	public RoofingType getRoofing() {
-		return roofing;
+	    return roofing;
 	}
 
 	@Enumerated(EnumType.STRING)
-	@Column(name = "Roofing", length = 50)
+	@Column(name = "ROOFING", length = 50)
 	private RoofingType roofing;
+
 
 	public void setFloor(FloorType floor) {
 		this.floor = floor;

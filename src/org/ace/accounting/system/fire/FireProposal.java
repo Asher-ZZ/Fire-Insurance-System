@@ -26,39 +26,39 @@ public class FireProposal implements Serializable, Cloneable {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.TABLE, generator = "FIREPROPOSAL_GEN")
-	@Column(name = "ProposalID")
+	@Column(name = "PROPOSALID")
 	private String id;
 
-	@Column(name = "CustomerType", length = 50)
+	@Column(name = "CUSTOMERTYPE")
 	private String customerType;
 
-	@Column(name = "Customer", length = 100)
+	@Column(name = "CUSTOMER")
 	private String customer;
 
-	@Column(name = "PropertyInterest", length = 255)
+	@Column(name = "PROPERTYINTEREST")
 	private String propertyInterest;
 
-	@Column(name = "PropertyLocation", length = 255)
+	@Column(name = "PROPERTYLOCATION")
 	private String propertyLocation;
 
-	@Column(name = "Township", length = 100)
+	@Column(name = "TOWNSHIP")
 	private String township;
 
-	@Column(name = "PolicyNumber", length = 50)
+	@Column(name = "POLICYNUMBER")
 	private String policyNumber;
 
-	@Column(name = "ProposalNo", length = 50)
+	@Column(name = "PROPOSALNO")
 	private String proposalNo; // New field for sequential number
 
 	@Temporal(TemporalType.DATE)
-	@Column(name = "PolicyStartDate")
+	@Column(name = "POLICYSTARTDATE")
 	private Date policyStartDate;
 
 	@Enumerated(EnumType.STRING)
 	private SaleChannel saleChannel;
 
 	@Enumerated(EnumType.STRING)
-	@Column(name = "PaymentType", length = 100)
+	@Column(name = "PAYMENTTYPE")
 	private PaymentType paymentType;
 
 	@OneToOne(fetch = FetchType.LAZY)
@@ -66,14 +66,14 @@ public class FireProposal implements Serializable, Cloneable {
 	private Branch branch;
 
 	@Temporal(TemporalType.DATE)
-	@Column(name = "SubmittedDate")
+	@Column(name = "SUBMITTEDDATE")
 	private Date submittedDate;
 
 	@Enumerated(EnumType.STRING)
-	@Column(name = "CurrencyType", length = 50)
+	@Column(name = "CURRENCYTYPE")
 	private CurrencyType1 currencyType;
 
-	@Column(name = "InsurancePeriodDays")
+	@Column(name = "INSURANCEPERIODDAYS")
 	private Integer insurancePeriodDays;
 
 	@OneToMany(mappedBy = "fireProposal", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -81,34 +81,30 @@ public class FireProposal implements Serializable, Cloneable {
 
 	/*
 	 * @Temporal(TemporalType.DATE)
-	 * 
-	 * @Column(name = "StartDateFrom") private Date startDateFrom;
-	 * 
+	 * @Column(name = "STARTDATEFROM") private Date startDateFrom;
+	 *
 	 * @Temporal(TemporalType.DATE)
-	 * 
-	 * @Column(name = "StartDateTo") private Date startDateTo;
+	 * @Column(name = "STARTDATETO") private Date startDateTo;
 	 */
 	@Version
-	@Column(name = "Version")
+	@Column(name = "VERSION")
 	private int version;
 
 	@Temporal(TemporalType.DATE)
-	@Column(name = "PolicyEndDate")
+	@Column(name = "POLICYENDDATE")
 	private Date policyEndDate;
 
 	@Embedded
 	private BasicEntity basicEntity;
 
-	@Column(name = "InsurancePeriodUnit", length = 10)
+	@Column(name = "INSURANCEPERIODUNIT")
 	private String insurancePeriodUnit;
 	/*
-	 * 
-	 * @Column(name = "TotalSumInsured", precision = 15, scale = 2) private Double
-	 * totalSumInsured = 0.0;
+	 * @Column(name = "TOTALSUMINSURED", precision = 15, scale = 2)
+	 * private Double totalSumInsured = 0.0;
 	 */
-	  @Column(name = "TotalPremiumPeriod", precision = 15, scale = 2) private
-	  Double totalPremiumPeriod = 0.0;
-	 
+	@Column(name = "TOTALPREMIUMPERIOD", precision = 15, scale = 2)
+	private Double totalPremiumPeriod = 0.0;
 
 	// Constructors
 	public FireProposal() {
