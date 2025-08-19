@@ -113,7 +113,7 @@ public class ManageFireEnquiryBean implements Serializable {
 				proposal.getProposalNo() != null ? proposal.getProposalNo() : proposal.getId(),
 				proposal.getSaleChannel() != null ? proposal.getSaleChannel().toString() : "",
 				proposal.getCustomer(),
-				proposal.getBranch() != null ? proposal.getBranch().toString() : "",
+				proposal.getBranch() != null ? proposal.getBranch().getName() : "",
 				proposal.getPaymentType() != null ? proposal.getPaymentType().toString() : ""
 		);
 	}

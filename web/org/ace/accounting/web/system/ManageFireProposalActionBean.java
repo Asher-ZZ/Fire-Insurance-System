@@ -57,7 +57,9 @@ public class ManageFireProposalActionBean extends BaseBean {
 	private List<FireProposal> fireProposalList;
 	private int periodMin;
 	private int periodMax;
+	private boolean saved = false;
 
+	
 	private String currentStep = "proposalInfo";
 
 	private Date minDate = toDate(LocalDate.of(1990, 1, 1));
@@ -127,13 +129,29 @@ public class ManageFireProposalActionBean extends BaseBean {
 	 */
 	
 	public void validatePolicyNo(FacesContext context, UIComponent component, Object value) {
-        String policyNo = (String) value;
-        if (policyNo != null && fireProposalService.existsByPolicyNumber(policyNo)) {
-            FacesMessage msg = new FacesMessage("Policy No. already exists.");
-            msg.setSeverity(FacesMessage.SEVERITY_ERROR);
-            throw new ValidatorException(msg);
-        }
-    }
+	    String policyNo = (String) value;
+
+	    if (policyNo == null || policyNo.trim().isEmpty()) {
+	        FacesMessage msg = new FacesMessage("Policy No. is required.");
+	        msg.setSeverity(FacesMessage.SEVERITY_ERROR);
+	        throw new ValidatorException(msg);
+	    }
+
+	    // Format check (POL + 3 digits)
+	    if (!policyNo.matches("^POL\\d{3}$")) {
+	        FacesMessage msg = new FacesMessage("Policy No. format must be like POL001.");
+	        msg.setSeverity(FacesMessage.SEVERITY_ERROR);
+	        throw new ValidatorException(msg);
+	    }
+
+	    // Check if already exists in DB
+	    if (fireProposalService.existsByPolicyNumber(policyNo)) {
+	        FacesMessage msg = new FacesMessage("Policy No. already exists.");
+	        msg.setSeverity(FacesMessage.SEVERITY_ERROR);
+	        throw new ValidatorException(msg);
+	    }
+	}
+
 	
 	public void calculateSquareFeet(AjaxBehaviorEvent event) {
         double length = buildingInfo.getLength() != null ? buildingInfo.getLength() : 0.0;
@@ -142,7 +160,7 @@ public class ManageFireProposalActionBean extends BaseBean {
     }
 	
 
-	public String saveAll() {
+	public void saveAll() {
 		try {
 			for (BuildingInfo b : buildings) {
 				b.setFireProposal(fireProposal);
@@ -164,6 +182,7 @@ public class ManageFireProposalActionBean extends BaseBean {
 				addInfoMessage(null, MessageId.UPDATE_SUCCESS, fireProposal.getCustomer());
 			}
 
+			saved = true;
 			createNewFireProposal();
 			loadFireProposals();
 
@@ -171,7 +190,7 @@ public class ManageFireProposalActionBean extends BaseBean {
 			logger.error("Failed to save FireProposal", ex);
 			handleSysException(ex);
 		}
-		return "/ui/system/home.xhtml?faces-redirect=true";
+		 
 
 	}
 
@@ -456,6 +475,14 @@ public class ManageFireProposalActionBean extends BaseBean {
 		this.maxDate = maxDate;
 	}
 
+	public boolean isSaved() {
+	    return saved;
+	}
+
+	public void setSaved(boolean saved) {
+	    this.saved = saved;
+	}
+	
 	public String getCurrentStep() {
 		return currentStep;
 	}

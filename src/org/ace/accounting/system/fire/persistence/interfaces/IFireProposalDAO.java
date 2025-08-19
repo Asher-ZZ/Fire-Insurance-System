@@ -27,4 +27,4 @@ public interface IFireProposalDAO {
     boolean existsByPolicyNumber(String policyNumber)throws DAOException;
     
 
-}
+}  
