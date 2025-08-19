@@ -101,14 +101,14 @@ public class FireProposal implements Serializable, Cloneable {
 
 	@Column(name = "InsurancePeriodUnit", length = 10)
 	private String insurancePeriodUnit;
-
 	/*
+	 * 
 	 * @Column(name = "TotalSumInsured", precision = 15, scale = 2) private Double
 	 * totalSumInsured = 0.0;
-	 * 
-	 * @Column(name = "TotalPremiumPeriod", precision = 15, scale = 2) private
-	 * Double totalPremiumPeriod = 0.0;
 	 */
+	  @Column(name = "TotalPremiumPeriod", precision = 15, scale = 2) private
+	  Double totalPremiumPeriod = 0.0;
+	 
 
 	// Constructors
 	public FireProposal() {
@@ -297,19 +297,22 @@ public class FireProposal implements Serializable, Cloneable {
 		this.insurancePeriodUnit = insurancePeriodUnit;
 	}
 
+	
+	
 	/*
 	 * public Double getTotalSumInsured() { return totalSumInsured != null ?
 	 * totalSumInsured : 0.0; }
 	 * 
 	 * public void setTotalSumInsured(Double totalSumInsured) { this.totalSumInsured
 	 * = totalSumInsured; }
-	 * 
-	 * public Double getTotalPremiumPeriod() { return totalPremiumPeriod != null ?
-	 * totalPremiumPeriod : 0.0; }
-	 * 
-	 * public void setTotalPremiumPeriod(Double totalPremiumPeriod) {
-	 * this.totalPremiumPeriod = totalPremiumPeriod; }
 	 */
+	  
+	  public Double getTotalPremiumPeriod() { return totalPremiumPeriod != null ?
+	  totalPremiumPeriod : 0.0; }
+	 
+	  public void setTotalPremiumPeriod(Double totalPremiumPeriod) {
+	  this.totalPremiumPeriod = totalPremiumPeriod; }
+	 
 	public double calculateTotalSumInsured() {
 		return buildingList.stream().mapToDouble(b -> b.getSumInsured() != null ? b.getSumInsured() : 0.0).sum();
 	}
@@ -340,10 +343,15 @@ public class FireProposal implements Serializable, Cloneable {
 		clone.setVersion(this.version);
 		clone.setPolicyEndDate(this.policyEndDate);
 		clone.setInsurancePeriodUnit(this.insurancePeriodUnit);
-		/*
-		 * clone.setTotalSumInsured(this.totalSumInsured);
-		 * clone.setTotalPremiumPeriod(this.totalPremiumPeriod);
-		 */
+		
+		/* clone.setTotalSumInsured(this.totalSumInsured); */
+		  clone.setTotalPremiumPeriod(this.totalPremiumPeriod);
+		 
 		return clone;
+	}
+
+	public void setTotalSumInsured(double totalSumInsured) {
+		// TODO Auto-generated method stub
+		
 	}
 }

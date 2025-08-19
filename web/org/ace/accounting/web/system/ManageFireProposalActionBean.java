@@ -56,8 +56,7 @@ public class ManageFireProposalActionBean extends BaseBean {
 
 	private Date minDate = toDate(LocalDate.of(1990, 1, 1));
 	private Date maxDate = toDate(LocalDate.now(ZoneId.of("Australia/Sydney")));
-
-	/* private Double totalSumInsured; */
+	private Double totalSumInsured;
 	private Date toDate(LocalDate localDate) {
 		return Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
 	}
@@ -106,19 +105,19 @@ public class ManageFireProposalActionBean extends BaseBean {
         return currentStep;
     }
 
-	/*
-	 * private void validateDates() { Date submittedDate =
-	 * fireProposal.getSubmittedDate(); Date policyStartDate =
-	 * fireProposal.getPolicyStartDate(); if (submittedDate != null &&
-	 * (submittedDate.before(minDate) || submittedDate.after(maxDate))) {
-	 * addErrorMessage(null, "Submitted date must be between " + minDate + " and " +
-	 * maxDate); return; } if (policyStartDate != null &&
-	 * (policyStartDate.before(minDate) || policyStartDate.after(maxDate))) {
-	 * addErrorMessage(null, "Policy start date must be between " + minDate +
-	 * " and " + maxDate); return; }
-	 * logger.debug("Validated dates: SubmittedDate={}, PolicyStartDate={}",
-	 * submittedDate, policyStartDate); }
-	 */
+	private void validateDates() {
+		Date submittedDate = fireProposal.getSubmittedDate();
+		Date policyStartDate = fireProposal.getPolicyStartDate();
+		if (submittedDate != null && (submittedDate.before(minDate) || submittedDate.after(maxDate))) {
+			addErrorMessage(null, "Submitted date must be between " + minDate + " and " + maxDate);
+			return;
+		}
+		if (policyStartDate != null && (policyStartDate.before(minDate) || policyStartDate.after(maxDate))) {
+			addErrorMessage(null, "Policy start date must be between " + minDate + " and " + maxDate);
+			return;
+		}
+		logger.debug("Validated dates: SubmittedDate={}, PolicyStartDate={}", submittedDate, policyStartDate);
+	}
 
 	public String saveAll() {
 		try {
@@ -282,30 +281,34 @@ public class ManageFireProposalActionBean extends BaseBean {
 	 * Recalculate all derived premium values for every row and overall total.
 	 */
 	public void recalculatePremiums() {
-		if (buildings == null)
-			return;
+	    if (buildings == null)
+	        return;
 
-		PaymentType pt = fireProposal.getPaymentType();
-		double divisor = getPaymentDivisor(pt);
-		double grandTotal = 0.0;
-		/* double totalSumInsured = 0.0; */
+	    PaymentType pt = fireProposal.getPaymentType();
+	    double divisor = getPaymentDivisor(pt);
+	    double grandTotal = 0.0;
+	    double totalSumInsured = 0.0;
 
-		for (BuildingInfo b : buildings) {
-			double basicPeriod = (b.getBasicPremiumPeriod() != null) ? b.getBasicPremiumPeriod() : 0.0;
-			double addonPeriod = (b.getAddOnPremiumPeriod() != null) ? b.getAddOnPremiumPeriod() : 0.0;
-			double basicTerm = divisor != 0.0 ? basicPeriod / divisor : 0.0;
-			double addonTerm = divisor != 0.0 ? addonPeriod / divisor : 0.0;
+	    for (BuildingInfo b : buildings) {
+	        double basicPeriod = (b.getBasicPremiumPeriod() != null) ? b.getBasicPremiumPeriod() : 0.0;
+	        double addonPeriod = (b.getAddOnPremiumPeriod() != null) ? b.getAddOnPremiumPeriod() : 0.0;
 
-			b.setBasicPremiumTerm(round(basicTerm));
-			b.setAddOnPremiumTerm(round(addonTerm));
-			b.setTotalPremiumPeriod(round(basicTerm + addonTerm));
-			grandTotal += b.getTotalPremiumPeriod();
-			/* totalSumInsured += (b.getSumInsured() != null) ? b.getSumInsured() : 0.0; */
-		}
+	        double basicTerm = divisor != 0.0 ? basicPeriod / divisor : 0.0;
+	        double addonTerm = divisor != 0.0 ? addonPeriod / divisor : 0.0;
 
-		buildingInfo.setTotalPremiumPeriod(round(grandTotal));
-		/* buildingInfo.setTotalSumInsured(totalSumInsured); */
+	        b.setBasicPremiumTerm(round(basicTerm));
+	        b.setAddOnPremiumTerm(round(addonTerm));
+	        b.setTotalPremiumPeriod(round(basicTerm + addonTerm));
+
+	        grandTotal += b.getTotalPremiumPeriod();
+	        totalSumInsured += (b.getSumInsured() != null) ? b.getSumInsured() : 0.0;
+	    }
+
+	    // update FireProposal fields for UI
+	    fireProposal.setTotalPremiumPeriod(round(grandTotal));
+	    fireProposal.setTotalSumInsured(totalSumInsured);
 	}
+
 
 	/**
 	 * Helper used while the user is typing in the Add new premium fields before
@@ -465,12 +468,12 @@ public class ManageFireProposalActionBean extends BaseBean {
 	public void setBuildingInfo(BuildingInfo buildingInfo) {
 		this.buildingInfo = buildingInfo;
 	}
+	public Double getTotalSumInsured() {
+	    return fireProposal != null ? fireProposal.calculateTotalSumInsured() : 0.0;
+	}
 
-	/*
-	 * public Double getTotalSumInsured() { return getTotalSumInsured(); }
-	 */
-	/*
-	 * public void setTotalSumInsured(Double totalSumInsured) { this.totalSumInsured
-	 * = totalSumInsured; }
-	 */
+
+	public void setTotalSumInsured(Double totalSumInsured) {
+		this.totalSumInsured = totalSumInsured;
+	}
 }
