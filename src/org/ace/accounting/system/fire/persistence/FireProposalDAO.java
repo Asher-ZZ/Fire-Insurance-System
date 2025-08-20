@@ -200,4 +200,5 @@ public class FireProposalDAO extends BasicDAO implements IFireProposalDAO {
         return count > 0;
     }
    
+   
 }

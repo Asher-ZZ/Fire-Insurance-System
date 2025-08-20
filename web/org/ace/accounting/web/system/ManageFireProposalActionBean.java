@@ -10,7 +10,9 @@ import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
+import javax.faces.component.UIComponent;
 import javax.faces.event.AjaxBehaviorEvent;
+import javax.faces.validator.ValidatorException;
 
 import org.ace.accounting.common.BuildingClass;
 import org.ace.accounting.common.CurrencyType1;
@@ -372,6 +374,34 @@ public class ManageFireProposalActionBean extends BaseBean {
 		Branch branch = (Branch) event.getObject();
 		fireProposal.setBranch(branch);
 	}
+	
+	
+	public void validatePolicyNo(FacesContext context, UIComponent component, Object value) {
+	      String policyNo = (String) value;
+
+	      if (policyNo == null || policyNo.trim().isEmpty()) {
+	          FacesMessage msg = new FacesMessage("Policy No. is required.");
+	          msg.setSeverity(FacesMessage.SEVERITY_ERROR);
+	          throw new ValidatorException(msg);
+	      }
+
+	      // Format check (POL + 3 digits)
+	      if (!policyNo.matches("^POL\\d{3}$")) {
+	          FacesMessage msg = new FacesMessage("Policy No. format must be like POL001.");
+	          msg.setSeverity(FacesMessage.SEVERITY_ERROR);
+	          throw new ValidatorException(msg);
+	      }
+
+	      // Check if already exists in DB
+	      if (fireProposalService.existsByPolicyNumber(policyNo)) {
+	          FacesMessage msg = new FacesMessage("Policy No. already exists.");
+	          msg.setSeverity(FacesMessage.SEVERITY_ERROR);
+	          throw new ValidatorException(msg);
+	      }
+	  }
+	
+	
+	
 
 	private double round(double value) {
 		return BigDecimal.valueOf(value).setScale(2, RoundingMode.HALF_UP).doubleValue();

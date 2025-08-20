@@ -97,13 +97,16 @@
 								value="#{ManageFireProposalActionBean.fireProposal.township}"
 								required="true" requiredMessage="Township is required." />
 
-							<p:outputLabel />
-							<p:message for="policyNo" display="text" />
-							<h:outputText value="Policy No."
-								styleClass="input-label mandatory" />
-							<p:inputText id="policyNo"
-								value="#{ManageFireProposalActionBean.fireProposal.policyNumber}"
-								required="true" requiredMessage="Policy No. is required." />
+						<p:outputLabel />
+              <p:message id="policyNoMessage" for="policyNo" display="text" />
+              <h:outputText value="Policy No."
+                styleClass="input-label mandatory" />
+              <p:inputText id="policyNo"
+                value="#{ManageFireProposalActionBean.fireProposal.policyNumber}"
+                required="true" requiredMessage="Policy No. is required."
+                validator="#{ManageFireProposalActionBean.validatePolicyNo}">
+                <p:ajax event="blur" update="policyNoMessage" />
+              </p:inputText>
 						</p:panelGrid>
 
 						<!-- Right Section -->
@@ -476,7 +479,7 @@
 					<!-- Action Buttons -->
 				<p:commandButton value="Add"
 							action="#{ManageFireProposalActionBean.addBuilding}"
-							process="buildingForm" update="buildingForm" icon="pi pi-plus"
+							process="buildingForm buildingTable" update="buildingForm buildingTable" icon="pi pi-plus"
 							style="margin-right: 5px;" onstart="this.disabled=true;"
 							oncomplete="this.disabled=false;" />
 
