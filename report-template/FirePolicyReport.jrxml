@@ -47,7 +47,7 @@
 	<columnHeader>
 		<band height="78" splitType="Stretch">
 			<staticText>
-				<reportElement x="0" y="0" width="202" height="20" uuid="6dc77ac9-a346-4ce0-ac11-e2c94ffe3fd4"/>
+				<reportElement x="0" y="0" width="260" height="20" uuid="6dc77ac9-a346-4ce0-ac11-e2c94ffe3fd4"/>
 				<textElement>
 					<font size="14"/>
 				</textElement>
@@ -63,97 +63,93 @@
 		</band>
 	</columnHeader>
 	<detail>
-		<band height="347" splitType="Stretch">
+		<band height="465" splitType="Stretch">
 			<textField>
-				<reportElement x="280" y="10" width="130" height="24" uuid="3df03aa5-7a86-49e8-8389-2bade800a4ab"/>
+				<reportElement x="280" y="53" width="200" height="24" uuid="3df03aa5-7a86-49e8-8389-2bade800a4ab"/>
 				<textElement>
 					<font size="14"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{PolicyNumber}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="0" y="10" width="170" height="19" uuid="3a17abef-cfda-44f6-a971-9acb41f4ea72"/>
+				<reportElement x="0" y="53" width="170" height="19" uuid="3a17abef-cfda-44f6-a971-9acb41f4ea72"/>
 				<textElement>
 					<font size="14"/>
 				</textElement>
-				<text><![CDATA["Policy Number"]]></text>
+				<text><![CDATA["PolicyNumber"]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="0" y="160" width="180" height="19" uuid="e5074f8a-ddab-4515-9c84-8166ee5b8809"/>
+				<reportElement x="0" y="103" width="170" height="19" uuid="e5074f8a-ddab-4515-9c84-8166ee5b8809"/>
 				<textElement>
 					<font size="14"/>
 				</textElement>
 				<text><![CDATA["ProposalNo"]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="0" y="110" width="170" height="19" uuid="4fc88b72-ecf9-4995-a4d2-218de82d0834"/>
+				<reportElement x="0" y="153" width="170" height="19" uuid="4fc88b72-ecf9-4995-a4d2-218de82d0834"/>
 				<textElement>
 					<font size="14"/>
 				</textElement>
 				<text><![CDATA["SumInsured"]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="0" y="160" width="170" height="19" uuid="1e2f88ae-1bfd-492d-b3a7-f35070b3881b"/>
+				<reportElement x="0" y="203" width="170" height="19" uuid="1e2f88ae-1bfd-492d-b3a7-f35070b3881b"/>
 				<textElement>
 					<font size="14"/>
 				</textElement>
 				<text><![CDATA["BasicPremiumTerm"]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="0" y="210" width="170" height="19" uuid="1ee1298f-90c1-472a-abf3-89df70733951"/>
+				<reportElement x="0" y="253" width="170" height="19" uuid="1ee1298f-90c1-472a-abf3-89df70733951"/>
 				<textElement>
 					<font size="14"/>
 				</textElement>
 				<text><![CDATA["AddOnPremiumTerm"]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="0" y="260" width="170" height="19" uuid="85bc749a-4b3b-4a94-9d3c-0f3249e3fc85"/>
+				<reportElement x="0" y="303" width="170" height="19" uuid="85bc749a-4b3b-4a94-9d3c-0f3249e3fc85"/>
 				<textElement>
 					<font size="14"/>
 				</textElement>
 				<text><![CDATA["TotalPremiumPeriod"]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="280" y="260" width="160" height="20" uuid="f203a57a-d8d8-4f16-b67a-14c69d34caba"/>
+				<reportElement x="280" y="303" width="200" height="20" uuid="f203a57a-d8d8-4f16-b67a-14c69d34caba"/>
 				<textElement>
 					<font size="14"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{TotalPremiumPeriod}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="280" y="210" width="170" height="20" uuid="b27a07ad-39fb-4a96-b369-3eb45f682010"/>
+				<reportElement x="280" y="253" width="200" height="20" uuid="b27a07ad-39fb-4a96-b369-3eb45f682010"/>
 				<textElement>
 					<font size="14"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{AddOnPremiumTerm}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="280" y="160" width="150" height="20" uuid="3871cda9-01ae-4c49-8722-ade6c86ce1d9"/>
+				<reportElement x="280" y="203" width="200" height="20" uuid="3871cda9-01ae-4c49-8722-ade6c86ce1d9"/>
 				<textElement>
 					<font size="14"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{BasicPremiumTerm}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="280" y="110" width="130" height="20" uuid="6335a0f6-b7b0-4a46-a987-1d32ea4d4791"/>
+				<reportElement x="280" y="153" width="200" height="20" uuid="6335a0f6-b7b0-4a46-a987-1d32ea4d4791"/>
 				<textElement>
 					<font size="14"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{SumInsured}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="280" y="60" width="130" height="20" uuid="a8fa736a-2c8b-4f00-bee8-9ca7d5bccf30"/>
+				<reportElement x="280" y="103" width="200" height="20" uuid="a8fa736a-2c8b-4f00-bee8-9ca7d5bccf30"/>
 				<textElement>
 					<font size="14"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{ProposalNo}]]></textFieldExpression>
 			</textField>
-		</band>
-	</detail>
-	<columnFooter>
-		<band height="70" splitType="Stretch">
 			<staticText>
-				<reportElement x="0" y="0" width="560" height="40" uuid="46c03bcb-ce6f-4f59-9e28-07dd9fdc4679"/>
+				<reportElement x="-13" y="375" width="560" height="40" uuid="46c03bcb-ce6f-4f59-9e28-07dd9fdc4679"/>
 				<textElement>
 					<font size="14"/>
 				</textElement>
@@ -161,18 +157,18 @@
 ]]></text>
 			</staticText>
 		</band>
-	</columnFooter>
-	<pageFooter>
-		<band height="70" splitType="Stretch">
+	</detail>
+	<columnFooter>
+		<band height="72" splitType="Stretch">
 			<staticText>
-				<reportElement x="391" y="40" width="153" height="30" uuid="aae33da2-00ee-494c-a8c1-a4252fdca5f2"/>
+				<reportElement x="410" y="0" width="153" height="30" uuid="aae33da2-00ee-494c-a8c1-a4252fdca5f2"/>
 				<textElement>
 					<font size="14"/>
 				</textElement>
 				<text><![CDATA[Authorized Signature]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="0" y="25" width="100" height="42" uuid="c9bd83b4-e57d-4533-b8a9-0aec86ad67bc"/>
+				<reportElement x="0" y="0" width="100" height="42" uuid="c9bd83b4-e57d-4533-b8a9-0aec86ad67bc"/>
 				<textElement>
 					<font size="14"/>
 				</textElement>
@@ -181,8 +177,11 @@ Your Sincerely,
 ]]></text>
 			</staticText>
 		</band>
+	</columnFooter>
+	<pageFooter>
+		<band height="23" splitType="Stretch"/>
 	</pageFooter>
 	<summary>
-		<band height="42" splitType="Stretch"/>
+		<band splitType="Stretch"/>
 	</summary>
 </jasperReport>

@@ -34,6 +34,7 @@ import org.apache.commons.io.FileUtils;
 import org.primefaces.event.FlowEvent;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.event.TabChangeEvent;
+import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,9 +49,11 @@ import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
 
 import javax.faces.application.FacesMessage;
+import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -155,8 +158,8 @@ public class ManageFireProposalActionBean extends BaseBean {
 	    }
 
 	    // Format check (POL + 3 digits)
-	    if (!policyNo.matches("^POL\\d{3}$")) {
-	        FacesMessage msg = new FacesMessage("Policy No. format must be like POL001.");
+	    if (!policyNo.matches("^POL\\d{4}$")) {
+	        FacesMessage msg = new FacesMessage("Policy No. format must be like POL0001.");
 	        msg.setSeverity(FacesMessage.SEVERITY_ERROR);
 	        throw new ValidatorException(msg);
 	    }
@@ -424,10 +427,22 @@ public class ManageFireProposalActionBean extends BaseBean {
 	    private StreamedContent letter;
 	    private final String reportName = "FirePolicyReport";
 		private final String pdfDirPath = "/pdf-report/" + reportName + "/" + System.currentTimeMillis() + "/";
+		public String getPdfDirPath() {
+			return pdfDirPath;
+		}
+
 		private final String dirPath = getWebRootPath() + pdfDirPath;
+		public String getDirPath() {
+			return dirPath;
+		}
+
 		private final String fileName = "Fire Policy Report";
 		
-	  public void generateLetter() {
+	  public String getFileName() {
+			return fileName;
+		}
+
+	public void generateLetter() {
 		  
 	        try {
 	            if (fireProposal == null || fireProposal.getBuildingList() == null) {
@@ -481,6 +496,33 @@ public class ManageFireProposalActionBean extends BaseBean {
 	        }
 	    }
 	
+	public StreamedContent getDownload() {
+        try {
+            String pdfFilePath = dirPath + fileName + ".pdf";
+            System.out.println("getDownload: Looking for PDF at " + pdfFilePath);
+            File file = new File(pdfFilePath);
+
+            // Generate report if PDF does not exist
+            if (!file.exists()) {
+                generateLetter();
+            }
+
+            if (!file.exists()) {
+                addErrorMessage(null, "Download Failed: PDF file could not be generated.");
+                return null;
+            }
+
+            InputStream input = new FileInputStream(file);
+            ExternalContext ext = FacesContext.getCurrentInstance().getExternalContext();
+
+            return new DefaultStreamedContent(input, ext.getMimeType(file.getName()), file.getName());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            addErrorMessage(null, "Download Failed: " + e.getMessage());
+            return null;
+        }
+    }
 	public void returnBranch(SelectEvent event) {
 		Branch branch = (Branch) event.getObject();
 		fireProposal.setBranch(branch);
