@@ -18,12 +18,15 @@ public interface IFireProposalService {
     FireProposal findById(String id) throws SystemException;
     
 
-	
-	/*
-	 * FireProposal findFireProposalByPolicyNo(String policyNo);
-	 * 
-	 * List<FireProposal> findFireProposalsByDateRange(Date startDate, Date
-	 * endDate);
-	 */
+    List<FireProposal> findFireProposalByPolicyNo(String policyNo);
+    
+    List<FireProposal> findFireProposalsByDateRange(Date startDate, Date endDate);
+    
+    public String generateProposalNo() throws SystemException;
 
+    boolean existsByPolicyNumber(String policyNumber)throws SystemException;
+
+    List<FireProposal> findByCriteria(String policyNo, Date startDateFrom, Date startDateTo) throws SystemException;
+
+    
 }

@@ -43,8 +43,7 @@
 				showDetail="true" />
 			<h:outputText value="Add New Fire Proposal" styleClass="title" />
 			<p:wizard
-				flowListener="#{ManageFireProposalActionBean.onFlowProcess}"
-				showNavBar="true" nextLabel="Next" backLabel="Back">
+				flowListener="#{ManageFireProposalActionBean.onFlowProcess}">
 				<!-- Proposal Info Tab -->
 				<p:tab id="proposalInfo" title="Proposal Info">
 					<p:panelGrid columns="2"
@@ -98,13 +97,16 @@
 								value="#{ManageFireProposalActionBean.fireProposal.township}"
 								required="true" requiredMessage="Township is required." />
 
-							<p:outputLabel />
-							<p:message for="policyNo" display="text" />
-							<h:outputText value="Policy No."
-								styleClass="input-label mandatory" />
-							<p:inputText id="policyNo"
-								value="#{ManageFireProposalActionBean.fireProposal.policyNumber}"
-								required="true" requiredMessage="Policy No. is required." />
+						<p:outputLabel />
+              <p:message id="policyNoMessage" for="policyNo" display="text" />
+              <h:outputText value="Policy No."
+                styleClass="input-label mandatory" />
+              <p:inputText id="policyNo"
+                value="#{ManageFireProposalActionBean.fireProposal.policyNumber}"
+                required="true" requiredMessage="Policy No. is required."
+                validator="#{ManageFireProposalActionBean.validatePolicyNo}">
+                <p:ajax event="blur" update="policyNoMessage" />
+              </p:inputText>
 						</p:panelGrid>
 
 						<!-- Right Section -->
@@ -118,7 +120,7 @@
 							<p:selectOneMenu id="saleChannel"
 								value="#{ManageFireProposalActionBean.fireProposal.saleChannel}"
 								required="true" requiredMessage="Sale channel is required.">
-								<f:selectItem itemLabel="Select Sale Channel" itemValue=""
+								<f:selectItem itemLabel="---Select Sale Channel---" itemValue=""
 									noSelectionOption="true" />
 								<f:selectItems
 									value="#{ManageFireProposalActionBean.saleChannels}"
@@ -132,7 +134,7 @@
 							<p:selectOneMenu id="paymentType"
 								value="#{ManageFireProposalActionBean.fireProposal.paymentType}"
 								required="true" requiredMessage="Please select a payment type">
-								<f:selectItem itemLabel="Select Payment Type" itemValue=""
+								<f:selectItem itemLabel="---Select Payment Type---" itemValue=""
 									noSelectionOption="true" />
 								<f:selectItems
 									value="#{ManageFireProposalActionBean.availablePaymentTypes}"
@@ -142,7 +144,7 @@
 									update="paymentType" process="@this" />
 							</p:selectOneMenu>
 
-							<p:outputLabel />
+							<!-- <p:outputLabel />
 							<p:message for="branch" display="text" />
 							<h:outputText value="Branch" styleClass="mandatory input-label" />
 							<p:selectOneMenu id="branch"
@@ -151,8 +153,32 @@
 								<f:selectItem itemLabel="Select Branch" itemValue=""
 									noSelectionOption="true" />
 								<f:selectItems value="#{ManageFireProposalActionBean.branches}"
-									var="branch" itemLabel="#{branch.label}" itemValue="#{branch}" />
-							</p:selectOneMenu>
+									var="branch" itemLabel="#{branch}" itemValue="#{branch}" />
+							</p:selectOneMenu> -->
+							<p:outputLabel />
+							<p:message display="text" for="branchId" />
+							<h:outputText styleClass="input-label" value="BRANCH" />
+							<p:panelGrid styleClass="ui-panelgrid-blank"
+								id="branchPanelGroup">
+								<div style="margin-top: -5px; margin-left: -5px;"
+									class="ui-g ui-fluid" id="branchPanelGroup">
+									<div class="ui-inputgroup ui-g-12 ui-lg-12 ui-lg-12">
+										<p:commandButton styleClass="green-button" icon="fa fa-search"
+											actionListener="#{ManageFireProposalActionBean.selectBranch()}"
+											id="selectBranchDialogLink" process="@this">
+											<p:ajax event="dialogReturn"
+												listener="#{ManageFireProposalActionBean.returnBranch}"
+												update="branchId" />
+										</p:commandButton>
+										<p:inputText id="branchId"
+											value="#{ManageFireProposalActionBean.fireProposal.branch == null ? '' : ManageFireProposalActionBean.fireProposal.branch.name}"
+											readonly="true" />
+										<p:commandButton styleClass="red-button" icon="fa fa-times"
+											action="#{ManageFireProposalActionBean.fireProposal.setBranch(null)}"
+											process="@this" update="branchId" />
+									</div>
+								</div>
+							</p:panelGrid>
 
 							<p:outputLabel />
 							<p:message for="submitDate" display="text" />
@@ -170,8 +196,8 @@
 							<p:selectOneMenu id="currency"
 								value="#{ManageFireProposalActionBean.fireProposal.currencyType}"
 								required="true" requiredMessage="Currency type is required.">
-								<f:selectItem itemLabel="Select Currency Type" itemValue=""
-									noSelectionOption="true" />
+								<f:selectItem itemLabel="---Select Currency Type---"
+									itemValue="" noSelectionOption="true" />
 								<f:selectItems
 									value="#{ManageFireProposalActionBean.currencyTypes}"
 									var="currency" itemLabel="#{currency}" itemValue="#{currency}" />
@@ -199,8 +225,8 @@
 									value="#{ManageFireProposalActionBean.fireProposal.insurancePeriodUnit}"
 									required="true" requiredMessage="Period unit is required."
 									styleClass="period-unit-dropdown">
-									<f:selectItem itemLabel="Select Period Unit" itemValue=""
-										noSelectionOption="true" />
+									<!-- <f:selectItem itemLabel="Select Period Unit"
+										itemValue="Select Preiod Unit" noSelectionOption="true" /> -->
 									<f:selectItem itemLabel="DAY" itemValue="DAY" />
 									<f:selectItem itemLabel="MONTH" itemValue="MONTH" />
 									<f:selectItem itemLabel="YEAR" itemValue="YEAR" />
@@ -221,19 +247,43 @@
 						</p:panelGrid>
 					</p:panelGrid>
 
-					<p:commandButton value="Cancel"
-						action="#{ManageFireProposalActionBean.cancel}" immediate="true"
-						style="margin-right: 5px;" />
-				</p:tab>
 
-				<!-- Building Info Tab -->
+					<p:commandButton value="Cancel"
+						onclick="PF('cancelConfirmDlg').show(); return false;"
+						style="margin-right: 5px;" styleClass="red-button" />
+
+					<p:confirmDialog widgetVar="cancelConfirmDlg" header="Confirmation"
+						message="Are you sure you want to cancel?" appendTo="@(body)"
+						closable="true" closeOnEscape="true" showEffect="fade"
+						style="width: 350px">
+
+						<p:commandButton value="Yes"
+							action="#{ManageFireProposalActionBean.cancel}" process="@this"
+							update="@form"
+							oncomplete="if(!args.validationFailed) {PF('cancelConfirmDlg').hide();}"
+							icon="pi pi-check" styleClass="ui-button-danger" />
+						<!-- Red color for destructive action -->
+
+						<p:commandButton value="No"
+							onclick="PF('cancelConfirmDlg').hide()" type="button"
+							icon="pi pi-times" styleClass="ui-button-secondary" />
+						<!-- Gray color for secondary action -->
+					</p:confirmDialog>
+
+
+				</p:tab>
 				<p:tab id="buildingInfo" title="Building Info">
+<h:form id="buildingForm">
 					<p:panelGrid columns="2"
 						columnClasses="ui-grid-col-6,ui-grid-col-6" layout="grid"
 						styleClass="ui-panelgrid-blank ui-fluid">
+
+						<!-- Left Column -->
 						<p:panelGrid columns="2"
 							columnClasses="ui-grid-col-3,ui-grid-col-9" layout="grid"
 							styleClass="ui-panelgrid-blank ui-fluid">
+
+							<!-- Building Name -->
 							<p:outputLabel />
 							<p:message display="text" for="buildingName" />
 							<h:outputText value="Building Name"
@@ -241,35 +291,65 @@
 							<p:inputText id="buildingName"
 								value="#{ManageFireProposalActionBean.buildingInfo.buildingName}"
 								required="true" requiredMessage="Building Name is required." />
-							<h:outputText value="Flooring" styleClass="input-label" />
-							<p:selectOneMenu id="flooring"
+
+							<!-- Floor -->
+							<p:outputLabel />
+							<p:message for="floor" display="text" />
+							<h:outputText value="Floor" styleClass="input-label" />
+							<p:selectOneMenu id="floor"
 								value="#{ManageFireProposalActionBean.buildingInfo.floor}"
-								required="true" requiredMessage="Flooring is required.">
-								<f:selectItem itemLabel="Select Flooring" itemValue=""
+								required="true" requiredMessage="Floor type is required.">
+								<f:selectItem itemLabel="---Select Floor Type---" itemValue=""
 									noSelectionOption="true" />
-								 <f:selectItems value="#{ManageFireProposalActionBean.floors}" var="floor" itemLabel="#{floor.label}" itemValue="#{floor}" />
+								<f:selectItems
+									value="#{ManageFireProposalActionBean.floorTypes}" var="type"
+									itemLabel="#{type}" itemValue="#{type}" />
 							</p:selectOneMenu>
+
+							<!-- Wall -->
+							<p:outputLabel />
+							<p:message for="wall" display="text" />
 							<h:outputText value="Wall" styleClass="input-label" />
 							<p:selectOneMenu id="wall"
 								value="#{ManageFireProposalActionBean.buildingInfo.wall}"
-								required="true" requiredMessage="Wall type is required.">
-								<f:selectItem itemLabel="Select Wall Type" itemValue=""
+								required="true" requiredMessage="Wall Type is required.">
+								<f:selectItem itemLabel="---Select Wall Type---" itemValue=""
 									noSelectionOption="true" />
-								<f:selectItems value="#{ManageFireProposalActionBean.walls}"
-									var="wall" itemLabel="#{wall.label}" itemValue="#{wall}" />
+								<f:selectItems value="#{ManageFireProposalActionBean.wallTypes}"
+									var="w" itemLabel="#{w}" itemValue="#{w}" />
 							</p:selectOneMenu>
+
+							<!-- Roofing -->
+							<p:outputLabel />
+							<p:message for="roofing" display="text" />
 							<h:outputText value="Roofing" styleClass="input-label" />
 							<p:selectOneMenu id="roofing"
-								value="#{ManageFireProposalActionBean.buildingInfo.roofing}">
-						<f:selectItems value="#{ManageFireProposalActionBean.roofings}" var="roof" itemLabel="#{roof.label}" itemValue="#{roof}" />
+								value="#{ManageFireProposalActionBean.buildingInfo.roofing}"
+								required="true" requiredMessage="Roofing type is required.">
+								<f:selectItem itemLabel="---Select Roofing Type---" itemValue=""
+									noSelectionOption="true" />
+								<f:selectItems
+									value="#{ManageFireProposalActionBean.roofingTypes}" var="type"
+									itemLabel="#{type}" itemValue="#{type}" />
 							</p:selectOneMenu>
+
+							<!-- Building Class -->
 							<p:outputLabel />
-							<p:message display="text" for="buildingClass" />
+							<p:message for="buildingClass" display="text" />
 							<h:outputText value="Building Class"
 								styleClass="mandatory input-label" />
-							<p:inputText id="buildingClass"
+							<p:selectOneMenu id="buildingClass"
 								value="#{ManageFireProposalActionBean.buildingInfo.buildingClass}"
-								required="true" requiredMessage="Building Class is required." />
+								required="true" requiredMessage="Building Class is required.">
+								<f:selectItem itemLabel="---Select Building Class---"
+									itemValue="#{null}" noSelectionOption="true" />
+								<f:selectItems
+									value="#{ManageFireProposalActionBean.buildingClasses}"
+									var="buildingClass" itemValue="#{buildingClass}"
+									itemLabel="#{buildingClass}" />
+							</p:selectOneMenu>
+
+							<!-- Nature of Business -->
 							<p:outputLabel />
 							<p:message display="text" for="natureOfBusiness" />
 							<h:outputText value="Nature of Business"
@@ -279,9 +359,13 @@
 								required="true"
 								requiredMessage="Nature Of Business is required." />
 						</p:panelGrid>
+
+						<!-- Right Column -->
 						<p:panelGrid columns="2"
 							columnClasses="ui-grid-col-3,ui-grid-col-9" layout="grid"
 							styleClass="ui-panelgrid-blank ui-fluid">
+
+							<!-- Main Cover -->
 							<p:outputLabel />
 							<p:message display="text" for="mainCover" />
 							<h:outputText value="Main Cover"
@@ -289,10 +373,13 @@
 							<p:inputText id="mainCover"
 								value="#{ManageFireProposalActionBean.buildingInfo.mainCover}"
 								required="true" requiredMessage="Main Cover is required" />
+
+							<!-- Floor Name -->
 							<h:outputText value="Floor Name" styleClass="input-label" />
 							<p:inputText id="floorName"
-								placeholder="Ground Floor, First Floor, etc."
 								value="#{ManageFireProposalActionBean.buildingInfo.floorName}" />
+
+							<!-- Sum Insured -->
 							<p:outputLabel />
 							<p:message display="text" for="sumInsured" />
 							<h:outputText value="Sum Insured"
@@ -302,29 +389,53 @@
 								required="true" requiredMessage="Sum Insured is required.">
 								<f:convertNumber minFractionDigits="2" />
 							</p:inputText>
+							<!-- Length -->
 							<h:outputText value="Length (ft)" styleClass="input-label" />
 							<p:inputText id="length"
-								value="#{ManageFireProposalActionBean.buildingInfo.length}" />
+								value="#{ManageFireProposalActionBean.buildingInfo.length}">
+								<p:ajax event="keyup"
+									listener="#{ManageFireProposalActionBean.calculateSquareFeet}"
+									update="squareFeet_display squareFeet_hidden" process="@form" />
+							</p:inputText>
+
+							<!-- Width -->
 							<h:outputText value="Width (ft)" styleClass="input-label" />
 							<p:inputText id="width"
-								value="#{ManageFireProposalActionBean.buildingInfo.width}" />
+								value="#{ManageFireProposalActionBean.buildingInfo.width}">
+								<p:ajax event="keyup"
+									listener="#{ManageFireProposalActionBean.calculateSquareFeet}"
+									update="squareFeet_display squareFeet_hidden" process="@form" />
+							</p:inputText>
+
+							<!-- Height -->
 							<h:outputText value="Height (ft)" styleClass="input-label" />
 							<p:inputText id="height"
 								value="#{ManageFireProposalActionBean.buildingInfo.height}" />
-							<p:outputLabel />
-							<p:message display="text" for="squareFeet" />
+
+							<!-- Square Feet -->
 							<h:outputText value="Square Feet"
 								styleClass="mandatory input-label" />
-							<p:inputText id="squareFeet"
+
+							<!-- Displayed but not editable -->
+							<p:inputText id="squareFeet_display"
 								value="#{ManageFireProposalActionBean.buildingInfo.squareFeet}"
-								required="true" requiredMessage="Square Feet is required" />
+								disabled="true">
+								<f:convertNumber minFractionDigits="2" />
+							</p:inputText>
+
+							<!-- Hidden field that actually submits -->
+							<h:inputHidden id="squareFeet_hidden"
+								value="#{ManageFireProposalActionBean.buildingInfo.squareFeet}" />
+
 						</p:panelGrid>
 					</p:panelGrid>
+
 					<!-- Additional Cover -->
 					<h:panelGrid columns="1"
 						style="display: flex; justify-content: center;">
 						<h:outputText value="Additional Cover" styleClass="section-title" />
 						<h:panelGrid columns="2" cellpadding="8" style="margin-top: 8px;">
+
 							<!-- Left Column -->
 							<h:panelGroup layout="block">
 								<p:selectBooleanCheckbox
@@ -343,6 +454,7 @@
 									value="#{ManageFireProposalActionBean.buildingInfo.riotStrike}"
 									itemLabel="Riot, Strike And Malicious Damage" />
 							</h:panelGroup>
+
 							<!-- Right Column -->
 							<h:panelGroup layout="block">
 								<p:selectBooleanCheckbox
@@ -364,16 +476,18 @@
 						</h:panelGrid>
 					</h:panelGrid>
 
-					<!-- Add Button and Data Table -->
-					<p:commandButton value="Add"
-						action="#{ManageFireProposalActionBean.addBuilding}"
-						update="@form" process="@form" icon="pi pi-plus"
-						style="margin-right: 5px;" onstart="this.disabled=true;"
-						oncomplete="this.disabled=false;" />
+					<!-- Action Buttons -->
+				<p:commandButton value="Add"
+							action="#{ManageFireProposalActionBean.addBuilding}"
+							process="buildingForm buildingTable" update="buildingForm buildingTable" icon="pi pi-plus"
+							style="margin-right: 5px;" onstart="this.disabled=true;"
+							oncomplete="this.disabled=false;" />
 
+					<!-- Data Table -->
 					<p:dataTable id="buildingTable"
 						value="#{ManageFireProposalActionBean.buildings}" var="building"
 						styleClass="ui-datatable">
+
 						<p:column headerText="Building Name">
 							<h:outputText value="#{building.buildingName}" />
 						</p:column>
@@ -396,8 +510,25 @@
 						</p:column>
 					</p:dataTable>
 
-					<p:commandButton value="Cancel" action="cancel"
+					<p:commandButton value="Cancel"
+						onclick="PF('cancelConfirmDlg').show(); return false;"
 						style="margin-right: 5px;" />
+
+					<p:confirmDialog widgetVar="cancelConfirmDlg" header="Confirmation"
+						message="Are you sure you want to cancel?" appendTo="@(body)"
+						closable="true" closeOnEscape="true">
+
+						<p:commandButton value="Yes"
+							action="#{ManageFireProposalActionBean.cancel}" process="@this"
+							update="@form"
+							oncomplete="if(!args.validationFailed) {PF('cancelConfirmDlg').hide();}"
+							icon="pi pi-check" />
+
+						<p:commandButton value="No"
+							onclick="PF('cancelConfirmDlg').hide()" type="button"
+							icon="pi pi-times" />
+					</p:confirmDialog>
+						</h:form>
 				</p:tab>
 
 				<!-- Premium Info Tab -->
@@ -467,12 +598,7 @@
 							</h:outputText>
 						</p:column>
 
-						<p:column headerText="Action"
-							style="text-align:center; width:80px;">
-							<p:commandButton value="Remove"
-								action="#{ManageFireProposalActionBean.removeBuilding(building)}"
-								update="@form" process="@this" icon="pi pi-trash" />
-						</p:column>
+
 					</p:dataTable>
 
 					<!-- Total Premium Summary -->
@@ -486,17 +612,58 @@
 						</h:outputText>
 					</p:panelGrid>
 
-					<!-- Buttons -->
-					<p:panelGrid columns="2" styleClass="ui-fluid"
-						style="margin-top: 10px;">
-						<p:commandButton value="Cancel"
-							action="#{ManageFireProposalActionBean.cancel}"
-							style="margin-right: 5px;" />
-						<p:commandButton value="Save All"
-							action="#{ManageFireProposalActionBean.saveAll}"
-							update=":fireProposalEntry" process="@form"
+					<p:commandButton value="Cancel"
+						onclick="PF('cancelConfirmDlg').show(); return false;"
+						style="margin-right: 5px;" />
+
+					<p:confirmDialog widgetVar="cancelConfirmDlg" header="Confirmation"
+						message="Are you sure you want to cancel?" appendTo="@(body)"
+						closable="true" closeOnEscape="true">
+
+						<p:commandButton value="Yes"
+							action="#{ManageFireProposalActionBean.cancel}" process="@this"
+							update="@form"
+							oncomplete="if(!args.validationFailed) {PF('cancelConfirmDlg').hide();}"
+							icon="pi pi-check" />
+
+						<p:commandButton value="No"
+							onclick="PF('cancelConfirmDlg').hide()" type="button"
+							icon="pi pi-times" />
+					</p:confirmDialog>
+
+
+					<p:growl id="messages" showDetail="true" sticky="false" life="5000" />
+
+
+					<!-- Submit Confirmation Dialog -->
+					<p:commandButton value="Policy Submit"
+						onclick="PF('submitConfirmDlg').show(); return false;"
+						styleClass="green-button" />
+
+					<p:confirmDialog widgetVar="submitConfirmDlg"
+						header="Confirm Submit"
+						message="Are you sure you want to submit this policy?"
+						appendTo="@(body)">
+
+						<p:commandButton value="Yes"
+							action="#{ManageFireProposalActionBean.saveAll}" process="@form"
+							update=":fireProposalEntry:msgs :fireProposalEntry:downloadBtn"
+							oncomplete="if (!args.validationFailed) PF('submitConfirmDlg').hide();"
 							styleClass="green-button" />
-					</p:panelGrid>
+
+						<p:commandButton value="No"
+							onclick="PF('submitConfirmDlg').hide()" type="button" />
+					</p:confirmDialog>
+					
+			<p:commandButton value="Download Report" id="downloadBtn"
+                 action="#{ManageFireProposalActionBean.generateLetter}"
+                 icon="pi pi-download"
+                 disabled="#{!ManageFireProposalActionBean.saved}"
+                 ajax="false" />
+
+					<p:growl id="msgs" autoUpdate="true" sticky="true" />
+
+
 				</p:tab>
 			</p:wizard>
 		</h:form>

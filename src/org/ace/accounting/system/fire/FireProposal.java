@@ -1,22 +1,23 @@
 package org.ace.accounting.system.fire;
 
-import java.io.Serializable;
+import java.io.Serializable;	
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
 import javax.persistence.*;
 
 import org.ace.accounting.common.BasicEntity;
-import org.ace.accounting.common.Branch;
 import org.ace.accounting.common.CurrencyType1;
 import org.ace.accounting.common.PaymentType;
 import org.ace.accounting.common.SaleChannel;
 import org.ace.accounting.common.TableName;
+import org.ace.accounting.system.branch.Branch;
 import org.ace.java.component.idgen.service.IDInterceptor;
 
 @Entity
-@Table(name = TableName.FIREPOLICY)
+@Table(name = TableName.FIREPROPOSAL)
 @TableGenerator(name = "FIREPROPOSAL_GEN", table = "ID_GEN", pkColumnName = "GEN_NAME", valueColumnName = "GEN_VAL", pkColumnValue = "FIREPROPOSAL_GEN", allocationSize = 10)
 @EntityListeners(IDInterceptor.class)
 public class FireProposal implements Serializable, Cloneable {
@@ -25,29 +26,32 @@ public class FireProposal implements Serializable, Cloneable {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.TABLE, generator = "FIREPROPOSAL_GEN")
-	@Column(name = "ProposalID")
+	@Column(name = "PROPOSALID")
 	private String id;
 
-	@Column(name = "CustomerType", length = 50)
+	@Column(name = "CUSTOMERTYPE")
 	private String customerType;
 
-	@Column(name = "Customer", length = 100)
+	@Column(name = "CUSTOMER")
 	private String customer;
-	
-	@Column(name = "PropertyInterest", length = 255)
+
+	@Column(name = "PROPERTYINTEREST")
 	private String propertyInterest;
 
-	@Column(name = "PropertyLocation", length = 255)
+	@Column(name = "PROPERTYLOCATION")
 	private String propertyLocation;
 
-	@Column(name = "Township", length = 100)
+	@Column(name = "TOWNSHIP")
 	private String township;
 
-	@Column(name = "PolicyNumber", length = 50)
+	@Column(name = "POLICYNUMBER")
 	private String policyNumber;
 
+	@Column(name = "PROPOSALNO")
+	private String proposalNo; // New field for sequential number
+
 	@Temporal(TemporalType.DATE)
-	@Column(name = "PolicyStartDate")
+	@Column(name = "POLICYSTARTDATE")
 	private Date policyStartDate;
 
 	@Enumerated(EnumType.STRING)
@@ -55,53 +59,52 @@ public class FireProposal implements Serializable, Cloneable {
 	private SaleChannel saleChannel;
 
 	@Enumerated(EnumType.STRING)
-	@Column(name = "PaymentType", length = 100)
+	@Column(name = "PAYMENTTYPE")
 	private PaymentType paymentType;
 
-	@Enumerated(EnumType.STRING)
-	@Column(name = "Branch", length = 100)
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "BRANCHID", referencedColumnName = "ID")
 	private Branch branch;
 
 	@Temporal(TemporalType.DATE)
-	@Column(name = "SubmittedDate")
+	@Column(name = "SUBMITTEDDATE")
 	private Date submittedDate;
 
 	@Enumerated(EnumType.STRING)
-	@Column(name = "CurrencyType", length = 50)
+	@Column(name = "CURRENCYTYPE")
 	private CurrencyType1 currencyType;
 
-	@Column(name = "InsurancePeriodDays")
+	@Column(name = "INSURANCEPERIODDAYS")
 	private Integer insurancePeriodDays;
 
 	@OneToMany(mappedBy = "fireProposal", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<BuildingInfo> buildingList = new ArrayList<>();
 
-	@Temporal(TemporalType.DATE)
-	@Column(name = "StartDateFrom")
-	private Date startDateFrom;
-
-	@Temporal(TemporalType.DATE)
-	@Column(name = "StartDateTo")
-	private Date startDateTo;
-
+	/*
+	 * @Temporal(TemporalType.DATE)
+	 * @Column(name = "STARTDATEFROM") private Date startDateFrom;
+	 *
+	 * @Temporal(TemporalType.DATE)
+	 * @Column(name = "STARTDATETO") private Date startDateTo;
+	 */
 	@Version
-	@Column(name = "Version")
+	@Column(name = "VERSION")
 	private int version;
 
 	@Temporal(TemporalType.DATE)
-	@Column(name = "PolicyEndDate")
+	@Column(name = "POLICYENDDATE")
 	private Date policyEndDate;
 
 	@Embedded
 	private BasicEntity basicEntity;
 
-	@Column(name = "InsurancePeriodUnit", length = 10)
+	@Column(name = "INSURANCEPERIODUNIT")
 	private String insurancePeriodUnit;
-
-	@Column(name = "TotalSumInsured", precision = 15, scale = 2)
-	private Double totalSumInsured = 0.0;
-
-	@Column(name = "TotalPremiumPeriod", precision = 15, scale = 2)
+	/*
+	 * @Column(name = "TOTALSUMINSURED", precision = 15, scale = 2)
+	 * private Double totalSumInsured = 0.0;
+	 */
+	@Column(name = "TOTALPREMIUMPERIOD", precision = 15, scale = 2)
 	private Double totalPremiumPeriod = 0.0;
 
 	// Constructors
@@ -158,11 +161,25 @@ public class FireProposal implements Serializable, Cloneable {
 	}
 
 	public String getPolicyNumber() {
+		if (policyNumber == null && proposalNo != null && policyStartDate != null) {
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(policyStartDate);
+			int year = cal.get(Calendar.YEAR);
+			return String.format("FM/PO/%s/FM-%d", proposalNo, year);
+		}
 		return policyNumber != null ? policyNumber : "";
 	}
 
 	public void setPolicyNumber(String policyNumber) {
 		this.policyNumber = policyNumber;
+	}
+
+	public String getProposalNo() {
+		return proposalNo != null ? proposalNo : id;
+	}
+
+	public void setProposalNo(String proposalNo) {
+		this.proposalNo = proposalNo;
 	}
 
 	public Date getPolicyStartDate() {
@@ -233,25 +250,18 @@ public class FireProposal implements Serializable, Cloneable {
 			}
 		}
 	}
+	/*
+	 * public Date getStartDateFrom() { return startDateFrom; }
+	 * 
+	 * public void setStartDateFrom(Date startDateFrom) { this.startDateFrom =
+	 * startDateFrom; }
+	 * 
+	 * public Date getStartDateTo() { return startDateTo; }
+	 * 
+	 * public void setStartDateTo(Date startDateTo) { this.startDateTo =
+	 * startDateTo; }
+	 */
 
-	public Date getStartDateFrom() {
-		return startDateFrom;
-	}
-
-	public void setStartDateFrom(Date startDateFrom) {
-		this.startDateFrom = startDateFrom;
-	}
-
-	public Date getStartDateTo() {
-		return startDateTo;
-	}
-
-	public void setStartDateTo(Date startDateTo) {
-		this.startDateTo = startDateTo;
-	}
-	
-
-	
 	public int getVersion() {
 		return version;
 	}
@@ -284,22 +294,22 @@ public class FireProposal implements Serializable, Cloneable {
 		this.insurancePeriodUnit = insurancePeriodUnit;
 	}
 
-	public Double getTotalSumInsured() {
-		return totalSumInsured != null ? totalSumInsured : 0.0;
-	}
-
-	public void setTotalSumInsured(Double totalSumInsured) {
-		this.totalSumInsured = totalSumInsured;
-	}
-
-	public Double getTotalPremiumPeriod() {
-		return totalPremiumPeriod != null ? totalPremiumPeriod : 0.0;
-	}
-
-	public void setTotalPremiumPeriod(Double totalPremiumPeriod) {
-		this.totalPremiumPeriod = totalPremiumPeriod;
-	}
-
+	
+	
+	/*
+	 * public Double getTotalSumInsured() { return totalSumInsured != null ?
+	 * totalSumInsured : 0.0; }
+	 * 
+	 * public void setTotalSumInsured(Double totalSumInsured) { this.totalSumInsured
+	 * = totalSumInsured; }
+	 */
+	  
+	  public Double getTotalPremiumPeriod() { return totalPremiumPeriod != null ?
+	  totalPremiumPeriod : 0.0; }
+	 
+	  public void setTotalPremiumPeriod(Double totalPremiumPeriod) {
+	  this.totalPremiumPeriod = totalPremiumPeriod; }
+	 
 	public double calculateTotalSumInsured() {
 		return buildingList.stream().mapToDouble(b -> b.getSumInsured() != null ? b.getSumInsured() : 0.0).sum();
 	}
@@ -314,6 +324,7 @@ public class FireProposal implements Serializable, Cloneable {
 		clone.setPropertyLocation(this.propertyLocation);
 		clone.setTownship(this.township);
 		clone.setPolicyNumber(this.policyNumber);
+		clone.setProposalNo(this.proposalNo);
 		clone.setPolicyStartDate(this.policyStartDate);
 		clone.setSaleChannel(this.saleChannel);
 		clone.setPaymentType(this.paymentType);
@@ -321,28 +332,23 @@ public class FireProposal implements Serializable, Cloneable {
 		clone.setSubmittedDate(this.submittedDate);
 		clone.setCurrencyType(this.currencyType);
 		clone.setInsurancePeriodDays(this.insurancePeriodDays);
-		clone.setBuildingList(new ArrayList<>(this.buildingList)); // Shallow copy, adjust if deep copy needed
-		clone.setStartDateFrom(this.startDateFrom);
-		clone.setStartDateTo(this.startDateTo);
+		clone.setBuildingList(new ArrayList<>(this.buildingList));
+		/*
+		 * clone.setStartDateFrom(this.startDateFrom);
+		 * clone.setStartDateTo(this.startDateTo);
+		 */
 		clone.setVersion(this.version);
 		clone.setPolicyEndDate(this.policyEndDate);
-		/*
-		 * clone.setBasicEntity(this.basicEntity != null ? this.basicEntity.clone() :
-		 * null);
-		 */
 		clone.setInsurancePeriodUnit(this.insurancePeriodUnit);
-		clone.setTotalSumInsured(this.totalSumInsured);
-		clone.setTotalPremiumPeriod(this.totalPremiumPeriod);
+		
+		/* clone.setTotalSumInsured(this.totalSumInsured); */
+		  clone.setTotalPremiumPeriod(this.totalPremiumPeriod);
+		 
 		return clone;
 	}
 
-	/*
-	 * public String getProposalNo() { return proposalNo; }
-	 * 
-	 * public void setProposalNo(String proposalNo) { this.proposalNo = proposalNo;
-	 * } 
-	 */
-
-	
-
+	public void setTotalSumInsured(double totalSumInsured) {
+		// TODO Auto-generated method stub
+		
+	}
 }

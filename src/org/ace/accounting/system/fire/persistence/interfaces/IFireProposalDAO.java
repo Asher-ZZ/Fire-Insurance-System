@@ -18,8 +18,15 @@ public interface IFireProposalDAO {
 
     FireProposal findById(String id) throws DAOException;
 
-    FireProposal findByPolicyNo(String policyNo) throws DAOException;
+    List<FireProposal> findByPolicyNo(String policyNo) throws DAOException;
 
     List<FireProposal> findByDateRange(Date startDate, Date endDate) throws DAOException;
+    
+    String findLastProposalNoByMonthYear(String monthYear) throws DAOException;
+    
+    boolean existsByPolicyNumber(String policyNumber)throws DAOException;
+    List<FireProposal> findByCriteria(String policyNo, Date startDate, Date endDate) throws DAOException;
+
+
 
 }

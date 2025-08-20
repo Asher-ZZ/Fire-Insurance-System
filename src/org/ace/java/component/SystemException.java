@@ -1,5 +1,6 @@
 package org.ace.java.component;
 
+import org.ace.java.component.persistence.exception.DAOException;
 import org.springframework.transaction.TransactionSystemException;
 
 public class SystemException extends TransactionSystemException {
@@ -23,6 +24,7 @@ public class SystemException extends TransactionSystemException {
 		this.response = response;
 	}
 
+	
 	public String getErrorCode() {
 		return errorCode;
 	}
