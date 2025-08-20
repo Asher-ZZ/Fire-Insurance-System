@@ -192,11 +192,12 @@ public class FireProposalDAO extends BasicDAO implements IFireProposalDAO {
         }
     }
     
-//    public boolean existsByPolicyNumber(String policyNumber) throws DAOException {
-//        Long count = em.createQuery("SELECT COUNT(f) FROM FireProposal f WHERE f.policyNumber = :policyNumber", Long.class)
-//                       .setParameter("policyNumber", policyNumber)
-//                       .getSingleResult();
-//        return count > 0;
-//    }
+   public boolean existsByPolicyNumber(String policyNumber) {
+        TypedQuery<Long> query = em.createQuery(
+            "SELECT COUNT(f) FROM FireProposal f WHERE f.policyNumber = :policyNo", Long.class);
+        query.setParameter("policyNo", policyNumber);
+        Long count = query.getSingleResult();
+        return count > 0;
+    }
    
 }

@@ -4,13 +4,17 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
+import javax.faces.component.UIComponent;
 import javax.faces.event.AjaxBehaviorEvent;
+import javax.faces.validator.ValidatorException;
 
 import org.ace.accounting.common.CurrencyType1;
 import org.ace.accounting.common.PaymentType;
@@ -26,16 +30,34 @@ import org.ace.accounting.system.fire.enumTypes.WallType;
 import org.ace.accounting.system.fire.service.interfaces.IFireProposalService;
 import org.ace.java.component.SystemException;
 import org.ace.java.web.common.BaseBean;
+import org.apache.commons.io.FileUtils;
 import org.primefaces.event.FlowEvent;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.event.TabChangeEvent;
+import org.primefaces.model.DefaultStreamedContent;
+import org.primefaces.model.StreamedContent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import net.sf.jasperreports.engine.JREmptyDataSource;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperExportManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.design.JasperDesign;
+import net.sf.jasperreports.engine.xml.JRXmlLoader;
+
 import javax.faces.application.FacesMessage;
+import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.SimpleDateFormat;
 
 @ManagedBean(name = "ManageFireProposalActionBean")
 @ViewScoped
@@ -55,12 +77,15 @@ public class ManageFireProposalActionBean extends BaseBean {
 	private List<FireProposal> fireProposalList;
 	private int periodMin;
 	private int periodMax;
+	private boolean saved = false;
 
+	
 	private String currentStep = "proposalInfo";
 
 	private Date minDate = toDate(LocalDate.of(1990, 1, 1));
 	private Date maxDate = toDate(LocalDate.now(ZoneId.of("Australia/Sydney")));
 
+	/* private Double totalSumInsured; */
 	private Date toDate(LocalDate localDate) {
 		return Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
 	}
@@ -90,8 +115,6 @@ public class ManageFireProposalActionBean extends BaseBean {
 			logger.warn("FireProposalService is null, initialized empty fire proposal list");
 		}
 	}
-	
-	
 
 	public String onFlowProcess(FlowEvent event) {
         String oldStep = event.getOldStep(); // current step
@@ -99,16 +122,7 @@ public class ManageFireProposalActionBean extends BaseBean {
 
         // Only block if going forward from buildingInfo to premiumInfo
         if ("buildingInfo".equals(oldStep) && "premiumInfo".equals(newStep)) {
-            if (buildingInfo == null || !buildingInfo.isValid()) {
-                addErrorMessage(null, "Please fill in all mandatory building info fields before proceeding.");
-                return oldStep; // prevent moving forward
-            }
             
-
-            validateDates();
-            if (hasErrors()) {
-                return oldStep; // prevent moving forward if errors exist
-            }
         }
 
         if ("premiumInfo".equals(newStep)) {
@@ -119,58 +133,94 @@ public class ManageFireProposalActionBean extends BaseBean {
         currentStep = newStep;
         return currentStep;
     }
+
+	/*
+	 * private void validateDates() { Date submittedDate =
+	 * fireProposal.getSubmittedDate(); Date policyStartDate =
+	 * fireProposal.getPolicyStartDate(); if (submittedDate != null &&
+	 * (submittedDate.before(minDate) || submittedDate.after(maxDate))) {
+	 * addErrorMessage(null, "Submitted date must be between " + minDate + " and " +
+	 * maxDate); return; } if (policyStartDate != null &&
+	 * (policyStartDate.before(minDate) || policyStartDate.after(maxDate))) {
+	 * addErrorMessage(null, "Policy start date must be between " + minDate +
+	 * " and " + maxDate); return; }
+	 * logger.debug("Validated dates: SubmittedDate={}, PolicyStartDate={}",
+	 * submittedDate, policyStartDate); }
+	 */
 	
-	private void validateDates() {
-		Date submittedDate = fireProposal.getSubmittedDate();
-		Date policyStartDate = fireProposal.getPolicyStartDate();
-		if (submittedDate != null && (submittedDate.before(minDate) || submittedDate.after(maxDate))) {
-			addErrorMessage(null, "Submitted date must be between " + minDate + " and " + maxDate);
-			return;
-		}
-		if (policyStartDate != null && (policyStartDate.before(minDate) || policyStartDate.after(maxDate))) {
-			addErrorMessage(null, "Policy start date must be between " + minDate + " and " + maxDate);
-			return;
-		}
-		logger.debug("Validated dates: SubmittedDate={}, PolicyStartDate={}", submittedDate, policyStartDate);
+	public void validatePolicyNo(FacesContext context, UIComponent component, Object value) {
+	    String policyNo = (String) value;
+
+	    if (policyNo == null || policyNo.trim().isEmpty()) {
+	        FacesMessage msg = new FacesMessage("Policy No. is required.");
+	        msg.setSeverity(FacesMessage.SEVERITY_ERROR);
+	        throw new ValidatorException(msg);
+	    }
+
+	    // Format check (POL + 3 digits)
+	    if (!policyNo.matches("^POL\\d{4}$")) {
+	        FacesMessage msg = new FacesMessage("Policy No. format must be like POL0001.");
+	        msg.setSeverity(FacesMessage.SEVERITY_ERROR);
+	        throw new ValidatorException(msg);
+	    }
+
+	    // Check if already exists in DB
+	    if (fireProposalService.existsByPolicyNumber(policyNo)) {
+	        FacesMessage msg = new FacesMessage("Policy No. already exists.");
+	        msg.setSeverity(FacesMessage.SEVERITY_ERROR);
+	        throw new ValidatorException(msg);
+	    }
 	}
 
-	public String saveAll() {
-		try {
-			for (BuildingInfo b : buildings) {
-				b.setFireProposal(fireProposal);
-			}
-			fireProposal.setBuildingList(buildings);
-			calculatePolicyEndDate();
-			logger.debug("Saving FireProposal with policyEndDate: {}", fireProposal.getPolicyEndDate());
+	
+	public void calculateSquareFeet(AjaxBehaviorEvent event) {
+        double length = buildingInfo.getLength() != null ? buildingInfo.getLength() : 0.0;
+        double width = buildingInfo.getWidth() != null ? buildingInfo.getWidth() : 0.0;
+        buildingInfo.setSquareFeet(length * width); // Calculate area as length × width
+    }
+	
 
-			if (fireProposal.getProposalNo() == null || fireProposal.getProposalNo().isEmpty()) {
-				String generatedNo = fireProposalService.generateProposalNo();
-				fireProposal.setProposalNo(generatedNo);
-			}
+	public void saveAll() {
+        try {
+            for (BuildingInfo b : buildings) {
+                b.setFireProposal(fireProposal);
+            }
+            fireProposal.setBuildingList(buildings);
+            calculatePolicyEndDate();
+            logger.debug("Saving FireProposal with policyEndDate: {}", fireProposal.getPolicyEndDate());
 
-			if (createNew) {
-				fireProposalService.addNewFireProposal(fireProposal);
-				addInfoMessage(null, MessageId.INSERT_SUCCESS, fireProposal.getCustomer());
-			} else {
-				fireProposalService.updateFireProposal(fireProposal);
-				addInfoMessage(null, MessageId.UPDATE_SUCCESS, fireProposal.getCustomer());
-			}
+            if (fireProposal.getProposalNo() == null || fireProposal.getProposalNo().isEmpty()) {
+                String generatedNo = fireProposalService.generateProposalNo();
+                fireProposal.setProposalNo(generatedNo);
+            }
 
-			createNewFireProposal();
-			loadFireProposals();
+            if (createNew) {
+                fireProposalService.addNewFireProposal(fireProposal);
+                addInfoMessage(null, MessageId.INSERT_SUCCESS, fireProposal.getCustomer());
+            } else {
+                fireProposalService.updateFireProposal(fireProposal);
+                addInfoMessage(null, MessageId.UPDATE_SUCCESS, fireProposal.getCustomer());
+            }
 
-		} catch (SystemException ex) {
-			logger.error("Failed to save FireProposal", ex);
-			handleSysException(ex);
-		}
-		return "/ui/system/home.xhtml?faces-redirect=true";
+            // ✅ Keep saved proposal in session for report bean
+            FacesContext.getCurrentInstance().getExternalContext()
+                    .getSessionMap().put("savedFireProposal", fireProposal);
 
-	}
+            saved = true;
+
+            // ⚠️ Do NOT reset fireProposal here, otherwise report will see null
+            // createNewFireProposal();
+            // loadFireProposals();
+
+        } catch (SystemException ex) {
+            logger.error("Failed to save FireProposal", ex);
+            handleSysException(ex);
+        }
+    }
 
 	public String cancel() {
-		createNewFireProposal();
-		return null;
-		
+		// createNewFireProposal();
+		return "/ui/system/home.xhtml?faces-redirect=true";
 	}
 
 	private void calculatePolicyEndDate() {
@@ -229,13 +279,13 @@ public class ManageFireProposalActionBean extends BaseBean {
 	}
 
 	public void addBuilding() {
-	    if (!buildingInfo.isValid()) {
-	        addErrorMessage("Please fill all required fields");
-	        return;
-	    }
-	    buildings.add(buildingInfo.clone());
-	    buildingInfo = new BuildingInfo();
-	    addErrorMessage("Building added successfully");
+		if (buildingInfo != null && buildingInfo.isValid()) {
+			BuildingInfo cloned = buildingInfo.clone();
+			buildings.add(cloned);
+			buildingInfo = new BuildingInfo(); // reset input
+		} else {
+			addErrorMessage(null, "Please fill building details before adding.");
+		}
 	}
 
 	// Return available payment types based on current insurance period
@@ -255,7 +305,8 @@ public class ManageFireProposalActionBean extends BaseBean {
 			return new PaymentType[] { PaymentType.LUMPSUM, PaymentType.SEMI_ANNUAL, PaymentType.QUARTER,
 					PaymentType.MONTHLY };
 		} else {
-			 
+			// only lumpsum
+			// ensure selected payment type is valid
 			if (fireProposal.getPaymentType() != PaymentType.LUMPSUM) {
 				fireProposal.setPaymentType(PaymentType.LUMPSUM);
 			}
@@ -302,7 +353,7 @@ public class ManageFireProposalActionBean extends BaseBean {
 		PaymentType pt = fireProposal.getPaymentType();
 		double divisor = getPaymentDivisor(pt);
 		double grandTotal = 0.0;
-		double totalSumInsured = 0.0;
+		/* double totalSumInsured = 0.0; */
 
 		for (BuildingInfo b : buildings) {
 			double basicPeriod = (b.getBasicPremiumPeriod() != null) ? b.getBasicPremiumPeriod() : 0.0;
@@ -314,11 +365,11 @@ public class ManageFireProposalActionBean extends BaseBean {
 			b.setAddOnPremiumTerm(round(addonTerm));
 			b.setTotalPremiumPeriod(round(basicTerm + addonTerm));
 			grandTotal += b.getTotalPremiumPeriod();
-			totalSumInsured += (b.getSumInsured() != null) ? b.getSumInsured() : 0.0;
+			/* totalSumInsured += (b.getSumInsured() != null) ? b.getSumInsured() : 0.0; */
 		}
 
-		fireProposal.setTotalPremiumPeriod(round(grandTotal));
-		fireProposal.setTotalSumInsured(totalSumInsured);
+		buildingInfo.setTotalPremiumPeriod(round(grandTotal));
+		/* buildingInfo.setTotalSumInsured(totalSumInsured); */
 	}
 
 	/**
@@ -373,6 +424,105 @@ public class ManageFireProposalActionBean extends BaseBean {
 		}
 	}
 
+	    private StreamedContent letter;
+	    private final String reportName = "FirePolicyReport";
+		private final String pdfDirPath = "/pdf-report/" + reportName + "/" + System.currentTimeMillis() + "/";
+		public String getPdfDirPath() {
+			return pdfDirPath;
+		}
+
+		private final String dirPath = getWebRootPath() + pdfDirPath;
+		public String getDirPath() {
+			return dirPath;
+		}
+
+		private final String fileName = "Fire Policy Report";
+		
+	  public String getFileName() {
+			return fileName;
+		}
+
+	public void generateLetter() {
+		  
+	        try {
+	            if (fireProposal == null || fireProposal.getBuildingList() == null) {
+	                throw new IllegalStateException("FireProposal or Building list is null. Save it first.");
+	            }
+
+	            // ---- Totals using double ----
+	            double totalSumInsured     = 0.0;
+	            double basicPremiumTerm    = 0.0;
+	            double addOnPremiumTerm    = 0.0;
+	            double totalPremiumPeriod  = 0.0;
+
+	            for (BuildingInfo b : fireProposal.getBuildingList()) {
+	                if (b == null) continue;
+	                if (b.getSumInsured() != null)       totalSumInsured    += b.getSumInsured().doubleValue();
+	                if (b.getBasicPremiumTerm() != null) basicPremiumTerm   += b.getBasicPremiumTerm().doubleValue();
+	                if (b.getAddOnPremiumTerm() != null) addOnPremiumTerm   += b.getAddOnPremiumTerm().doubleValue();
+	                if (b.getTotalPremiumPeriod() != null) totalPremiumPeriod += b.getTotalPremiumPeriod().doubleValue();
+	            }
+
+	            // ---- Parameters for JasperReports ----
+	            Map<String, Object> params = new HashMap<String, Object>();
+	            System.out.println("Customer Name"+fireProposal.getCustomer());
+	            System.out.println("Policy Number"+fireProposal.getPolicyNumber());
+	            System.out.println("ProposalNo"+fireProposal.getProposalNo());
+	            params.put("Customer",           fireProposal.getCustomer());
+	            params.put("PolicyNumber",      fireProposal.getPolicyNumber());
+	            params.put("ProposalNo",         fireProposal.getProposalNo());
+	            params.put("SumInsured",         totalSumInsured);
+	            params.put("BasicPremiumTerm",   basicPremiumTerm);
+	            params.put("AddOnPremiumTerm",   addOnPremiumTerm);
+	            params.put("TotalPremiumPeriod", totalPremiumPeriod);
+	            params.put("RunDate", new SimpleDateFormat("dd-MM-yyyy").format(new java.util.Date()));
+
+	            InputStream jrxml = Thread.currentThread()
+	                    .getContextClassLoader()
+	                    .getResourceAsStream("FirePolicyReport.jrxml");
+	            JasperDesign design = JRXmlLoader.load(jrxml);
+	            JasperReport report = JasperCompileManager.compileReport(design);
+	            JasperPrint print = JasperFillManager.fillReport(report, params, new JREmptyDataSource());
+	            FileUtils.forceMkdir(new File(dirPath));
+				JasperExportManager.exportReportToPdfFile(print, dirPath + fileName.concat(".pdf"));;
+	            // ---- Export to PDF ----
+	           
+	            System.out.println("PDF generated successfully!");
+
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	            this.setLetter(null);
+	            throw new RuntimeException("Error generating Fire Proposal Letter", e);
+	        }
+	    }
+	
+	public StreamedContent getDownload() {
+        try {
+            String pdfFilePath = dirPath + fileName + ".pdf";
+            System.out.println("getDownload: Looking for PDF at " + pdfFilePath);
+            File file = new File(pdfFilePath);
+
+            // Generate report if PDF does not exist
+            if (!file.exists()) {
+                generateLetter();
+            }
+
+            if (!file.exists()) {
+                addErrorMessage(null, "Download Failed: PDF file could not be generated.");
+                return null;
+            }
+
+            InputStream input = new FileInputStream(file);
+            ExternalContext ext = FacesContext.getCurrentInstance().getExternalContext();
+
+            return new DefaultStreamedContent(input, ext.getMimeType(file.getName()), file.getName());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            addErrorMessage(null, "Download Failed: " + e.getMessage());
+            return null;
+        }
+    }
 	public void returnBranch(SelectEvent event) {
 		Branch branch = (Branch) event.getObject();
 		fireProposal.setBranch(branch);
@@ -448,6 +598,14 @@ public class ManageFireProposalActionBean extends BaseBean {
 		this.maxDate = maxDate;
 	}
 
+	public boolean isSaved() {
+	    return saved;
+	}
+
+	public void setSaved(boolean saved) {
+	    this.saved = saved;
+	}
+	
 	public String getCurrentStep() {
 		return currentStep;
 	}
@@ -455,20 +613,7 @@ public class ManageFireProposalActionBean extends BaseBean {
 	public SaleChannel[] getSaleChannels() {
 		return SaleChannel.values();
 	}
-	
-	 public WallType[] getWallTypes() {
-	        return WallType.values();
-	    }
-	 
-	 public RoofingType[] getRoofingTypes() {
-		    return RoofingType.values();
-		}
-	 public BuildingClass[] getBuildingClasses() {
-		    return BuildingClass.values();
-		}
-	 public FloorType[] getFloorTypes() {
-		    return FloorType.values();
-		}
+
 	public CurrencyType1[] getCurrencyTypes() {
 		return CurrencyType1.values();
 	}
@@ -476,6 +621,19 @@ public class ManageFireProposalActionBean extends BaseBean {
 	public PaymentType[] getPaymentTypes() {
 		return PaymentType.values();
 	}
+	public WallType[] getWallTypes() {
+        return WallType.values();
+    }
+ 
+ public RoofingType[] getRoofingTypes() {
+      return RoofingType.values();
+  }
+ public BuildingClass[] getBuildingClasses() {
+      return BuildingClass.values();
+  }
+ public FloorType[] getFloorTypes() {
+      return FloorType.values();
+  }
 
 	public void setFireProposalService(IFireProposalService fireProposalService) {
 		this.fireProposalService = fireProposalService;
@@ -492,4 +650,20 @@ public class ManageFireProposalActionBean extends BaseBean {
 	public void setBuildingInfo(BuildingInfo buildingInfo) {
 		this.buildingInfo = buildingInfo;
 	}
+
+	public StreamedContent getLetter() {
+		return letter;
+	}
+
+	public void setLetter(StreamedContent letter) {
+		this.letter = letter;
+	}
+
+	/*
+	 * public Double getTotalSumInsured() { return getTotalSumInsured(); }
+	 */
+	/*
+	 * public void setTotalSumInsured(Double totalSumInsured) { this.totalSumInsured
+	 * = totalSumInsured; }
+	 */
 }
