@@ -68,14 +68,15 @@ public class FireProposalService extends BaseService implements IFireProposalSer
     }
 
     @Transactional(propagation = Propagation.REQUIRED, readOnly = true)
-    public FireProposal findFireProposalByPolicyNo(String policyNo) throws SystemException {
+
+    public List<FireProposal> findFireProposalByPolicyNo(String policyNo) throws SystemException {
         try {
             return fireProposalDAO.findByPolicyNo(policyNo);
         } catch (DAOException e) {
-            throw new SystemException(e.getErrorCode(), "Failed to find fire proposal by policy number: " + policyNo, e);
+            throw new SystemException(e.getErrorCode(), 
+                "Failed to find fire proposal by policy number: " + policyNo, e);
         }
     }
-
     @Transactional(propagation = Propagation.REQUIRED, readOnly = true)
     public List<FireProposal> findFireProposalsByDateRange(Date startDate, Date endDate) throws SystemException {
         try {
@@ -108,6 +109,16 @@ public class FireProposalService extends BaseService implements IFireProposalSer
     public boolean existsByPolicyNumber(String policyNumber) {
         return fireProposalDAO.existsByPolicyNumber(policyNumber);
     }
+    
+    @Transactional(propagation = Propagation.REQUIRED, readOnly = true)
+    public List<FireProposal> findByCriteria(String policyNo, Date startDate, Date endDate) {
+        try {
+            return fireProposalDAO.findByCriteria(policyNo, startDate, endDate);
+        } catch (DAOException e) {
+            throw new SystemException(e.getErrorCode(), "Failed to find FireProposals by Criteria", e);
+        }
+    }
+
 
 
 }

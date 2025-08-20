@@ -85,51 +85,76 @@ public class ManageFireEnquiryBean implements Serializable {
 		this.fireProposalService = fireProposalService;
 	}
 
-	// Search action
+	/*
+	 * // Search action public void search() { // Clear previous results
+	 * policies.clear();
+	 * 
+	 * try { List<FireProposal> fireProposals = new ArrayList<>();
+	 * 
+	 * boolean hasPolicyNo = policyNo != null && !policyNo.trim().isEmpty(); boolean
+	 * hasStartDate = startDateFrom != null; boolean hasEndDate = startDateTo !=
+	 * null;
+	 * 
+	 * if (!hasPolicyNo && !hasStartDate && !hasEndDate) { // No criteria -> fetch
+	 * all fireProposals = fireProposalService.findAllFireProposals(); } else if
+	 * (hasPolicyNo && !hasStartDate && !hasEndDate) { // Only policy number
+	 * fireProposals = fireProposalService.findFireProposalByPolicyNo(policyNo); }
+	 * else if (!hasPolicyNo && (hasStartDate || hasEndDate)) { // Only date range
+	 * (start, end, or both) fireProposals =
+	 * fireProposalService.findFireProposalsByDateRange(startDateFrom, startDateTo);
+	 * } else if (hasPolicyNo && (hasStartDate || hasEndDate)) { // Policy number +
+	 * date range List<FireProposal> proposalsByNo =
+	 * fireProposalService.findFireProposalByPolicyNo(policyNo); for (FireProposal
+	 * proposal : proposalsByNo) { Date policyDate = proposal.getPolicyStartDate();
+	 * boolean matchesStart = hasStartDate ? !policyDate.before(startDateFrom) :
+	 * true; boolean matchesEnd = hasEndDate ? !policyDate.after(startDateTo) :
+	 * true;
+	 * 
+	 * if (matchesStart && matchesEnd) { fireProposals.add(proposal); } } }
+	 * 
+	 * // Convert results to Policy objects for (FireProposal proposal :
+	 * fireProposals) { policies.add(convertToPolicy(proposal)); }
+	 * 
+	 * // Show message FacesContext context = FacesContext.getCurrentInstance(); if
+	 * (policies.isEmpty()) { context.addMessage(null, new
+	 * FacesMessage(FacesMessage.SEVERITY_INFO, "No records found", null)); } else {
+	 * context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO,
+	 * "Search completed", policies.size() + " records found")); }
+	 * 
+	 * } catch (SystemException e) {
+	 * FacesContext.getCurrentInstance().addMessage(null, new
+	 * FacesMessage(FacesMessage.SEVERITY_ERROR, "Error during search",
+	 * e.getMessage())); } }
+	 */
 	public void search() {
-	    // Normalize empty dates to null
-	    if (startDateFrom != null && startDateFrom.toString().trim().isEmpty()) {
-	        startDateFrom = null;
-	    }
-	    if (startDateTo != null && startDateTo.toString().trim().isEmpty()) {
-	        startDateTo = null;
-	    }
-
-	    // Clear previous results
 	    policies.clear();
 
 	    try {
-	        if (isValidSearchCriteria()) {
-	            List<FireProposal> fireProposals = new ArrayList<>();
+	        // Call one flexible DAO/service method
+	        List<FireProposal> fireProposals = fireProposalService.findByCriteria(policyNo, startDateFrom, startDateTo);
 
-	            if (policyNo != null && !policyNo.trim().isEmpty()) {
-	                FireProposal proposal = fireProposalService.findFireProposalByPolicyNo(policyNo);
-	                if (proposal != null) {
-	                    policies.add(convertToPolicy(proposal));
-	                }
-	            } else {
-	                fireProposals = fireProposalService.findFireProposalsByDateRange(startDateFrom, startDateTo);
-	                for (FireProposal proposal : fireProposals) {
-	                    policies.add(convertToPolicy(proposal));
-	                }
-	            }
-
-	            if (policies.isEmpty()) {
-	                FacesContext.getCurrentInstance().addMessage(null,
-	                        new FacesMessage(FacesMessage.SEVERITY_INFO, "No records found", null));
-	            } else {
-	                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO,
-	                        "Search completed", policies.size() + " records found"));
-	            }
-	        } else {
-	            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN,
-	                    "Invalid search criteria", "Please provide valid dates or policy number"));
+	        for (FireProposal proposal : fireProposals) {
+	            policies.add(convertToPolicy(proposal));
 	        }
+
+	        FacesContext context = FacesContext.getCurrentInstance();
+	        if (policies.isEmpty()) {
+	            context.addMessage(null,
+	                new FacesMessage(FacesMessage.SEVERITY_INFO, "No records found", null));
+	        } else {
+	            context.addMessage(null,
+	                new FacesMessage(FacesMessage.SEVERITY_INFO, "Search completed", 
+	                    policies.size() + " records found"));
+	        }
+
 	    } catch (SystemException e) {
 	        FacesContext.getCurrentInstance().addMessage(null,
-	                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error during search", e.getMessage()));
+	            new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error during search", e.getMessage()));
 	    }
 	}
+
+	
+	
 
 
 	// Reset action

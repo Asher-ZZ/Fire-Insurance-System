@@ -213,9 +213,9 @@
 									value="#{ManageFireProposalActionBean.fireProposal.insurancePeriodDays}"
 									required="true" requiredMessage="Insurance period is required."
 									styleClass="spinner-input">
-									<!-- <f:validateLongRange
+									<f:validateLongRange
 										minimum="#{ManageFireProposalActionBean.periodMin}"
-										maximum="#{ManageFireProposalActionBean.periodMax}" /> -->
+										maximum="#{ManageFireProposalActionBean.periodMax}" />
 									<p:ajax event="change"
 										listener="#{ManageFireProposalActionBean.updatePeriodRange}"
 										update="paymentType" process="@this" />
@@ -647,13 +647,19 @@
 
 						<p:commandButton value="Yes"
 							action="#{ManageFireProposalActionBean.saveAll}" process="@form"
-							update=":fireProposalEntry:msgs"
+							update=":fireProposalEntry:msgs :fireProposalEntry:downloadBtn"
 							oncomplete="if (!args.validationFailed) PF('submitConfirmDlg').hide();"
 							styleClass="green-button" />
 
 						<p:commandButton value="No"
 							onclick="PF('submitConfirmDlg').hide()" type="button" />
 					</p:confirmDialog>
+					
+			<p:commandButton value="Download Report" id="downloadBtn"
+                 action="#{ManageFireProposalActionBean.generateLetter}"
+                 icon="pi pi-download"
+                 disabled="#{!ManageFireProposalActionBean.saved}"
+                 ajax="false" />
 
 					<p:growl id="msgs" autoUpdate="true" sticky="true" />
 
