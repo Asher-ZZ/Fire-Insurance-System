@@ -51,7 +51,7 @@
 				<textElement>
 					<font size="14"/>
 				</textElement>
-				<text><![CDATA[xxx Insurance And Premium charges]]></text>
+				<text><![CDATA[Fire Insurance And Premium charges]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="0" y="28" width="534" height="50" uuid="5f176c7f-c487-4262-88c6-729dc2c65409"/>
@@ -79,7 +79,7 @@
 				<text><![CDATA["Policy Number"]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="0" y="60" width="170" height="19" uuid="e5074f8a-ddab-4515-9c84-8166ee5b8809"/>
+				<reportElement x="0" y="160" width="180" height="19" uuid="e5074f8a-ddab-4515-9c84-8166ee5b8809"/>
 				<textElement>
 					<font size="14"/>
 				</textElement>

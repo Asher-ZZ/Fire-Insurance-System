@@ -4,7 +4,9 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
@@ -28,16 +30,31 @@ import org.ace.accounting.system.fire.enumTypes.WallType;
 import org.ace.accounting.system.fire.service.interfaces.IFireProposalService;
 import org.ace.java.component.SystemException;
 import org.ace.java.web.common.BaseBean;
+import org.apache.commons.io.FileUtils;
 import org.primefaces.event.FlowEvent;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.event.TabChangeEvent;
+import org.primefaces.model.StreamedContent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import net.sf.jasperreports.engine.JREmptyDataSource;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperExportManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.design.JasperDesign;
+import net.sf.jasperreports.engine.xml.JRXmlLoader;
+
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
+
+import java.io.File;
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.SimpleDateFormat;
 
 @ManagedBean(name = "ManageFireProposalActionBean")
 @ViewScoped
@@ -161,38 +178,42 @@ public class ManageFireProposalActionBean extends BaseBean {
 	
 
 	public void saveAll() {
-		try {
-			for (BuildingInfo b : buildings) {
-				b.setFireProposal(fireProposal);
-			}
-			fireProposal.setBuildingList(buildings);
-			calculatePolicyEndDate();
-			logger.debug("Saving FireProposal with policyEndDate: {}", fireProposal.getPolicyEndDate());
+        try {
+            for (BuildingInfo b : buildings) {
+                b.setFireProposal(fireProposal);
+            }
+            fireProposal.setBuildingList(buildings);
+            calculatePolicyEndDate();
+            logger.debug("Saving FireProposal with policyEndDate: {}", fireProposal.getPolicyEndDate());
 
-			if (fireProposal.getProposalNo() == null || fireProposal.getProposalNo().isEmpty()) {
-				String generatedNo = fireProposalService.generateProposalNo();
-				fireProposal.setProposalNo(generatedNo);
-			}
+            if (fireProposal.getProposalNo() == null || fireProposal.getProposalNo().isEmpty()) {
+                String generatedNo = fireProposalService.generateProposalNo();
+                fireProposal.setProposalNo(generatedNo);
+            }
 
-			if (createNew) {
-				fireProposalService.addNewFireProposal(fireProposal);
-				addInfoMessage(null, MessageId.INSERT_SUCCESS, fireProposal.getCustomer());
-			} else {
-				fireProposalService.updateFireProposal(fireProposal);
-				addInfoMessage(null, MessageId.UPDATE_SUCCESS, fireProposal.getCustomer());
-			}
+            if (createNew) {
+                fireProposalService.addNewFireProposal(fireProposal);
+                addInfoMessage(null, MessageId.INSERT_SUCCESS, fireProposal.getCustomer());
+            } else {
+                fireProposalService.updateFireProposal(fireProposal);
+                addInfoMessage(null, MessageId.UPDATE_SUCCESS, fireProposal.getCustomer());
+            }
 
-			saved = true;
-			createNewFireProposal();
-			loadFireProposals();
+            // ✅ Keep saved proposal in session for report bean
+            FacesContext.getCurrentInstance().getExternalContext()
+                    .getSessionMap().put("savedFireProposal", fireProposal);
 
-		} catch (SystemException ex) {
-			logger.error("Failed to save FireProposal", ex);
-			handleSysException(ex);
-		}
-		 
+            saved = true;
 
-	}
+            // ⚠️ Do NOT reset fireProposal here, otherwise report will see null
+            // createNewFireProposal();
+            // loadFireProposals();
+
+        } catch (SystemException ex) {
+            logger.error("Failed to save FireProposal", ex);
+            handleSysException(ex);
+        }
+    }
 
 	public String cancel() {
 		// createNewFireProposal();
@@ -400,6 +421,66 @@ public class ManageFireProposalActionBean extends BaseBean {
 		}
 	}
 
+	    private StreamedContent letter;
+	    private final String reportName = "FirePolicyReport";
+		private final String pdfDirPath = "/pdf-report/" + reportName + "/" + System.currentTimeMillis() + "/";
+		private final String dirPath = getWebRootPath() + pdfDirPath;
+		private final String fileName = "Fire Policy Report";
+		
+	  public void generateLetter() {
+		  
+	        try {
+	            if (fireProposal == null || fireProposal.getBuildingList() == null) {
+	                throw new IllegalStateException("FireProposal or Building list is null. Save it first.");
+	            }
+
+	            // ---- Totals using double ----
+	            double totalSumInsured     = 0.0;
+	            double basicPremiumTerm    = 0.0;
+	            double addOnPremiumTerm    = 0.0;
+	            double totalPremiumPeriod  = 0.0;
+
+	            for (BuildingInfo b : fireProposal.getBuildingList()) {
+	                if (b == null) continue;
+	                if (b.getSumInsured() != null)       totalSumInsured    += b.getSumInsured().doubleValue();
+	                if (b.getBasicPremiumTerm() != null) basicPremiumTerm   += b.getBasicPremiumTerm().doubleValue();
+	                if (b.getAddOnPremiumTerm() != null) addOnPremiumTerm   += b.getAddOnPremiumTerm().doubleValue();
+	                if (b.getTotalPremiumPeriod() != null) totalPremiumPeriod += b.getTotalPremiumPeriod().doubleValue();
+	            }
+
+	            // ---- Parameters for JasperReports ----
+	            Map<String, Object> params = new HashMap<String, Object>();
+	            System.out.println("Customer Name"+fireProposal.getCustomer());
+	            System.out.println("Policy Number"+fireProposal.getPolicyNumber());
+	            System.out.println("ProposalNo"+fireProposal.getProposalNo());
+	            params.put("Customer",           fireProposal.getCustomer());
+	            params.put("PolicyNumber",      fireProposal.getPolicyNumber());
+	            params.put("ProposalNo",         fireProposal.getProposalNo());
+	            params.put("SumInsured",         totalSumInsured);
+	            params.put("BasicPremiumTerm",   basicPremiumTerm);
+	            params.put("AddOnPremiumTerm",   addOnPremiumTerm);
+	            params.put("TotalPremiumPeriod", totalPremiumPeriod);
+	            params.put("RunDate", new SimpleDateFormat("dd-MM-yyyy").format(new java.util.Date()));
+
+	            InputStream jrxml = Thread.currentThread()
+	                    .getContextClassLoader()
+	                    .getResourceAsStream("FirePolicyReport.jrxml");
+	            JasperDesign design = JRXmlLoader.load(jrxml);
+	            JasperReport report = JasperCompileManager.compileReport(design);
+	            JasperPrint print = JasperFillManager.fillReport(report, params, new JREmptyDataSource());
+	            FileUtils.forceMkdir(new File(dirPath));
+				JasperExportManager.exportReportToPdfFile(print, dirPath + fileName.concat(".pdf"));;
+	            // ---- Export to PDF ----
+	           
+	            System.out.println("PDF generated successfully!");
+
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	            this.setLetter(null);
+	            throw new RuntimeException("Error generating Fire Proposal Letter", e);
+	        }
+	    }
+	
 	public void returnBranch(SelectEvent event) {
 		Branch branch = (Branch) event.getObject();
 		fireProposal.setBranch(branch);
@@ -526,6 +607,14 @@ public class ManageFireProposalActionBean extends BaseBean {
 
 	public void setBuildingInfo(BuildingInfo buildingInfo) {
 		this.buildingInfo = buildingInfo;
+	}
+
+	public StreamedContent getLetter() {
+		return letter;
+	}
+
+	public void setLetter(StreamedContent letter) {
+		this.letter = letter;
 	}
 
 	/*

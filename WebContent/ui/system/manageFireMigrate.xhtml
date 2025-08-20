@@ -556,10 +556,11 @@
 							styleClass="green-button" />
 
 						<p:commandButton value="Download Report"
-                 actionListener="#{FireReportActionBean.generateLetter}"
-                 ajax="false"
+                 actionListener="#{ManageFireProposalActionBean.generateLetter}"
+                 
                  icon="pi pi-download"
-                 disabled="#{!ManageFireProposalActionBean.saved}" />
+                 disabled="#{!ManageFireProposalActionBean.saved}" 
+                 oncomplete="PF('PreviewDlg'.show()"/>
 					</p:panelGrid>
 				</p:tab>
 			</p:wizard>
