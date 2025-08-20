@@ -97,8 +97,12 @@ public class ManageFireProposalActionBean extends BaseBean {
 
         // Only block if going forward from buildingInfo to premiumInfo
         if ("buildingInfo".equals(oldStep) && "premiumInfo".equals(newStep)) {
-            
+            if (buildings == null || buildings.isEmpty()) {
+                addErrorMessage(null, "Please add at least one building before proceeding.");
+                return oldStep;
+            }
         }
+
 
         if ("premiumInfo".equals(newStep)) {
             fireProposal.setBuildingList(buildings);
