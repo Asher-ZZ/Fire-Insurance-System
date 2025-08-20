@@ -25,5 +25,6 @@ public interface IFireProposalDAO {
     String findLastProposalNoByMonthYear(String monthYear) throws DAOException;
     
     boolean existsByPolicyNumber(String policyNumber)throws DAOException;
+    
 
-}
+}  

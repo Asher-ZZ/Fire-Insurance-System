@@ -191,12 +191,13 @@ public class FireProposalDAO extends BasicDAO implements IFireProposalDAO {
             throw new DAOException("Failed to find last proposal number for " + monthYear, monthYear, pe);
         }
     }
-    public boolean existsByPolicyNumber(String policyNumber) {
+    
+   public boolean existsByPolicyNumber(String policyNumber) {
         TypedQuery<Long> query = em.createQuery(
             "SELECT COUNT(f) FROM FireProposal f WHERE f.policyNumber = :policyNo", Long.class);
         query.setParameter("policyNo", policyNumber);
         Long count = query.getSingleResult();
         return count > 0;
     }
-    
+   
 }

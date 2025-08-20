@@ -60,10 +60,10 @@
         
 
         <properties>
-            <property name="javax.persistence.jdbc.url" value="jdbc:sqlserver://localhost;databaseName=FNIGP;selectMethod=cursor" />
+            <property name="javax.persistence.jdbc.url" value="jdbc:sqlserver://localhost;databaseName=FNIGP-ACC;selectMethod=cursor" />
             <property name="javax.persistence.jdbc.driver" value="com.microsoft.sqlserver.jdbc.SQLServerDriver"/>
             <property name="javax.persistence.jdbc.user" value="sa"/>
-            <property name="javax.persistence.jdbc.password" value="1340"/>
+            <property name="javax.persistence.jdbc.password" value="1234"/>
 
             <!-- Performance Tuning -->
             <property name="eclipselink.orm.throw.exceptions" value="true"/>

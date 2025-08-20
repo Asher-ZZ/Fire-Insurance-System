@@ -26,39 +26,40 @@ public class FireProposal implements Serializable, Cloneable {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.TABLE, generator = "FIREPROPOSAL_GEN")
-	@Column(name = "PROPOSALID")
+	@Column(name = "ProposalID")
 	private String id;
 
-	@Column(name = "CUSTOMERTYPE")
+	@Column(name = "CustomerType", length = 50)
 	private String customerType;
 
-	@Column(name = "CUSTOMER")
+	@Column(name = "Customer", length = 100)
 	private String customer;
 
-	@Column(name = "PROPERTYINTEREST")
+	@Column(name = "PropertyInterest", length = 255)
 	private String propertyInterest;
 
-	@Column(name = "PROPERTYLOCATION")
+	@Column(name = "PropertyLocation", length = 255)
 	private String propertyLocation;
 
-	@Column(name = "TOWNSHIP")
+	@Column(name = "Township", length = 100)
 	private String township;
 
-	@Column(name = "POLICYNUMBER")
+	@Column(name = "PolicyNumber", length = 50)
 	private String policyNumber;
 
-	@Column(name = "PROPOSALNO")
+	@Column(name = "ProposalNo", length = 50)
 	private String proposalNo; // New field for sequential number
 
 	@Temporal(TemporalType.DATE)
-	@Column(name = "POLICYSTARTDATE")
+	@Column(name = "PolicyStartDate")
 	private Date policyStartDate;
 
 	@Enumerated(EnumType.STRING)
+	@Column(name = "SaleChannel", length = 100)
 	private SaleChannel saleChannel;
 
 	@Enumerated(EnumType.STRING)
-	@Column(name = "PAYMENTTYPE")
+	@Column(name = "PaymentType", length = 100)
 	private PaymentType paymentType;
 
 	@OneToOne(fetch = FetchType.LAZY)
@@ -66,14 +67,14 @@ public class FireProposal implements Serializable, Cloneable {
 	private Branch branch;
 
 	@Temporal(TemporalType.DATE)
-	@Column(name = "SUBMITTEDDATE")
+	@Column(name = "SubmittedDate")
 	private Date submittedDate;
 
 	@Enumerated(EnumType.STRING)
-	@Column(name = "CURRENCYTYPE")
+	@Column(name = "CurrencyType", length = 50)
 	private CurrencyType1 currencyType;
 
-	@Column(name = "INSURANCEPERIODDAYS")
+	@Column(name = "InsurancePeriodDays")
 	private Integer insurancePeriodDays;
 
 	@OneToMany(mappedBy = "fireProposal", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -81,30 +82,35 @@ public class FireProposal implements Serializable, Cloneable {
 
 	/*
 	 * @Temporal(TemporalType.DATE)
-	 * @Column(name = "STARTDATEFROM") private Date startDateFrom;
-	 *
+	 * 
+	 * @Column(name = "StartDateFrom") private Date startDateFrom;
+	 * 
 	 * @Temporal(TemporalType.DATE)
-	 * @Column(name = "STARTDATETO") private Date startDateTo;
+	 * 
+	 * @Column(name = "StartDateTo") private Date startDateTo;
 	 */
 	@Version
-	@Column(name = "VERSION")
+	@Column(name = "Version")
 	private int version;
 
 	@Temporal(TemporalType.DATE)
-	@Column(name = "POLICYENDDATE")
+	@Column(name = "PolicyEndDate")
 	private Date policyEndDate;
 
 	@Embedded
 	private BasicEntity basicEntity;
 
-	@Column(name = "INSURANCEPERIODUNIT")
+	@Column(name = "InsurancePeriodUnit", length = 10)
 	private String insurancePeriodUnit;
+
+
 	/*
-	 * @Column(name = "TOTALSUMINSURED", precision = 15, scale = 2)
-	 * private Double totalSumInsured = 0.0;
+	 * @Column(name = "TotalSumInsured", precision = 15, scale = 2) private Double
+	 * totalSumInsured = 0.0;
+	 * 
+	 * @Column(name = "TotalPremiumPeriod", precision = 15, scale = 2) private
+	 * Double totalPremiumPeriod = 0.0;
 	 */
-	@Column(name = "TOTALPREMIUMPERIOD", precision = 15, scale = 2)
-	private Double totalPremiumPeriod = 0.0;
 
 	// Constructors
 	public FireProposal() {
@@ -293,22 +299,19 @@ public class FireProposal implements Serializable, Cloneable {
 		this.insurancePeriodUnit = insurancePeriodUnit;
 	}
 
-	
-	
 	/*
 	 * public Double getTotalSumInsured() { return totalSumInsured != null ?
 	 * totalSumInsured : 0.0; }
 	 * 
 	 * public void setTotalSumInsured(Double totalSumInsured) { this.totalSumInsured
 	 * = totalSumInsured; }
+	 * 
+	 * public Double getTotalPremiumPeriod() { return totalPremiumPeriod != null ?
+	 * totalPremiumPeriod : 0.0; }
+	 * 
+	 * public void setTotalPremiumPeriod(Double totalPremiumPeriod) {
+	 * this.totalPremiumPeriod = totalPremiumPeriod; }
 	 */
-	  
-	  public Double getTotalPremiumPeriod() { return totalPremiumPeriod != null ?
-	  totalPremiumPeriod : 0.0; }
-	 
-	  public void setTotalPremiumPeriod(Double totalPremiumPeriod) {
-	  this.totalPremiumPeriod = totalPremiumPeriod; }
-	 
 	public double calculateTotalSumInsured() {
 		return buildingList.stream().mapToDouble(b -> b.getSumInsured() != null ? b.getSumInsured() : 0.0).sum();
 	}
@@ -339,15 +342,10 @@ public class FireProposal implements Serializable, Cloneable {
 		clone.setVersion(this.version);
 		clone.setPolicyEndDate(this.policyEndDate);
 		clone.setInsurancePeriodUnit(this.insurancePeriodUnit);
-		
-		/* clone.setTotalSumInsured(this.totalSumInsured); */
-		  clone.setTotalPremiumPeriod(this.totalPremiumPeriod);
-		 
+		/*
+		 * clone.setTotalSumInsured(this.totalSumInsured);
+		 * clone.setTotalPremiumPeriod(this.totalPremiumPeriod);
+		 */
 		return clone;
-	}
-
-	public void setTotalSumInsured(double totalSumInsured) {
-		// TODO Auto-generated method stub
-		
 	}
 }

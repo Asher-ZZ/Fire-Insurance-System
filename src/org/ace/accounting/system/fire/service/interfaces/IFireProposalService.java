@@ -26,4 +26,5 @@ public interface IFireProposalService {
     
     boolean existsByPolicyNumber(String policyNumber)throws SystemException;
 
+    boolean existsByPolicyNumber(String policyNumber)throws SystemException;
 }
