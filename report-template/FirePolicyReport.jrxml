@@ -1,187 +1,187 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.10.0.final using JasperReports Library version 6.10.0-unknown  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="FirePolicyReport" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="41b4de0f-d037-4c04-b518-1cac97cdabf8">
-	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
-	<parameter name="Customer" class="java.lang.String"/>
-	<parameter name="PolicyNumber" class="java.lang.String"/>
-	<parameter name="ProposalNo" class="java.lang.String"/>
-	<parameter name="SumInsured" class="java.lang.Double"/>
-	<parameter name="BasicPremiumTerm" class="java.lang.Double"/>
-	<parameter name="AddOnPremiumTerm" class="java.lang.Double"/>
-	<parameter name="TotalPremiumPeriod" class="java.lang.Double"/>
-	<queryString>
-		<![CDATA[]]>
-	</queryString>
-	<background>
-		<band splitType="Stretch"/>
-	</background>
-	<title>
-		<band height="54" splitType="Stretch">
-			<staticText>
-				<reportElement x="212" y="0" width="130" height="30" uuid="e25ee28d-33be-4ba4-b05e-0f75092e98e4"/>
-				<textElement textAlignment="Center">
-					<font size="18"/>
-				</textElement>
-				<text><![CDATA[Fire Insurance]]></text>
-			</staticText>
-		</band>
-	</title>
-	<pageHeader>
-		<band height="51" splitType="Stretch">
-			<textField>
-				<reportElement x="57" y="13" width="89" height="24" uuid="bc6ae751-0524-4837-ab13-83fec088ecef"/>
-				<textElement>
-					<font size="14"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$P{Customer}]]></textFieldExpression>
-			</textField>
-			<staticText>
-				<reportElement x="0" y="0" width="44" height="30" uuid="2afc74bc-aa7f-4b2b-9bad-27a9eebb1fed"/>
-				<textElement textAlignment="Center">
-					<font size="14"/>
-				</textElement>
-				<text><![CDATA[To]]></text>
-			</staticText>
-		</band>
-	</pageHeader>
-	<columnHeader>
-		<band height="78" splitType="Stretch">
-			<staticText>
-				<reportElement x="0" y="0" width="260" height="20" uuid="6dc77ac9-a346-4ce0-ac11-e2c94ffe3fd4"/>
-				<textElement>
-					<font size="14"/>
-				</textElement>
-				<text><![CDATA[Fire Insurance And Premium charges]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="0" y="28" width="534" height="50" uuid="5f176c7f-c487-4262-88c6-729dc2c65409"/>
-				<textElement>
-					<font size="14"/>
-				</textElement>
-				<text><![CDATA[We appreciate your choice our company and warmly inform you that, your proposal of fire insurance has been approved and fire insurance premium is as follow.]]></text>
-			</staticText>
-		</band>
-	</columnHeader>
-	<detail>
-		<band height="465" splitType="Stretch">
-			<textField>
-				<reportElement x="280" y="53" width="200" height="24" uuid="3df03aa5-7a86-49e8-8389-2bade800a4ab"/>
-				<textElement>
-					<font size="14"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$P{PolicyNumber}]]></textFieldExpression>
-			</textField>
-			<staticText>
-				<reportElement x="0" y="53" width="170" height="19" uuid="3a17abef-cfda-44f6-a971-9acb41f4ea72"/>
-				<textElement>
-					<font size="14"/>
-				</textElement>
-				<text><![CDATA["PolicyNumber"]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="0" y="103" width="170" height="19" uuid="e5074f8a-ddab-4515-9c84-8166ee5b8809"/>
-				<textElement>
-					<font size="14"/>
-				</textElement>
-				<text><![CDATA["ProposalNo"]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="0" y="153" width="170" height="19" uuid="4fc88b72-ecf9-4995-a4d2-218de82d0834"/>
-				<textElement>
-					<font size="14"/>
-				</textElement>
-				<text><![CDATA["SumInsured"]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="0" y="203" width="170" height="19" uuid="1e2f88ae-1bfd-492d-b3a7-f35070b3881b"/>
-				<textElement>
-					<font size="14"/>
-				</textElement>
-				<text><![CDATA["BasicPremiumTerm"]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="0" y="253" width="170" height="19" uuid="1ee1298f-90c1-472a-abf3-89df70733951"/>
-				<textElement>
-					<font size="14"/>
-				</textElement>
-				<text><![CDATA["AddOnPremiumTerm"]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="0" y="303" width="170" height="19" uuid="85bc749a-4b3b-4a94-9d3c-0f3249e3fc85"/>
-				<textElement>
-					<font size="14"/>
-				</textElement>
-				<text><![CDATA["TotalPremiumPeriod"]]></text>
-			</staticText>
-			<textField>
-				<reportElement x="280" y="303" width="200" height="20" uuid="f203a57a-d8d8-4f16-b67a-14c69d34caba"/>
-				<textElement>
-					<font size="14"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$P{TotalPremiumPeriod}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="280" y="253" width="200" height="20" uuid="b27a07ad-39fb-4a96-b369-3eb45f682010"/>
-				<textElement>
-					<font size="14"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$P{AddOnPremiumTerm}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="280" y="203" width="200" height="20" uuid="3871cda9-01ae-4c49-8722-ade6c86ce1d9"/>
-				<textElement>
-					<font size="14"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$P{BasicPremiumTerm}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="280" y="153" width="200" height="20" uuid="6335a0f6-b7b0-4a46-a987-1d32ea4d4791"/>
-				<textElement>
-					<font size="14"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$P{SumInsured}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="280" y="103" width="200" height="20" uuid="a8fa736a-2c8b-4f00-bee8-9ca7d5bccf30"/>
-				<textElement>
-					<font size="14"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$P{ProposalNo}]]></textFieldExpression>
-			</textField>
-			<staticText>
-				<reportElement x="-13" y="375" width="560" height="40" uuid="46c03bcb-ce6f-4f59-9e28-07dd9fdc4679"/>
-				<textElement>
-					<font size="14"/>
-				</textElement>
-				<text><![CDATA[Please accept our wishes that is healthy and wealthy come to you. Thank you for your strong support of our services.
+  <property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
+  <parameter name="Customer" class="java.lang.String"/>
+  <parameter name="PolicyNumber" class="java.lang.String"/>
+  <parameter name="ProposalNo" class="java.lang.String"/>
+  <parameter name="SumInsured" class="java.lang.Double"/>
+  <parameter name="BasicPremiumTerm" class="java.lang.Double"/>
+  <parameter name="AddOnPremiumTerm" class="java.lang.Double"/>
+  <parameter name="TotalPremiumPeriod" class="java.lang.Double"/>
+  <queryString>
+    <![CDATA[]]>
+  </queryString>
+  <background>
+    <band splitType="Stretch"/>
+  </background>
+  <title>
+    <band height="54" splitType="Stretch">
+      <staticText>
+        <reportElement x="212" y="0" width="130" height="30" uuid="e25ee28d-33be-4ba4-b05e-0f75092e98e4"/>
+        <textElement textAlignment="Center">
+          <font size="18"/>
+        </textElement>
+        <text><![CDATA[Fire Insurance]]></text>
+      </staticText>
+    </band>
+  </title>
+  <pageHeader>
+    <band height="51" splitType="Stretch">
+      <textField>
+        <reportElement x="57" y="13" width="212" height="24" uuid="bc6ae751-0524-4837-ab13-83fec088ecef"/>
+        <textElement>
+          <font size="14"/>
+        </textElement>
+        <textFieldExpression><![CDATA[$P{Customer}]]></textFieldExpression>
+      </textField>
+      <staticText>
+        <reportElement x="0" y="0" width="44" height="30" uuid="2afc74bc-aa7f-4b2b-9bad-27a9eebb1fed"/>
+        <textElement textAlignment="Center">
+          <font size="14"/>
+        </textElement>
+        <text><![CDATA[To]]></text>
+      </staticText>
+    </band>
+  </pageHeader>
+  <columnHeader>
+    <band height="78" splitType="Stretch">
+      <staticText>
+        <reportElement x="0" y="0" width="260" height="20" uuid="6dc77ac9-a346-4ce0-ac11-e2c94ffe3fd4"/>
+        <textElement>
+          <font size="14"/>
+        </textElement>
+        <text><![CDATA[Fire Insurance And Premium charges]]></text>
+      </staticText>
+      <staticText>
+        <reportElement x="0" y="28" width="534" height="50" uuid="5f176c7f-c487-4262-88c6-729dc2c65409"/>
+        <textElement>
+          <font size="14"/>
+        </textElement>
+        <text><![CDATA[We appreciate your choice our company and warmly inform you that, your proposal of fire insurance has been approved and fire insurance premium is as follow.]]></text>
+      </staticText>
+    </band>
+  </columnHeader>
+  <detail>
+    <band height="465" splitType="Stretch">
+      <textField>
+        <reportElement x="280" y="53" width="200" height="24" uuid="3df03aa5-7a86-49e8-8389-2bade800a4ab"/>
+        <textElement>
+          <font size="14"/>
+        </textElement>
+        <textFieldExpression><![CDATA[$P{PolicyNumber}]]></textFieldExpression>
+      </textField>
+      <staticText>
+        <reportElement x="0" y="53" width="170" height="19" uuid="3a17abef-cfda-44f6-a971-9acb41f4ea72"/>
+        <textElement>
+          <font size="14"/>
+        </textElement>
+        <text><![CDATA["PolicyNumber"]]></text>
+      </staticText>
+      <staticText>
+        <reportElement x="0" y="103" width="170" height="19" uuid="e5074f8a-ddab-4515-9c84-8166ee5b8809"/>
+        <textElement>
+          <font size="14"/>
+        </textElement>
+        <text><![CDATA["ProposalNo"]]></text>
+      </staticText>
+      <staticText>
+        <reportElement x="0" y="153" width="170" height="19" uuid="4fc88b72-ecf9-4995-a4d2-218de82d0834"/>
+        <textElement>
+          <font size="14"/>
+          </textElement>
+        <text><![CDATA["SumInsured"]]></text>
+      </staticText>
+      <staticText>
+        <reportElement x="0" y="203" width="170" height="19" uuid="1e2f88ae-1bfd-492d-b3a7-f35070b3881b"/>
+        <textElement>
+          <font size="14"/>
+        </textElement>
+        <text><![CDATA["BasicPremiumTerm"]]></text>
+      </staticText>
+      <staticText>
+        <reportElement x="0" y="253" width="170" height="19" uuid="1ee1298f-90c1-472a-abf3-89df70733951"/>
+        <textElement>
+          <font size="14"/>
+        </textElement>
+        <text><![CDATA["AddOnPremiumTerm"]]></text>
+      </staticText>
+      <staticText>
+        <reportElement x="0" y="303" width="170" height="19" uuid="85bc749a-4b3b-4a94-9d3c-0f3249e3fc85"/>
+        <textElement>
+          <font size="14"/>
+        </textElement>
+        <text><![CDATA["TotalPremiumPeriod"]]></text>
+      </staticText>
+      <textField>
+        <reportElement x="280" y="303" width="200" height="20" uuid="f203a57a-d8d8-4f16-b67a-14c69d34caba"/>
+        <textElement>
+          <font size="14"/>
+        </textElement>
+        <textFieldExpression><![CDATA[$P{TotalPremiumPeriod}]]></textFieldExpression>
+      </textField>
+      <textField>
+        <reportElement x="280" y="253" width="200" height="20" uuid="b27a07ad-39fb-4a96-b369-3eb45f682010"/>
+        <textElement>
+          <font size="14"/>
+        </textElement>
+        <textFieldExpression><![CDATA[new java.text.DecimalFormat("#,##0.00").format($P{AddOnPremiumTerm})]]></textFieldExpression>
+      </textField>
+      <textField>
+        <reportElement x="280" y="203" width="200" height="20" uuid="3871cda9-01ae-4c49-8722-ade6c86ce1d9"/>
+        <textElement>
+          <font size="14"/>
+        </textElement>
+        <textFieldExpression><![CDATA[new java.text.DecimalFormat("#,##0.00").format($P{BasicPremiumTerm})]]></textFieldExpression>
+      </textField>
+      <textField>
+        <reportElement x="280" y="153" width="200" height="20" uuid="6335a0f6-b7b0-4a46-a987-1d32ea4d4791"/>
+        <textElement>
+          <font size="14"/>
+        </textElement>
+        <textFieldExpression><![CDATA[new java.text.DecimalFormat("#,##0.00").format($P{SumInsured})]]></textFieldExpression>
+      </textField>
+      <textField>
+        <reportElement x="280" y="103" width="200" height="20" uuid="a8fa736a-2c8b-4f00-bee8-9ca7d5bccf30"/>
+        <textElement>
+          <font size="14"/>
+        </textElement>
+        <textFieldExpression><![CDATA[$P{ProposalNo}]]></textFieldExpression>
+      </textField>
+      <staticText>
+        <reportElement x="-13" y="375" width="560" height="40" uuid="46c03bcb-ce6f-4f59-9e28-07dd9fdc4679"/>
+        <textElement>
+          <font size="14"/>
+        </textElement>
+        <text><![CDATA[Please accept our wishes that is healthy and wealthy come to you. Thank you for your strong support of our services.
 ]]></text>
-			</staticText>
-		</band>
-	</detail>
-	<columnFooter>
-		<band height="72" splitType="Stretch">
-			<staticText>
-				<reportElement x="410" y="0" width="153" height="30" uuid="aae33da2-00ee-494c-a8c1-a4252fdca5f2"/>
-				<textElement>
-					<font size="14"/>
-				</textElement>
-				<text><![CDATA[Authorized Signature]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="0" y="0" width="100" height="42" uuid="c9bd83b4-e57d-4533-b8a9-0aec86ad67bc"/>
-				<textElement>
-					<font size="14"/>
-				</textElement>
-				<text><![CDATA[Thank You,
-Your Sincerely,	
+      </staticText>
+    </band>
+  </detail>
+  <columnFooter>
+    <band height="72" splitType="Stretch">
+      <staticText>
+        <reportElement x="410" y="0" width="153" height="30" uuid="aae33da2-00ee-494c-a8c1-a4252fdca5f2"/>
+        <textElement>
+          <font size="14"/>
+        </textElement>
+        <text><![CDATA[Authorized Signature]]></text>
+      </staticText>
+      <staticText>
+        <reportElement x="0" y="0" width="100" height="42" uuid="c9bd83b4-e57d-4533-b8a9-0aec86ad67bc"/>
+        <textElement>
+          <font size="14"/>
+        </textElement>
+        <text><![CDATA[Thank You,
+Your Sincerely,  
 ]]></text>
-			</staticText>
-		</band>
-	</columnFooter>
-	<pageFooter>
-		<band height="23" splitType="Stretch"/>
-	</pageFooter>
-	<summary>
-		<band splitType="Stretch"/>
-	</summary>
+      </staticText>
+    </band>
+  </columnFooter>
+  <pageFooter>
+    <band height="23" splitType="Stretch"/>
+  </pageFooter>
+  <summary>
+    <band splitType="Stretch"/>
+  </summary>
 </jasperReport>

@@ -160,7 +160,8 @@
 							</p:selectOneMenu> -->
 							<p:outputLabel />
 							<p:message display="text" for="branchId" />
-							<h:outputText styleClass="input-label" value="BRANCH" />
+							<h:outputText styleClass="mandatory input-label" value="BRANCH" />
+							
 							<p:panelGrid styleClass="ui-panelgrid-blank"
 								id="branchPanelGroup">
 								<div style="margin-top: -5px; margin-left: -5px;"
@@ -561,7 +562,7 @@
 						<!-- Editable Basic Premium -->
 						<p:column headerText="Basic Premium (Period)"
 							style="text-align:right;">
-							<p:inputText value="#{building.basicPremiumPeriod}" required="true">
+							<p:inputText value="#{building.basicPremiumPeriod}">
 								<f:convertNumber minFractionDigits="2" />
 								<p:ajax event="blur"
 									listener="#{ManageFireProposalActionBean.recalculatePremiums}"
@@ -579,7 +580,7 @@
 						<!-- Editable Add-On Premium -->
 						<p:column headerText="Add-On Premium (Period)"
 							style="text-align:right;">
-							<p:inputText value="#{building.addOnPremiumPeriod}" required="true" >
+							<p:inputText value="#{building.addOnPremiumPeriod}" >
 								<f:convertNumber minFractionDigits="2" />
 								<p:ajax event="blur"
 									listener="#{ManageFireProposalActionBean.recalculatePremiums}"
@@ -607,7 +608,7 @@
 					<!-- Total Premium Summary -->
 					<p:panelGrid columns="2" styleClass="ui-fluid"
 						style="margin-top: 10px;">
-						<h:outputText value="Total Premium (Period): "
+						<h:outputText value="Total:"
 							styleClass="input-label" />
 						<h:outputText id="totalPremiumOutput"
 							value="#{ManageFireProposalActionBean.fireProposal.totalPremiumPeriod}">
