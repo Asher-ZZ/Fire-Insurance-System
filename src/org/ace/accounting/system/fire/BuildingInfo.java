@@ -1,13 +1,14 @@
 package org.ace.accounting.system.fire;
 
 import java.io.Serializable;
+import java.util.List;
 
 import javax.persistence.*;
 
-import org.ace.accounting.system.fire.enumTypes.BuildingClass;
-import org.ace.accounting.system.fire.enumTypes.FloorType;
-import org.ace.accounting.system.fire.enumTypes.RoofingType;
-import org.ace.accounting.system.fire.enumTypes.WallType;
+import org.ace.accounting.common.BuildingClass;
+import org.ace.accounting.common.FloorType;
+import org.ace.accounting.common.RoofingType;
+import org.ace.accounting.common.WallType;
 import org.ace.java.component.idgen.service.IDInterceptor;
 
 @Entity
@@ -17,103 +18,127 @@ import org.ace.java.component.idgen.service.IDInterceptor;
 public class BuildingInfo implements Serializable, Cloneable {
 
 	private static final long serialVersionUID = 1L;
-
 	@Id
 	@GeneratedValue(strategy = GenerationType.TABLE, generator = "BUILDING_INFO_GEN") // Changed to IDENTITY
-	@Column(name = "BuildingInfoID")
+	@Column(name = "BUILDINGINFOID")
 	private String id;
 
-	@Column(name = "BuildingName", length = 100)
+	@Column(name = "BUILDINGNAME", length = 100)
 	private String buildingName;
 
 	@Enumerated(EnumType.STRING)
-	@Column(name = "Floor", length = 50)
-	private FloorType floor;
-
-	@Enumerated(EnumType.STRING)
-    @Column(name = "Wall", length = 50)
-    private WallType wall;
-
-	@Enumerated(EnumType.STRING)
-	@Column(name = "Roofing", length = 50)
-	private RoofingType roofing;
-
-	@Enumerated(EnumType.STRING)
-	@Column(name = "BuildingClass", length = 50)
+	@Column(name = "BUILDINGCLASS", length = 50)
 	private BuildingClass buildingClass;
 
-	@Column(name = "NatureOfBusiness", length = 255)
+	@Column(name = "NATUREOFBUSINESS", length = 255)
 	private String natureOfBusiness;
 
-	@Column(name = "MainCover", length = 255)
+	@Column(name = "MAINCOVER", length = 255)
 	private String mainCover;
 
-	@Column(name = "FloorName", length = 100)
+	@Column(name = "FLOORNAME", length = 100)
 	private String floorName;
 
-	@Column(name = "SumInsured", precision = 18, scale = 2)
+	@Column(name = "SUMINSURED", precision = 18, scale = 2)
 	private Double sumInsured;
 
-	@Column(name = "Length", precision = 10, scale = 2)
+	@Column(name = "LENGTH", precision = 10, scale = 2)
 	private Double length;
 
-	@Column(name = "Width", precision = 10, scale = 2)
+	@Column(name = "WIDTH", precision = 10, scale = 2)
 	private Double width;
 
-	@Column(name = "Height", precision = 10, scale = 2)
+	@Column(name = "HEIGHT", precision = 10, scale = 2)
 	private Double height;
 
-	@Column(name = "SquareFeet", precision = 10, scale = 2)
+	@Column(name = "SQUAREFEET", precision = 10, scale = 2)
 	private Double squareFeet;
 
-	@Column(name = "AirCraftDamage")
+	@Column(name = "AIRCRAFTDAMAGE")
 	private Boolean airCraftDamage;
 
-	@Column(name = "EarthQuakeFire")
+	@Column(name = "EARTHQUAKEFIRE")
 	private Boolean earthQuakeFire;
 
-	@Column(name = "FloodAndInundation")
+	@Column(name = "FLOODANDINUNDATION")
 	private Boolean floodAndInundation;
 
-	@Column(name = "ImpactDamage")
+	@Column(name = "IMPACTDAMAGE")
 	private Boolean impactDamage;
 
-	@Column(name = "RiotStrike")
+	@Column(name = "RIOTSTRIKE")
 	private Boolean riotStrike;
 
-	@Column(name = "SpontaneousCombustion")
+	@Column(name = "SPONTANEOUSCOMBUSTION")
 	private Boolean spontaneousCombustion;
 
-	@Column(name = "StormTyphoon")
+	@Column(name = "STORMTYPHOON")
 	private Boolean stormTyphoon;
 
-	@Column(name = "WaterDamage")
+	@Column(name = "WATERDAMAGE")
 	private Boolean waterDamage;
 
-	@Column(name = "SubsidenceAndLandslide")
+	@Column(name = "SUBSIDENCEANDLANDSLIDE")
 	private Boolean subsidenceAndLandslide;
 
-	@Column(name = "WarRisk")
+	@Column(name = "WARRISK")
 	private Boolean warRisk;
 
-	@Column(name = "BasicPremiumPeriod")
+	@Column(name = "BASICPREMIUMPERIOD")
 	private Double basicPremiumPeriod;
 
-	@Column(name = "BasicPremiumTerm")
+	@Column(name = "BASICPREMIUMTERM")
 	private Double basicPremiumTerm;
 
-	@Column(name = "AddOnPremiumPeriod")
+	@Column(name = "ADDONPREMIUMPERIOD")
 	private Double addOnPremiumPeriod;
 
-	@Column(name = "AddOnPremiumTerm")
+	@Column(name = "ADDONPREMIUMTERM")
 	private Double addOnPremiumTerm;
 
-	@Column(name = "TotalPremiumPeriod")
+	@Column(name = "TOTALPREMIUMPERIOD")
 	private Double totalPremiumPeriod;
 
 	@ManyToOne
 	@JoinColumn(name = "FIREPROPOSALID")
 	private FireProposal fireProposal;
+
+	@Enumerated(EnumType.STRING)
+	@Column(name = "FLOOR", length = 50)
+	private FloorType floor;
+
+	@Enumerated(EnumType.STRING)
+	@Column(name = "WALL", length = 50)
+	private WallType wall;
+
+	public FloorType getFloor() {
+	    return floor;
+	}
+
+	public WallType getWall() {
+	    return wall;
+	}
+
+	public RoofingType getRoofing() {
+	    return roofing;
+	}
+
+	@Enumerated(EnumType.STRING)
+	@Column(name = "ROOFING", length = 50)
+	private RoofingType roofing;
+
+
+	public void setFloor(FloorType floor) {
+		this.floor = floor;
+	}
+
+	public void setWall(WallType wall) {
+		this.wall = wall;
+	}
+
+	public void setRoofing(RoofingType roofing) {
+		this.roofing = roofing;
+	}
 
 	// Default constructor
 	public BuildingInfo() {
@@ -134,39 +159,6 @@ public class BuildingInfo implements Serializable, Cloneable {
 
 	public void setBuildingName(String buildingName) {
 		this.buildingName = buildingName;
-	}
-
-	public FloorType getFloor() {
-	    return floor;
-	}
-
-	public void setFloor(FloorType floor) {
-	    this.floor = floor;
-	}
-
-	public WallType getWall() {
-        return wall;
-    }
-
-    public void setWall(WallType wall) {
-        this.wall = wall;
-    }
-	
-
-    public RoofingType getRoofing() {
-        return roofing;
-    }
-
-    public void setRoofing(RoofingType roofing) {
-        this.roofing = roofing;
-    }
-
-	public BuildingClass getBuildingClass() {
-	    return buildingClass;
-	}
-
-	public void setBuildingClass(BuildingClass buildingClass) {
-	    this.buildingClass = buildingClass;
 	}
 
 	public String getNatureOfBusiness() {
@@ -194,7 +186,7 @@ public class BuildingInfo implements Serializable, Cloneable {
 	}
 
 	public Double getSumInsured() {
-		return sumInsured != null ? sumInsured : 0;
+		return sumInsured != null ? sumInsured : 0.0;
 	}
 
 	public void setSumInsured(Double sumInsured) {
@@ -202,7 +194,7 @@ public class BuildingInfo implements Serializable, Cloneable {
 	}
 
 	public Double getLength() {
-		return length != null ? length : 0;
+		return length != null ? length : 0.0;
 	}
 
 	public void setLength(Double length) {
@@ -210,7 +202,7 @@ public class BuildingInfo implements Serializable, Cloneable {
 	}
 
 	public Double getWidth() {
-		return width != null ? width : 0;
+		return width != null ? width : 0.0;
 	}
 
 	public void setWidth(Double width) {
@@ -218,7 +210,7 @@ public class BuildingInfo implements Serializable, Cloneable {
 	}
 
 	public Double getHeight() {
-		return height != null ? height : 0;
+		return height != null ? height : 0.0;
 	}
 
 	public void setHeight(Double height) {
@@ -226,7 +218,7 @@ public class BuildingInfo implements Serializable, Cloneable {
 	}
 
 	public Double getSquareFeet() {
-		return squareFeet != null ? squareFeet : 0;
+		return squareFeet != null ? squareFeet : 0.0;
 	}
 
 	public void setSquareFeet(Double squareFeet) {
@@ -397,15 +389,29 @@ public class BuildingInfo implements Serializable, Cloneable {
 		return clone;
 	}
 
+	public BuildingClass getBuildingClass() {
+		return buildingClass;
+	}
+
+	public void setBuildingClass(BuildingClass buildingClass) {
+		this.buildingClass = buildingClass;
+	}
+
 	// Handle relationship if needed
 	public boolean isValid() {
 		return buildingName != null && !buildingName.trim().isEmpty() && buildingClass != null
-				&& natureOfBusiness != null && !natureOfBusiness.trim().isEmpty()
+		/* && !buildingClass.trim().isEmpty() */ && natureOfBusiness != null && !natureOfBusiness.trim().isEmpty()
 				&& sumInsured != null && sumInsured > 0 && squareFeet != null && squareFeet > 0;
 	}
 
 	public void setTotalSumInsured(double totalSumInsured) {
 		// TODO Auto-generated method stub
-		
+
 	}
+
+	// Inside FireProposal.java
+
+
+
+
 }
