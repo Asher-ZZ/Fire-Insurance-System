@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.io.OutputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.annotation.PostConstruct;
@@ -35,6 +36,7 @@ import org.apache.commons.io.FileUtils;
 import org.primefaces.event.FlowEvent;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.event.TabChangeEvent;
+import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,9 +51,11 @@ import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
 
 import javax.faces.application.FacesMessage;
+import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -436,89 +440,106 @@ public class ManageFireProposalActionBean extends BaseBean {
 	    private final String dirPath = getWebRootPath() + pdfDirPath;
 	    private final String fileName = "Fire Policy Report";
 	    
-	    public void generateLetter() {
+	    public void generateFireProposalReport() {
+	        if (fireProposal == null || fireProposal.getBuildingList() == null || fireProposal.getBuildingList().isEmpty()) {
+	            addErrorMessage(null, "Cannot generate report: No buildings found in proposal.");
+	            return;
+	        }
+
 	        FacesContext facesContext = FacesContext.getCurrentInstance();
 	        HttpServletResponse response = (HttpServletResponse) facesContext.getExternalContext().getResponse();
 
-	        try {
-	            if (fireProposal == null || fireProposal.getBuildingList() == null) {
-	                throw new IllegalStateException("FireProposal or Building list is null. Save it first.");
+	        try (InputStream inputStream = Thread.currentThread().getContextClassLoader()
+	                .getResourceAsStream("FirePolicyReport.jrxml")) {
+
+	            if (inputStream == null) {
+	                addErrorMessage(null, "Report design file not found");
+	                return;
 	            }
 
-	            // Clear response to prevent contamination
+	            // ---- Parameters ----
+	            Map<String, Object> parameters = new HashMap<>();
+	            parameters.put("Customer", fireProposal.getCustomer());
+	            parameters.put("PolicyNumber", fireProposal.getPolicyNumber());
+	            parameters.put("ProposalNo", fireProposal.getProposalNo());
+
+	            double totalSumInsured = fireProposal.getBuildingList().stream()
+	                    .filter(Objects::nonNull)
+	                    .mapToDouble(b -> b.getSumInsured() != null ? b.getSumInsured().doubleValue() : 0.0)
+	                    .sum();
+
+	            double basicPremiumTerm = fireProposal.getBuildingList().stream()
+	                    .filter(Objects::nonNull)
+	                    .mapToDouble(b -> b.getBasicPremiumTerm() != null ? b.getBasicPremiumTerm().doubleValue() : 0.0)
+	                    .sum();
+
+	            double addOnPremiumTerm = fireProposal.getBuildingList().stream()
+	                    .filter(Objects::nonNull)
+	                    .mapToDouble(b -> b.getAddOnPremiumTerm() != null ? b.getAddOnPremiumTerm().doubleValue() : 0.0)
+	                    .sum();
+
+	            double totalPremiumPeriod = fireProposal.getBuildingList().stream()
+	                    .filter(Objects::nonNull)
+	                    .mapToDouble(b -> b.getTotalPremiumPeriod() != null ? b.getTotalPremiumPeriod().doubleValue() : 0.0)
+	                    .sum();
+
+	            parameters.put("SumInsured", totalSumInsured);
+	            parameters.put("BasicPremiumTerm", basicPremiumTerm);
+	            parameters.put("AddOnPremiumTerm", addOnPremiumTerm);
+	            parameters.put("TotalPremiumPeriod", totalPremiumPeriod);
+
+	            // ---- Generate report ----
+	            JasperDesign jasperDesign = JRXmlLoader.load(inputStream);
+	            JasperReport jasperReport = JasperCompileManager.compileReport(jasperDesign);
+	            JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, new JREmptyDataSource());
+
+	            // ---- Send PDF to browser ----
 	            response.reset();
 	            response.setContentType("application/pdf");
-	            response.setHeader("Content-Disposition", "inline; filename=FirePolicyReport.pdf");
-	            response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
-	            response.setHeader("Pragma", "no-cache");
-	            response.setHeader("Expires", "0");
+	            response.setHeader("Content-Disposition", "inline; filename=FireProposal.pdf");
 
-	            // ---- Totals using double ----
-	            double totalSumInsured     = 0.0;
-	            double basicPremiumTerm    = 0.0;
-	            double addOnPremiumTerm    = 0.0;
-	            double totalPremiumPeriod  = 0.0;
+	            OutputStream outputStream = response.getOutputStream();
+	            JasperExportManager.exportReportToPdfStream(jasperPrint, outputStream);
 
-	            for (BuildingInfo b : fireProposal.getBuildingList()) {
-	                if (b == null) continue;
-	                if (b.getSumInsured() != null)       totalSumInsured    += b.getSumInsured().doubleValue();
-	                if (b.getBasicPremiumTerm() != null) basicPremiumTerm   += b.getBasicPremiumTerm().doubleValue();
-	                if (b.getAddOnPremiumTerm() != null) addOnPremiumTerm   += b.getAddOnPremiumTerm().doubleValue();
-	                if (b.getTotalPremiumPeriod() != null) totalPremiumPeriod += b.getTotalPremiumPeriod().doubleValue();
-	            }
+	            outputStream.flush();
+				/* outputStream.close(); */
 
-	            // ---- Parameters for JasperReports ----
-	            Map<String, Object> params = new HashMap<>();
-	            System.out.println("Customer Name: " + fireProposal.getCustomer());
-	            System.out.println("Policy Number: " + fireProposal.getPolicyNumber());
-	            System.out.println("ProposalNo: " + fireProposal.getProposalNo());
-	            params.put("Customer",           fireProposal.getCustomer());
-	            params.put("PolicyNumber",      fireProposal.getPolicyNumber());
-	            params.put("ProposalNo",         fireProposal.getProposalNo());
-	            params.put("SumInsured",         totalSumInsured);
-	            params.put("BasicPremiumTerm",   basicPremiumTerm);
-	            params.put("AddOnPremiumTerm",   addOnPremiumTerm);
-	            params.put("TotalPremiumPeriod", totalPremiumPeriod);
-
-	            // ---- Generate PDF with JasperReports ----
-	            InputStream jrxml = Thread.currentThread()
-	                    .getContextClassLoader()
-	                    .getResourceAsStream("FirePolicyReport.jrxml");
-	            if (jrxml == null) {
-	                throw new IllegalStateException("FirePolicyReport.jrxml not found in classpath");
-	            }
-	            JasperDesign design = JRXmlLoader.load(jrxml);
-	            JasperReport report = JasperCompileManager.compileReport(design);
-	            JasperPrint print = JasperFillManager.fillReport(report, params, new JREmptyDataSource());
-
-	            // ---- Stream PDF directly to client ----
-	            byte[] pdfBytes = JasperExportManager.exportReportToPdf(print);
-	            System.out.println("PDF size: " + pdfBytes.length + " bytes");
-	            response.setContentLength(pdfBytes.length);
-
-	            try (OutputStream out = response.getOutputStream()) {
-	                out.write(pdfBytes);
-	                out.flush();
-	            }
-	            System.out.println("PDF streamed to client successfully.");
-
-	            // Complete the JSF response
-	            facesContext.responseComplete();
+	            facesContext.responseComplete(); // Important to stop JSF page rendering
 
 	        } catch (Exception e) {
 	            e.printStackTrace();
-	            facesContext.getExternalContext().log("Error generating Fire Proposal Letter", e);
-	            try {
-	                response.reset();
-	                response.setContentType("text/html");
-	                facesContext.getExternalContext().responseSendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error generating PDF: " + e.getMessage());
-	                facesContext.responseComplete();
-	            } catch (Exception ex) {
-	                ex.printStackTrace();
-	            }
-	            throw new RuntimeException("Error generating Fire Proposal Letter", e);
+	            addErrorMessage(null, "Report Generation Failed: " + e.getMessage());
 	        }
 	    }
+
+	    public StreamedContent getFireProposalDownload() {
+	        try {
+	            String pdfFilePath = dirPath + fileName + ".pdf";
+	            System.out.println("getFireProposalDownload: Looking for PDF at " + pdfFilePath);
+	            File file = new File(pdfFilePath);
+
+	            // Generate if not exists
+	            if (!file.exists()) {
+	                generateFireProposalReport();
+	            }
+
+	            if (!file.exists()) {
+	                addErrorMessage(null, "Download Failed: PDF file could not be generated.");
+	                return null;
+	            }
+
+	            InputStream input = new FileInputStream(file);
+	            ExternalContext ext = FacesContext.getCurrentInstance().getExternalContext();
+
+	            return new DefaultStreamedContent(input, ext.getMimeType(file.getName()), file.getName());
+
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	            addErrorMessage(null, "Download Failed: " + e.getMessage());
+	            return null;
+	        }
+	    }
+
 	
 
 	private double round(double value) {

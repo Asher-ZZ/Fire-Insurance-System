@@ -1,3 +1,6 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:ui="http://java.sun.com/jsf/facelets"
 	xmlns:h="http://java.sun.com/jsf/html"
@@ -558,7 +561,7 @@
 						<!-- Editable Basic Premium -->
 						<p:column headerText="Basic Premium (Period)"
 							style="text-align:right;">
-							<p:inputText value="#{building.basicPremiumPeriod}">
+							<p:inputText value="#{building.basicPremiumPeriod}" required="true">
 								<f:convertNumber minFractionDigits="2" />
 								<p:ajax event="blur"
 									listener="#{ManageFireProposalActionBean.recalculatePremiums}"
@@ -576,7 +579,7 @@
 						<!-- Editable Add-On Premium -->
 						<p:column headerText="Add-On Premium (Period)"
 							style="text-align:right;">
-							<p:inputText value="#{building.addOnPremiumPeriod}">
+							<p:inputText value="#{building.addOnPremiumPeriod}" required="true" >
 								<f:convertNumber minFractionDigits="2" />
 								<p:ajax event="blur"
 									listener="#{ManageFireProposalActionBean.recalculatePremiums}"
@@ -656,7 +659,7 @@
 					</p:confirmDialog>
 					
 			<p:commandButton value="Download Report" id="downloadBtn"
-                 action="#{ManageFireProposalActionBean.generateLetter}"
+                 action="#{ManageFireProposalActionBean.generateFireProposalReport}"
                  icon="pi pi-download"
                  disabled="#{!ManageFireProposalActionBean.saved}"
                  ajax="false" />
