@@ -85,51 +85,48 @@ public class ManageFireEnquiryBean implements Serializable {
 		this.fireProposalService = fireProposalService;
 	}
 
-	// Search action
 	public void search() {
-	    // Normalize empty dates to null
-	    if (startDateFrom != null && startDateFrom.toString().trim().isEmpty()) {
-	        startDateFrom = null;
-	    }
-	    if (startDateTo != null && startDateTo.toString().trim().isEmpty()) {
-	        startDateTo = null;
-	    }
-
 	    // Clear previous results
 	    policies.clear();
 
 	    try {
-	        if (isValidSearchCriteria()) {
-	            List<FireProposal> fireProposals = new ArrayList<>();
+	        List<FireProposal> fireProposals = new ArrayList<>();
 
-	            if (policyNo != null && !policyNo.trim().isEmpty()) {
-	                FireProposal proposal = fireProposalService.findFireProposalByPolicyNo(policyNo);
-	                if (proposal != null) {
-	                    policies.add(convertToPolicy(proposal));
-	                }
-	            } else {
-	                fireProposals = fireProposalService.findFireProposalsByDateRange(startDateFrom, startDateTo);
-	                for (FireProposal proposal : fireProposals) {
-	                    policies.add(convertToPolicy(proposal));
-	                }
-	            }
-
-	            if (policies.isEmpty()) {
-	                FacesContext.getCurrentInstance().addMessage(null,
-	                        new FacesMessage(FacesMessage.SEVERITY_INFO, "No records found", null));
-	            } else {
-	                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO,
-	                        "Search completed", policies.size() + " records found"));
+	        if ((policyNo == null || policyNo.trim().isEmpty()) 
+	            && startDateFrom == null && startDateTo == null) {
+	            // No criteria -> fetch all
+	            fireProposals = fireProposalService.findAllFireProposals();
+	        } else if (policyNo != null && !policyNo.trim().isEmpty()) {
+	            // Search by policy number
+	            FireProposal proposal = fireProposalService.findFireProposalByPolicyNo(policyNo);
+	            if (proposal != null) {
+	                policies.add(convertToPolicy(proposal));
 	            }
 	        } else {
-	            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN,
-	                    "Invalid search criteria", "Please provide valid dates or policy number"));
+	            // Search by dates (startDateFrom and/or startDateTo)
+	            fireProposals = fireProposalService.findFireProposalsByDateRange(startDateFrom, startDateTo);
 	        }
+
+	        // Convert results to Policy
+	        for (FireProposal proposal : fireProposals) {
+	            policies.add(convertToPolicy(proposal));
+	        }
+
+	        // Show message
+	        if (policies.isEmpty()) {
+	            FacesContext.getCurrentInstance().addMessage(null,
+	                new FacesMessage(FacesMessage.SEVERITY_INFO, "No records found", null));
+	        } else {
+	            FacesContext.getCurrentInstance().addMessage(null,
+	                new FacesMessage(FacesMessage.SEVERITY_INFO, "Search completed", policies.size() + " records found"));
+	        }
+
 	    } catch (SystemException e) {
 	        FacesContext.getCurrentInstance().addMessage(null,
-	                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error during search", e.getMessage()));
+	            new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error during search", e.getMessage()));
 	    }
 	}
+
 
 
 	// Reset action

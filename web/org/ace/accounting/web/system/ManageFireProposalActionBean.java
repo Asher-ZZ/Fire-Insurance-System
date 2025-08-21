@@ -113,20 +113,19 @@ public class ManageFireProposalActionBean extends BaseBean {
 		return currentStep;
 	}
 
-	private void validateDates() {
-		Date submittedDate = fireProposal.getSubmittedDate();
-		Date policyStartDate = fireProposal.getPolicyStartDate();
-		if (submittedDate != null && (submittedDate.before(minDate) || submittedDate.after(maxDate))) {
-			addErrorMessage(null, "Submitted date must be between " + minDate + " and " + maxDate);
-			return;
-		}
-		if (policyStartDate != null && (policyStartDate.before(minDate) || policyStartDate.after(maxDate))) {
-			addErrorMessage(null, "Policy start date must be between " + minDate + " and " + maxDate);
-			return;
-		}
-		logger.debug("Validated dates: SubmittedDate={}, PolicyStartDate={}", submittedDate, policyStartDate);
-	}
-
+	/*
+	 * private void validateDates() { Date submittedDate =
+	 * fireProposal.getSubmittedDate(); Date policyStartDate =
+	 * fireProposal.getPolicyStartDate(); if (submittedDate != null &&
+	 * (submittedDate.before(minDate) || submittedDate.after(maxDate))) {
+	 * addErrorMessage(null, "Submitted date must be between " + minDate + " and " +
+	 * maxDate); return; } if (policyStartDate != null &&
+	 * (policyStartDate.before(minDate) || policyStartDate.after(maxDate))) {
+	 * addErrorMessage(null, "Policy start date must be between " + minDate +
+	 * " and " + maxDate); return; }
+	 * logger.debug("Validated dates: SubmittedDate={}, PolicyStartDate={}",
+	 * submittedDate, policyStartDate); }
+	 */
 	public String saveAll() {
 		try {
 			for (BuildingInfo b : buildings) {
