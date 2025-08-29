@@ -19,7 +19,7 @@ public class BuildingInfo implements Serializable, Cloneable {
 
 	private static final long serialVersionUID = 1L;
 	@Id
-	@GeneratedValue(strategy = GenerationType.TABLE, generator = "BUILDING_INFO_GEN") // Changed to IDENTITY
+	@GeneratedValue(strategy = GenerationType.TABLE, generator = "BUILDING_INFO_GEN") 
 	@Column(name = "BUILDINGINFOID")
 	private String id;
 

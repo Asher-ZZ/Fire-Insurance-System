@@ -17,6 +17,8 @@ import javax.faces.bean.ViewScoped;
 import javax.faces.component.UIComponent;
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.validator.ValidatorException;
+import javax.persistence.CascadeType;
+import javax.persistence.OneToMany;
 
 import org.ace.accounting.common.BuildingClass;
 import org.ace.accounting.common.CurrencyType1;
@@ -77,7 +79,7 @@ public class ManageFireProposalActionBean extends BaseBean {
 	private FireProposal fireProposal;
 	private BuildingInfo buildingInfo;
 	private List<BuildingInfo> buildings;
-	private BuildingInfo tempPremium; // Temporary object for premium input
+     
 	private List<FireProposal> fireProposalList;
 	private int periodMin;
 	private int periodMax;
@@ -95,7 +97,7 @@ public class ManageFireProposalActionBean extends BaseBean {
 	@PostConstruct
 	public void init() {
 		createNewFireProposal();
-		loadFireProposals();
+		/* loadFireProposals(); */
 	}
 
 	private void createNewFireProposal() {
@@ -103,31 +105,37 @@ public class ManageFireProposalActionBean extends BaseBean {
 		fireProposal = new FireProposal();
 		buildingInfo = new BuildingInfo();
 		buildings = new ArrayList<>();
-		tempPremium = new BuildingInfo(); // Initialize tempPremium for UI input
+
 		fireProposal.setBuildingList(buildings);
 		logger.debug("Initialized new FireProposal with multiple buildings support");
 	}
 
-	private void loadFireProposals() {
-		if (fireProposalService != null) {
-			fireProposalList = fireProposalService.findAllFireProposals();
-			logger.debug("Loaded {} fire proposals", fireProposalList.size());
-		} else {
-			fireProposalList = new ArrayList<>();
-			logger.warn("FireProposalService is null, initialized empty fire proposal list");
-		}
-	}
+	/*
+	 * private void loadFireProposals() { if (fireProposalService != null) {
+	 * fireProposalList = fireProposalService.findAllFireProposals();
+	 * logger.debug("Loaded {} fire proposals", fireProposalList.size()); } else {
+	 * fireProposalList = new ArrayList<>(); logger.
+	 * warn("FireProposalService is null, initialized empty fire proposal list"); }
+	 * }
+	 */
 
 	public String onFlowProcess(FlowEvent event) {
-		String oldStep = event.getOldStep(); // current step
+		String oldStep = event.getOldStep();
 		String newStep = event.getNewStep();
 
-		// Only block if going forward from buildingInfo to premiumInfo
+	                  //String check
 		if ("buildingInfo".equals(oldStep) && "premiumInfo".equals(newStep)) {
+			/*
+	* A variable exists, but it does
+     *  not point to any object in memory        empty means an object exists,buildingInfo
+        *                                           but it contains no elements/data
+			 */                                     // ArrayList object in memory
+			/* object reference */       /* object shi */
 			if (buildings == null || buildings.isEmpty()) {
 				addErrorMessage(null, "Please add at least one building before proceeding.");
 				return oldStep;
 			}
+
 		}
 
 		if ("premiumInfo".equals(newStep)) {
@@ -157,13 +165,13 @@ public class ManageFireProposalActionBean extends BaseBean {
 	    try {
 	        boolean valid = true;
 
-	        // Validate each building's premiums
+	      
 	        for (BuildingInfo b : buildings) {
 	            if (b.getBasicPremiumPeriod() == null) {
 	                addErrorMessage("basicPremiumPeriod",
 	                        "Basic Premium (Period) cannot be empty for building: " + b.getBuildingName());
 	                valid = false;
-	            } else if (b.getBasicPremiumPeriod() < 0) {
+	            } else if (b.getBasicPremiumPeriod() <= 0) {
 	                addErrorMessage("basicPremiumPeriod",
 	                        "Basic Premium (Period) cannot be negative for building: " + b.getBuildingName());
 	                valid = false;
@@ -173,19 +181,19 @@ public class ManageFireProposalActionBean extends BaseBean {
 	                addErrorMessage("addOnPremiumPeriod",
 	                        "Add-On Premium (Period) cannot be empty for building: " + b.getBuildingName());
 	                valid = false;
-	            } else if (b.getAddOnPremiumPeriod() < 0) {
+	            } else if (b.getAddOnPremiumPeriod() <= 0) {
 	                addErrorMessage("addOnPremiumPeriod",
 	                        "Add-On Premium (Period) cannot be negative for building: " + b.getBuildingName());
 	                valid = false;
 	            }
 	        }
-
-	        // Stop saving if validation failed
+	        
+	
 	        if (!valid) {
 	            return;
 	        }
 
-	        // Link buildings to the proposal
+	       
 	        for (BuildingInfo b : buildings) {
 	            b.setFireProposal(fireProposal);
 	        }
@@ -207,9 +215,11 @@ public class ManageFireProposalActionBean extends BaseBean {
 	            addInfoMessage(null, MessageId.UPDATE_SUCCESS, fireProposal.getCustomer());
 	        }
 
-	        // Keep saved proposal in session for report bean
-	        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("savedFireProposal",
-	                fireProposal);
+			/*
+			 * // Keep saved proposal in session for report bean
+			 * FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(
+			 * "savedFireProposal", fireProposal);
+			 */
 
 	        saved = true;
 
@@ -219,7 +229,7 @@ public class ManageFireProposalActionBean extends BaseBean {
 	    }
 	}
 	public String cancel() {
-		// createNewFireProposal();
+		
 		return "/ui/system/home.xhtml?faces-redirect=true";
 	}
 
@@ -250,9 +260,84 @@ public class ManageFireProposalActionBean extends BaseBean {
 		fireProposal.setPolicyEndDate(Date.from(start.atStartOfDay(ZoneId.systemDefault()).toInstant()));
 	}
 
+	/*
+	 * Clone သုံးတဲ့အခါ
+	 * 
+	 * clone() သုံးလိုက်ရင် deep copy / new object တစ်ခုထပ်ဖန်တီးပြီး original
+	 * object ထဲက data တွေကို copy လုပ်ပေးတယ်။
+	 * 
+	 * ဥပမာ-
+	 * 
+	 * BuildingInfo b1 = new BuildingInfo(); b1.setBuildingName("Building A");
+	 * 
+	 * BuildingInfo b2 = b1.clone(); // deep copy b2.setBuildingName("Building B");
+	 * 
+	 * System.out.println(b1.getBuildingName()); // "Building A"
+	 * System.out.println(b2.getBuildingName()); // "Building B"
+	 * 
+	 * 
+	 *  ဒီလိုဆိုရင် b1 နဲ့ b2 က တူညီတဲ့ reference မဟုတ်တော့ဘဲ၊ တူညီတဲ့ value
+	 * တွေရှိတဲ့ object နှစ်ခု ဖြစ်သွားမယ်။
+	 */
+	
+	/*
+	 * User က form မှာ data ရိုက်ပြီး add original buildingInfo object ကို direct
+	 * add လုပ်လိုက်ရင် နောက်ထပ်ရိုက်တဲ့ data တွေ ပိုပြီး overwrite ဖြစ်နိုင်တယ်။
+	 * 
+	 * ဒါကြောင့် clone() လုပ်ပြီး new object ဖန်တီးကာ list ထဲထည့်ထားတာ။
+	 */
+	
+	/*
+	 * clone() သုံးတာဟာ object တူတူကို share မဖြစ်အောင်၊ object
+	 * အသစ်တစ်ခုထပ်ဖန်တီးပြီး safe copy တစ်ခုရအောင် သုံးတာပါ။ ဒါကြောင့် Fire
+	 * Insurance Proposal မှာ BuildingInfo, FireProposal တို့ကို clone() လုပ်ပြီး
+	 * အသစ်ထပ်ထည့်သုံးတာ ဖြစ်တယ်။
+	 */
+	
+	public void addBuilding() {
+		if (buildingInfo != null && buildingInfo.isValid()) {
+			BuildingInfo cloned = buildingInfo.clone();
+			buildings.add(cloned);
+			buildingInfo = new BuildingInfo(); 
+			fireProposal.setBuildingList(buildings);
+		} else {
+			addErrorMessage(null, "Please fill building details before adding.");
+		}
+	}
+
+
+	public void onPaymentTypeChange(AjaxBehaviorEvent event) {
+		recalculatePremiums();
+	}
+
+	private double getPaymentDivisor(PaymentType paymentType) {
+		if (paymentType == null)
+			return 1.0;
+		switch (paymentType) {
+		case LUMPSUM:
+			return 1.0;
+		case SEMI_ANNUAL:
+			return 2.0;
+		case QUARTER:
+			return 4.0;
+		case MONTHLY:
+			return 12.0;
+		default:
+			return 1.0;
+		}
+	}
+
+	
+  //constructor lo a lote lote
+	//default value nal sa at tr ma shi yin caculation mr pyt tha nr tat naing    period range ka initialized ma phit tot buu
 	public ManageFireProposalActionBean() {
 		fireProposal = new FireProposal();
 		updatePeriodRange(null);
+	}
+	
+	public void updatePeriodRange() {
+		updatePeriodRange((AjaxBehaviorEvent) null); 
+		recalculatePremiums();
 	}
 
 	public void updatePeriodRange(AjaxBehaviorEvent event) {
@@ -278,17 +363,6 @@ public class ManageFireProposalActionBean extends BaseBean {
 		}
 	}
 
-	public void addBuilding() {
-		if (buildingInfo != null && buildingInfo.isValid()) {
-			BuildingInfo cloned = buildingInfo.clone();
-			buildings.add(cloned);
-			buildingInfo = new BuildingInfo(); // reset input
-		} else {
-			addErrorMessage(null, "Please fill building details before adding.");
-		}
-	}
-
-	// Return available payment types based on current insurance period
 	public PaymentType[] getAvailablePaymentTypes() {
 		Integer days = fireProposal.getInsurancePeriodDays();
 		String unit = fireProposal.getInsurancePeriodUnit();
@@ -301,48 +375,19 @@ public class ManageFireProposalActionBean extends BaseBean {
 				|| ("MONTH".equalsIgnoreCase(unit) && days == 12) || ("YEAR".equalsIgnoreCase(unit) && days == 1);
 
 		if (isFullYear) {
-			// return all options
+		
 			return new PaymentType[] { PaymentType.LUMPSUM, PaymentType.SEMI_ANNUAL, PaymentType.QUARTER,
 					PaymentType.MONTHLY };
 		} else {
-			// only lumpsum
-			// ensure selected payment type is valid
+		
 			if (fireProposal.getPaymentType() != PaymentType.LUMPSUM) {
 				fireProposal.setPaymentType(PaymentType.LUMPSUM);
 			}
 			return new PaymentType[] { PaymentType.LUMPSUM };
 		}
 	}
-
-	// Called when user changes period unit/value (wired in XHTML)
-	public void updatePeriodRange() {
-		updatePeriodRange((AjaxBehaviorEvent) null); // reuse your existing method that sets periodMin/periodMax
-		recalculatePremiums();
-	}
-
-	// Called when PaymentType changes (via p:ajax)
-	public void onPaymentTypeChange(AjaxBehaviorEvent event) {
-		recalculatePremiums();
-	}
-
-	// Calculate divisor for the payment type (divide by this)
-	private double getPaymentDivisor(PaymentType paymentType) {
-		if (paymentType == null)
-			return 1.0;
-		switch (paymentType) {
-		case LUMPSUM:
-			return 1.0;
-		case SEMI_ANNUAL:
-			return 2.0;
-		case QUARTER:
-			return 4.0;
-		case MONTHLY:
-			return 12.0;
-		default:
-			return 1.0;
-		}
-	}
-
+	
+	
 	public void recalculatePremiums() {
 		if (buildings == null)
 			return;
@@ -419,9 +464,23 @@ public class ManageFireProposalActionBean extends BaseBean {
 	 * tempPremium = new BuildingInfo(); // Reset tempPremium input
 	 * recalculatePremiums(); }
 	 */
+	
+	
+	
+	/*  
+	 * onTabChange က event-driven method  tab switch phit tl a chain
+	 * phan htar
+	 * 
+	 */
 	public void onTabChange(TabChangeEvent event) {
+		                          //returns the ID of 
+		                          //the current tab.
 		if ("premiumInfo".equals(event.getTab().getId())) {
+			//assign lote htar chin thr phit 
+			//sat sat mhu shi because cascade = CascadeType.ALL
+			//@OneToMany(mappedBy = "fireProposal", cascade = CascadeType.ALL, orphanRemoval = true)
 			fireProposal.setBuildingList(buildings);
+			
 			recalculatePremiums();
 		}
 	}
@@ -440,14 +499,13 @@ public class ManageFireProposalActionBean extends BaseBean {
 			throw new ValidatorException(msg);
 		}
 
-		// Format check (POL + 3 digits)
 		if (!policyNo.matches("^POL\\d{3}$")) {
 			FacesMessage msg = new FacesMessage("Policy No. format must be like POL001.");
 			msg.setSeverity(FacesMessage.SEVERITY_ERROR);
 			throw new ValidatorException(msg);
 		}
 
-		// Check if already exists in DB
+	
 		if (fireProposalService.existsByPolicyNumber(policyNo)) {
 			FacesMessage msg = new FacesMessage("Policy No. already exists.");
 			msg.setSeverity(FacesMessage.SEVERITY_ERROR);
@@ -478,7 +536,6 @@ public class ManageFireProposalActionBean extends BaseBean {
 				return;
 			}
 
-			// ---- Parameters ----
 			Map<String, Object> parameters = new HashMap<>();
 			parameters.put("Customer", fireProposal.getCustomer());
 			parameters.put("PolicyNumber", fireProposal.getPolicyNumber());
@@ -561,7 +618,7 @@ public class ManageFireProposalActionBean extends BaseBean {
 
 	public boolean hasErrors() {
 		FacesContext context = FacesContext.getCurrentInstance();
-		return context.getMessages().hasNext(); // Returns true if any message exists (including errors)
+		return context.getMessages().hasNext(); 
 	}
 
 	public void removeBuilding(BuildingInfo building) {
@@ -581,13 +638,6 @@ public class ManageFireProposalActionBean extends BaseBean {
 		return buildingInfo != null ? buildingInfo : (buildingInfo = new BuildingInfo());
 	}
 
-	public BuildingInfo getTempPremium() {
-		return tempPremium != null ? tempPremium : (tempPremium = new BuildingInfo());
-	}
-
-	public void setTempPremium(BuildingInfo tempPremium) {
-		this.tempPremium = tempPremium;
-	}
 
 	public List<FireProposal> getFireProposalList() {
 		return fireProposalList != null ? fireProposalList : (fireProposalList = new ArrayList<>());
@@ -700,6 +750,6 @@ public class ManageFireProposalActionBean extends BaseBean {
 	public void calculateSquareFeet(AjaxBehaviorEvent event) {
 		double length = buildingInfo.getLength() != null ? buildingInfo.getLength() : 0.0;
 		double width = buildingInfo.getWidth() != null ? buildingInfo.getWidth() : 0.0;
-		buildingInfo.setSquareFeet(length * width); // Calculate area as length × width
+		buildingInfo.setSquareFeet(length * width); 
 	}
 }

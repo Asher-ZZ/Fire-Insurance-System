@@ -193,6 +193,21 @@ public class FireProposalDAO extends BasicDAO implements IFireProposalDAO {
         Long count = query.getSingleResult();
         return count > 0;
     }
+   
+   
+	/*
+	 * ဒီ method က update / insert / delete မလုပ်ဘဲ data ရှာဖတ်တာသာ ဖြစ်တယ် 1=1
+	 * သုံးထားတာ → dynamic condition add လုပ်ဖို့ အတွက်
+	 * 
+	 * paramMap → query parameter တွေ save လုပ်ထားမယ် HQL ကို EntityManager ကနေ
+	 * query object ပြောင်း
+	 * 
+	 * parameter တွေကို assign လုပ် → :policyNo, :startDate, :endDate return
+	 * query.getResultList(); Query result အားလုံးကို List<FireProposal> အနေနဲ့
+	 * return
+	 * 
+	 * criteria ဖြင့် filter လုပ်ပြီး လိုချင်တဲ့ data list ရလာတယ်
+	 */
    @SuppressWarnings("unchecked")
    @Transactional(propagation = Propagation.REQUIRED, readOnly = true)
    public List<FireProposal> findByCriteria(String policyNo, Date startDate, Date endDate) throws DAOException {

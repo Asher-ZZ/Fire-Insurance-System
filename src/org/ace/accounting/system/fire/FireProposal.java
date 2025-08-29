@@ -161,12 +161,12 @@ public class FireProposal implements Serializable, Cloneable {
 	}
 
 	public String getPolicyNumber() {
-		if (policyNumber == null && proposalNo != null && policyStartDate != null) {
-			Calendar cal = Calendar.getInstance();
-			cal.setTime(policyStartDate);
-			int year = cal.get(Calendar.YEAR);
-			return String.format("FM/PO/%s/FM-%d", proposalNo, year);
-		}
+		/*
+		 * if (policyNumber == null && proposalNo != null && policyStartDate != null) {
+		 * Calendar cal = Calendar.getInstance(); cal.setTime(policyStartDate); int year
+		 * = cal.get(Calendar.YEAR); return String.format("FM/PO/%s/FM-%d", proposalNo,
+		 * year); }
+		 */
 		return policyNumber != null ? policyNumber : "";
 	}
 
