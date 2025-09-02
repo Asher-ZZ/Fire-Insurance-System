@@ -54,7 +54,7 @@ public class LoginBean extends BaseBean {
 
 	public String authenticate() {
 		boolean authenticate = userService.authenticate(username, password);
-		if (authenticate) {
+		if (authenticate) { 
 			User user = userService.findUser(username);
 			putParam(ParamId.LOGIN_USER, user);
 			userProcessService.registerUser(user);
