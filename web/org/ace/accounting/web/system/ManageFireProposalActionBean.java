@@ -454,6 +454,7 @@ public class ManageFireProposalActionBean extends BaseBean {
 			throw new ValidatorException(msg);
 		}
 	}
+	
 
 	private final String reportName = "FirePolicyReport";
 	private final String pdfDirPath = "/pdf-report/" + reportName + "/" + System.currentTimeMillis() + "/";
