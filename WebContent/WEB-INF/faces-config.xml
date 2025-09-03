@@ -155,6 +155,12 @@
    <redirect/>
   </navigation-case>
   
+   <navigation-case>
+   <from-outcome>carEntryForm</from-outcome>
+   <to-view-id>/ui/system/manageCar.xhtml</to-view-id>
+   <redirect/>
+  </navigation-case>
+  
     <navigation-case>
    <from-outcome>policySearchForm</from-outcome>
    <to-view-id>/ui/system/manageFirePolicyEnquiryForm.xhtml</to-view-id>

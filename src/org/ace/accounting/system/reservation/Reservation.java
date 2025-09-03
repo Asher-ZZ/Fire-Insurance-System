@@ -1,4 +1,4 @@
-package org.ace.accounting.system.car;
+package org.ace.accounting.system.reservation;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -6,6 +6,8 @@ import javax.persistence.*;
 
 import org.ace.accounting.common.BasicEntity;
 import org.ace.accounting.common.TableName;
+import org.ace.accounting.system.car.Car;
+import org.ace.accounting.system.customer.Renter;
 import org.ace.java.component.idgen.service.IDInterceptor;
 
 @Entity
@@ -29,8 +31,8 @@ public class Reservation implements Serializable {
     private Long reserveId;
 
     @ManyToOne
-    @JoinColumn(name = "UserID")
-    private Customer customer;
+    @JoinColumn(name = "RenterID")
+    private Renter renter;
 
     @ManyToOne
     @JoinColumn(name = "CarID")
@@ -42,17 +44,25 @@ public class Reservation implements Serializable {
     @Column(name = "EndDate")
     private LocalDateTime endDate;
 
-    @Column(name = "DailyRate")
+    public Renter getRenter() {
+		return renter;
+	}
+
+	public void setRenter(Renter renter) {
+		this.renter = renter;
+	}
+
+	@Column(name = "DailyRate")
     private Double dailyRate;
 
     @Column(name = "TotalCost")
     private Double totalCost;
 
-    @Enumerated(EnumType.STRING)
+    
     @Column(name = "Status")
     private String status; // store enum as string
 
-    @Enumerated(EnumType.STRING)
+    
     @Column(name = "RentalType")
     private String rentalType; // store enum as string
 
@@ -73,12 +83,12 @@ public class Reservation implements Serializable {
         this.reserveId = reserveId;
     }
 
-    public Customer getCustomer() {
-        return customer;
+    public Renter getCustomer() {
+        return renter;
     }
 
-    public void setCustomer(Customer customer) {
-        this.customer = customer;
+    public void setCustomer(Renter renter) {
+        this.renter = renter;
     }
 
     public Car getCar() {

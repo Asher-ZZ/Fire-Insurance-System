@@ -1,0 +1,111 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/common/commonLayout.xhtml">
+
+	<ui:define name="content">
+		<h:form id="carEntryForm">
+
+			<p:growl globalOnly="true" showDetail="true" escape="false" />
+			<!-- <p:messages autoUpdate="true" /> -->
+
+			<p:panel header="Car Information" styleClass="ui-fluid">
+				<p:panelGrid columns="2" columnClasses="ui-grid-col-3,ui-grid-col-9"
+					layout="grid" styleClass="ui-panelgrid-blank">
+
+					<p:outputLabel />
+					<p:message for="type" display="text" />
+					<h:outputText for="type" value="Type"
+						styleClass="input-label mandatory" />
+					<p:inputText id="type" value="#{ManageCarActionBean.car.type}"
+						required="true" label="Type"
+						requiredMessage="Please Enter Car Type" />
+
+					<p:outputLabel />
+					<p:message for="status" display="text" />
+					<h:outputText for="status" value="Status"
+						styleClass="input-label mandatory" />
+					<p:selectOneMenu id="status"
+						value="#{ManageCarActionBean.car.status}" required="true">
+						<f:selectItem itemLabel="Select Status" itemValue=""
+							noSelectionOption="true" />
+						<f:selectItem itemLabel="Available" itemValue="Available" />
+						<f:selectItem itemLabel="Rented" itemValue="Rented" />
+						<f:selectItem itemLabel="Maintenance" itemValue="Maintenance" />
+					</p:selectOneMenu>
+
+					<p:outputLabel />
+					<p:message for="make" display="text" />
+					<h:outputText for="make" value="Make"
+						styleClass="input-label mandatory" />
+					<p:inputText id="make" value="#{ManageCarActionBean.car.make}"
+						required="true" />
+
+					<p:outputLabel />
+					<p:message for="model" display="text" />
+					<h:outputText for="model" value="Model"
+						styleClass="input-label mandatory" />
+					<p:inputText id="model" value="#{ManageCarActionBean.car.model}"
+						required="true" />
+
+					<p:outputLabel />
+					<p:message for="year" display="text" />
+					<h:outputText for="year" value="Year"
+						styleClass="input-label mandatory" />
+					<p:inputNumber id="year" value="#{ManageCarActionBean.car.year}"
+						required="true" decimalPlaces="0" />
+
+					<p:outputLabel />
+					<p:message for="regNo" display="text" />
+					<h:outputText for="regNo" value="Registration No"
+						styleClass="input-label mandatory" />
+					<p:inputText id="regNo"
+						value="#{ManageCarActionBean.car.registrationNo}" required="true" />
+
+					<p:outputLabel />
+					<p:message for="passenger" display="text" />
+					<h:outputText for="passenger" value="Passenger Capacity"
+						styleClass="input-label mandatory" />
+					<p:inputNumber id="passenger"
+						value="#{ManageCarActionBean.car.passenger}" required="true"
+						decimalPlaces="0" />
+
+					<p:outputLabel />
+					<p:message for="baseRate" display="text" />
+					<h:outputText for="baseRate" value="Base Rate"
+						styleClass="input-label mandatory" />
+					<p:inputNumber id="baseRate"
+						value="#{ManageCarActionBean.car.baseRate}" required="true"
+						decimalPlaces="2" />
+
+					<p:outputLabel />
+					<p:message for="branch" display="text" />
+					<h:outputText for="branch" value="Branch"
+						styleClass="input-label mandatory" />
+					<p:inputText id="branch" value="#{ManageCarActionBean.car.branch}"
+						required="true" />
+
+					<p:outputLabel />
+					<p:message for="category" display="text" />
+					<h:outputText for="category" value="Category"
+						styleClass="input-label mandatory" />
+					<p:inputText id="category"
+						value="#{ManageCarActionBean.car.category}" required="true" />
+
+				</p:panelGrid>
+
+				<p:separator />
+
+				<p:commandButton id="addBtn" value="Save" icon="pi pi-save"
+					action="#{ManageCarActionBean.saveCar}" update=":carEntryForm"
+					style="margin-right:10px" />
+				<p:commandButton id="resetBtn" value="Reset" icon="pi pi-refresh"
+					action="#{ManageCarActionBean.resetCar}" immediate="true"
+					process="@this" update=":carEntryForm" />
+
+			</p:panel>
+		</h:form>
+	</ui:define>
+</ui:composition>

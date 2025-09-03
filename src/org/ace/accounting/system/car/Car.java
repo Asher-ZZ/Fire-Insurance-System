@@ -1,7 +1,6 @@
 package org.ace.accounting.system.car;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
 import javax.persistence.*;
 
 import org.ace.accounting.common.BasicEntity;
@@ -31,7 +30,7 @@ public class Car implements Serializable {
     @Column(name = "Type")
     private String type;
 
-    @Enumerated(EnumType.STRING)
+    
     @Column(name = "Status")
     private String status; 
 
@@ -56,7 +55,7 @@ public class Car implements Serializable {
     @Column(name = "Branch")
     private String branch;
 
-    @Enumerated(EnumType.STRING)
+    
     @Column(name = "Category")
     private String category; 
 

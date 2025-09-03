@@ -1,6 +1,7 @@
-package org.ace.accounting.system.car;
+package org.ace.accounting.system.customer;
 
 import java.io.Serializable;
+
 import java.time.LocalDate;
 
 import javax.persistence.*;
@@ -8,23 +9,25 @@ import javax.persistence.*;
 import org.ace.accounting.common.BasicEntity;
 import org.ace.accounting.common.TableName;
 import org.ace.java.component.idgen.service.IDInterceptor;
+
 @Entity
-@Table(name=TableName.Customer)
+@Table(name=TableName.CarRenter)
 @TableGenerator(
-        name = "CUSTOMER_GEN",
+        name = "RENTER_GEN",
         table = "ID_GEN",
         pkColumnName = "GEN_NAME",
         valueColumnName = "GEN_VAL",
-        pkColumnValue = "CUSTOMER_GEN",
+        pkColumnValue = "RENTER_GEN",
         allocationSize = 10
     )
 @EntityListeners(IDInterceptor.class)
-public class Customer implements Serializable{
+public class Renter implements Serializable{
 
 	private static final long serialVersionUID = 1L;
-	 @GeneratedValue(strategy = GenerationType.TABLE, generator = "CUSTOMER_GEN")
-	 @Column(name="UserID")
-	 private Long userId;
+	@Id
+	 @GeneratedValue(strategy = GenerationType.TABLE, generator = "RENTER_GEN")
+	 @Column(name="RenterID")
+	 private Long renterId;
 	 
 	 @Column(name="Name")
 	    private String name;
@@ -55,14 +58,15 @@ public class Customer implements Serializable{
 
 	 @Embedded
 		private BasicEntity basicEntity;
+	 
 	 	@Version
 		@Column(name = "VERSION") 
 	    private Integer version;
-		public Long getUserId() {
-			return userId;
+		public Long getRenterId() {
+			return renterId;
 		}
-		public void setUserId(Long userId) {
-			this.userId = userId;
+		public void setRenterId(Long renterId) {
+			this.renterId = renterId;
 		}
 		public String getName() {
 			return name;

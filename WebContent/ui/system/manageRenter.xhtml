@@ -1,0 +1,55 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                template="/common/commonLayout.xhtml">
+                
+   <ui:define name="content">
+   		<h:form id="customerForm">
+    <h:panelGrid columns="2" cellpadding="5">
+
+        <h:outputLabel value="Name:" for="name"/>
+        <p:inputText id="name" value="#{customerBean.selectedCustomer.name}" required="true"/>
+
+        <h:outputLabel value="Phone Number:" for="phone"/>
+        <p:inputText id="phone" value="#{customerBean.selectedCustomer.phoneNumber}" required="true"/>
+
+        <h:outputLabel value="Driver License:" for="license"/>
+        <p:inputText id="license" value="#{customerBean.selectedCustomer.driverLicence}" required="true"/>
+
+        <h:outputLabel value="Address:" for="address"/>
+        <p:inputText id="address" value="#{customerBean.selectedCustomer.address}" />
+
+        <h:outputLabel value="Email:" for="email"/>
+        <p:inputText id="email" value="#{customerBean.selectedCustomer.email}" />
+
+        <h:outputLabel value="Gender:" for="gender"/>
+        <p:selectOneMenu id="gender" value="#{customerBean.selectedCustomer.gender}">
+            <f:selectItem itemLabel="Select" itemValue="" />
+            <f:selectItem itemLabel="Male" itemValue="Male" />
+            <f:selectItem itemLabel="Female" itemValue="Female" />
+        </p:selectOneMenu>
+
+        <h:outputLabel value="ID Type:" for="idType"/>
+        <p:selectOneMenu id="idType" value="#{customerBean.selectedCustomer.idType}">
+            <f:selectItem itemLabel="Select" itemValue="" />
+            <f:selectItem itemLabel="NRC" itemValue="NRC" />
+            <f:selectItem itemLabel="Passport" itemValue="Passport" />
+        </p:selectOneMenu>
+
+        <h:outputLabel value="ID Number:" for="idNumber"/>
+        <p:inputText id="idNumber" value="#{customerBean.selectedCustomer.idNumber}" />
+
+        <h:outputLabel value="Date of Birth:" for="dob"/>
+        <p:calendar id="dob" value="#{customerBean.selectedCustomer.dateOfBirth}" pattern="yyyy-MM-dd"/>
+        
+    </h:panelGrid>
+
+    <p:commandButton value="Save" action="#{customerBean.saveCustomer}" update=":customerListForm:customerTable" />
+    <p:commandButton value="Cancel" action="#{customerBean.cancel}" immediate="true"/>
+</h:form>
+
+   </ui:define>            
+           
+</ui:composition>

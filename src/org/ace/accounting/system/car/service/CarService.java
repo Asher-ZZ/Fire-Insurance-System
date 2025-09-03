@@ -1,0 +1,67 @@
+package org.ace.accounting.system.car.service;
+
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.ace.accounting.system.car.Car;
+import org.ace.accounting.system.car.persistence.interfaces.ICarDAO;
+import org.ace.accounting.system.car.service.interfaces.ICarService;
+import org.ace.java.component.SystemException;
+import org.ace.java.component.persistence.exception.DAOException;
+import org.ace.java.component.service.BaseService;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
+@Service("CarService")
+public class CarService extends BaseService implements ICarService {
+
+    @Resource(name = "CarDAO")
+    private ICarDAO carDAO;
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public void addNewCar(Car car) throws SystemException{
+        try {
+            carDAO.insert(car);
+        } catch (DAOException e) {
+            throw new SystemException(e.getErrorCode(), "Failed to insert Car", e);
+        }
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public void updateCar(Car car) throws SystemException {
+        try {
+            carDAO.update(car);
+        } catch (DAOException e) {
+            throw new SystemException(e.getErrorCode(), "Failed to update Car", e);
+        } 
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public void deleteCar(Car car) throws SystemException{
+        try {
+            carDAO.delete(car);
+        } catch (DAOException e) {
+            throw new SystemException(e.getErrorCode(), "Failed to delete Car", e);
+        }
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED, readOnly = true)
+    public Car findById(Long id)throws SystemException {
+        try {
+            return carDAO.findById(id);
+        } catch (DAOException e) {
+            throw new SystemException(e.getErrorCode(), "Failed to find Car by ID", e);
+        }
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED, readOnly = true)
+    public List<Car> findAll()throws SystemException{
+        try {
+            return carDAO.findAll();
+        } catch (DAOException e) {
+            throw new SystemException(e.getErrorCode(), "Failed to find all Cars", e);
+        }
+    }
+}

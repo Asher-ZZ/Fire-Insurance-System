@@ -7,6 +7,422 @@
                 
    <ui:define name="content">
    		
+<h:head>
+    <title>Car Rental - JSF Implementation</title>
+    <style>
+        :root {
+            --primary: #3a86ff;
+            --secondary: #ff006e;
+            --accent: #8338ec;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --light-gray: #e9ecef;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+        
+        .hero-section {
+    background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), 
+                url('https://images.unsplash.com/photo-1537005081207-04f90e3ba640?ixlib=rb-4.0.3&amp;auto=format&amp;fit=crop&amp;w=1674&amp;q=80') no-repeat center center/cover;
+    color: white;
+    padding: 100px 0;
+    text-align: center;
+}
+        .hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .hero-title {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.2rem;
+            margin-bottom: 40px;
+            opacity: 0.9;
+        }
+        
+        .btn-hero {
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            margin-right: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-hero:hover {
+            background: #2a75ff;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn-video {
+            background: transparent;
+            border: 2px solid white;
+        }
+        
+        .btn-video:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .search-section {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            margin-top: -50px;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 10;
+        }
+        
+        .search-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .search-item {
+            margin-bottom: 15px;
+        }
+        
+        .search-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--dark);
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--light-gray);
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        
+        .btn-search {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 5px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-search:hover {
+            background: #2a75ff;
+        }
+        
+        .cars-section {
+            padding: 80px 0;
+        }
+        
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 50px;
+            font-weight: 700;
+            color: var(--dark);
+        }
+        
+        .cars-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+        
+        .car-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+        
+        .car-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .car-image {
+            height: 180px;
+            background-color: #f1f3f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: var(--gray);
+        }
+        
+        .car-details {
+            padding: 20px;
+        }
+        
+        .car-name {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+        
+        .car-features {
+            list-style: none;
+            margin-bottom: 20px;
+        }
+        
+        .car-features li {
+            padding: 5px 0;
+            color: var(--gray);
+            display: flex;
+            align-items: center;
+        }
+        
+        .car-features li i {
+            margin-right: 10px;
+            color: var(--primary);
+        }
+        
+        .car-price {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+        
+        .btn-rent {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-rent:hover {
+            background: #2a75ff;
+        }
+        
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.2rem;
+            }
+            
+            .search-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .btn-hero {
+                display: block;
+                margin: 10px auto;
+                width: 80%;
+            }
+        }
+    </style>
+</h:head>
+<h:body>
+    <div class="container">
+        <!-- Hero Section -->
+        <div class="hero-section">
+            <div class="hero-content">
+                <h1 class="hero-title">ACCOMPANY YOUR JOURNEY WITH COMFORT</h1>
+                <p class="hero-subtitle">Car rent services for various terrain with guaranteed quality</p>
+                <a href="#" class="btn-hero">Learn More</a>
+                <a href="#" class="btn-hero btn-video"><i class="fas fa-play-circle"></i> Watch Video</a>
+            </div>
+        </div>
+        
+        <!-- Search Section -->
+        <div class="search-section">
+            <h:form>
+                <div class="search-grid">
+                    <div class="search-item">
+                        <label class="search-label">Location</label>
+                        <p:selectOneMenu styleClass="search-input" value="#{carRentalBean.location}">
+                            <f:selectItem itemLabel="Choose Location" itemValue="" />
+                            <f:selectItem itemLabel="New York" itemValue="ny" />
+                            <f:selectItem itemLabel="Los Angeles" itemValue="la" />
+                            <f:selectItem itemLabel="Chicago" itemValue="chi" />
+                            <f:selectItem itemLabel="Miami" itemValue="mia" />
+                        </p:selectOneMenu>
+                    </div>
+                    
+                    <div class="search-item">
+                        <label class="search-label">Car Type</label>
+                        <p:selectOneMenu styleClass="search-input" value="#{carRentalBean.carType}">
+                            <f:selectItem itemLabel="City Car" itemValue="" />
+                            <f:selectItem itemLabel="SUV" itemValue="suv" />
+                            <f:selectItem itemLabel="Sedan" itemValue="sedan" />
+                            <f:selectItem itemLabel="Luxury" itemValue="luxury" />
+                            <f:selectItem itemLabel="Minivan" itemValue="minivan" />
+                        </p:selectOneMenu>
+                    </div>
+                    
+                    <div class="search-item">
+                        <label class="search-label">Pick Up</label>
+                        <p:calendar styleClass="search-input" value="#{carRentalBean.pickupDate}" pattern="dd MMM yyyy" />
+                    </div>
+                    
+                    <div class="search-item">
+                        <label class="search-label">Return</label>
+                        <p:calendar styleClass="search-input" value="#{carRentalBean.returnDate}" pattern="dd MMM yyyy" />
+                    </div>
+                    
+                    <div class="search-item">
+                        <label class="search-label" style="opacity: 0;">Search</label>
+                        <p:commandButton value="Search" styleClass="btn-search" action="#{carRentalBean.searchCars}" />
+                    </div>
+                </div>
+            </h:form>
+        </div>
+        
+        <!-- Cars Section -->
+        <div class="cars-section">
+            <h2 class="section-title">Available Cars</h2>
+            
+            <div class="cars-grid">
+                <!-- Car 1 -->
+                <div class="car-card">
+                    <div class="car-image">
+                        <i class="fas fa-car"></i>
+                    </div>
+                    <div class="car-details">
+                        <h3 class="car-name">SimSong</h3>
+                        <ul class="car-features">
+                            <li><i class="fas fa-user"></i> 5 Seats</li>
+                            <li><i class="fas fa-gas-pump"></i> Hybrid</li>
+                            <li><i class="fas fa-cog"></i> Automatic</li>
+                        </ul>
+                        <p class="car-price">$45/day</p>
+                        <p:commandButton value="Rent Now" styleClass="btn-rent" action="#{carRentalBean.rentCar('SimSong')}" />
+                    </div>
+                </div>
+                
+                <!-- Car 2 -->
+                <div class="car-card">
+                    <div class="car-image">
+                        <i class="fas fa-car"></i>
+                    </div>
+                    <div class="car-details">
+                        <h3 class="car-name">Harps</h3>
+                        <ul class="car-features">
+                            <li><i class="fas fa-user"></i> 5 Seats</li>
+                            <li><i class="fas fa-gas-pump"></i> Petrol</li>
+                            <li><i class="fas fa-cog"></i> Automatic</li>
+                        </ul>
+                        <p class="car-price">$52/day</p>
+                        <p:commandButton value="Rent Now" styleClass="btn-rent" action="#{carRentalBean.rentCar('Harps')}" />
+                    </div>
+                </div>
+                
+                <!-- Car 3 -->
+                <div class="car-card">
+                    <div class="car-image">
+                        <i class="fas fa-car"></i>
+                    </div>
+                    <div class="car-details">
+                        <h3 class="car-name">DiskVan</h3>
+                        <ul class="car-features">
+                            <li><i class="fas fa-user"></i> 7 Seats</li>
+                            <li><i class="fas fa-gas-pump"></i> Diesel</li>
+                            <li><i class="fas fa-cog"></i> Manual</li>
+                        </ul>
+                        <p class="car-price">$65/day</p>
+                        <p:commandButton value="Rent Now" styleClass="btn-rent" action="#{carRentalBean.rentCar('DiskVan')}" />
+                    </div>
+                </div>
+                
+                <!-- Car 4 -->
+                <div class="car-card">
+                    <div class="car-image">
+                        <i class="fas fa-car"></i>
+                    </div>
+                    <div class="car-details">
+                        <h3 class="car-name">Ikon</h3>
+                        <ul class="car-features">
+                            <li><i class="fas fa-user"></i> 5 Seats</li>
+                            <li><i class="fas fa-gas-pump"></i> Petrol</li>
+                            <li><i class="fas fa-cog"></i> Automatic</li>
+                        </ul>
+                        <p class="car-price">$48/day</p>
+                        <p:commandButton value="Rent Now" styleClass="btn-rent" action="#{carRentalBean.rentCar('Ikon')}" />
+                    </div>
+                </div>
+                
+                <!-- Car 5 -->
+                <div class="car-card">
+                    <div class="car-image">
+                        <i class="fas fa-car"></i>
+                    </div>
+                    <div class="car-details">
+                        <h3 class="car-name">Strons</h3>
+                        <ul class="car-features">
+                            <li><i class="fas fa-user"></i> 5 Seats</li>
+                            <li><i class="fas fa-gas-pump"></i> Electric</li>
+                            <li><i class="fas fa-cog"></i> Automatic</li>
+                        </ul>
+                        <p class="car-price">$58/day</p>
+                        <p:commandButton value="Rent Now" styleClass="btn-rent" action="#{carRentalBean.rentCar('Strons')}" />
+                    </div>
+                </div>
+                
+                <!-- Car 6 -->
+                <div class="car-card">
+                    <div class="car-image">
+                        <i class="fas fa-car"></i>
+                    </div>
+                    <div class="car-details">
+                        <h3 class="car-name">Cocoon</h3>
+                        <ul class="car-features">
+                            <li><i class="fas fa-user"></i> 4 Seats</li>
+                            <li><i class="fas fa-gas-pump"></i> Petrol</li>
+                            <li><i class="fas fa-cog"></i> Manual</li>
+                        </ul>
+                        <p class="car-price">$42/day</p>
+                        <p:commandButton value="Rent Now" styleClass="btn-rent" action="#{carRentalBean.rentCar('Cocoon')}" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JSF and PrimeFaces components -->
+    <h:outputScript library="primefaces" name="jquery/jquery.js" />
+    <h:outputScript library="primefaces" name="primefaces.js" />
+</h:body>
+
    </ui:define>             
            
 </ui:composition>

@@ -26,7 +26,10 @@
 <!--         <class>org.ace.accounting.system.fire.Product</class> -->
         <class>org.ace.accounting.system.fire.FireProposal</class>
 <!--          <class>org.ace.accounting.system.fire.Premium</class> -->
-
+		<class>org.ace.accounting.system.customer.Renter</class>
+		<class>org.ace.accounting.system.car.Car</class>
+        <class>org.ace.accounting.system.reservation.Reservation</class>
+        
         <class>org.ace.accounting.system.branch.Student</class> <!-- ✅ Added Student entity -->
         <class>org.ace.accounting.system.currency.Currency</class>
         <class>org.ace.accounting.system.rateinfo.RateInfo</class>
