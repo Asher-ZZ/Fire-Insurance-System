@@ -4,7 +4,10 @@ import java.io.Serializable;
 import javax.persistence.*;
 
 import org.ace.accounting.common.BasicEntity;
+import org.ace.accounting.common.SaleChannel;
 import org.ace.accounting.common.TableName;
+import org.ace.accounting.system.car.enumTypes.CarBranch;
+import org.ace.accounting.system.car.enumTypes.Category;
 import org.ace.java.component.idgen.service.IDInterceptor;
 
 @Entity
@@ -25,7 +28,7 @@ public class Car implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE, generator = "CAR_GEN")
     @Column(name = "CarID")
-    private Long carId;
+    private String carId;
 
     @Column(name = "Type")
     private String type;
@@ -52,14 +55,21 @@ public class Car implements Serializable {
     @Column(name = "BaseRate")
     private Double baseRate;
 
+ 
+	@Enumerated(EnumType.STRING)
     @Column(name = "Branch")
-    private String branch;
+    private CarBranch carBranch;
 
-    
+    @Enumerated(EnumType.STRING)
     @Column(name = "Category")
-    private String category; 
+    private Category category; 
 
-    @Embedded
+	/*
+	 * @Column(name = "PhotoPath") private String photoPath;
+	 */
+    
+
+	@Embedded
     private BasicEntity basicEntity;
 
     @Version
@@ -68,11 +78,11 @@ public class Car implements Serializable {
 
     // Getters and setters
 
-    public Long getCarId() {
+    public String getCarId() {
         return carId;
     }
 
-    public void setCarId(Long carId) {
+    public void setId(String carId) {
         this.carId = carId;
     }
 
@@ -140,21 +150,22 @@ public class Car implements Serializable {
         this.baseRate = baseRate;
     }
 
-    public String getBranch() {
-        return branch;
-    }
+    public CarBranch getCarBranch() {
+		return carBranch;
+	}
 
-    public void setBranch(String branch) {
-        this.branch = branch;
-    }
+    public void setCarBranch(CarBranch carBranch) {
+		this.carBranch = carBranch;
+	}
 
-    public String getCategory() {
+    public Category getCategory() {
         return category;
     }
 
-    public void setCategory(String category) {
-        this.category = category;
-    }
+    public void setCategory(Category category) {
+		this.category = category;
+	}
+
 
     public BasicEntity getBasicEntity() {
         return basicEntity;
@@ -171,4 +182,9 @@ public class Car implements Serializable {
     public void setVersion(Integer version) {
         this.version = version;
     }
+    
+	/*
+	 * public String getPhotoPath() { return photoPath; } public void
+	 * setPhotoPath(String photoPath) { this.photoPath = photoPath; }
+	 */
 }

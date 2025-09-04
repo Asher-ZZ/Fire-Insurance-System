@@ -86,40 +86,21 @@
 						<p:inputNumber id="baseRate"
 							value="#{ManageCarActionBean.car.baseRate}" required="true"
 							decimalPlaces="2" />
+
 						<p:outputLabel />
 						<p:message for="branch" display="text" />
-						<p:outputLabel for="branch" value="Branch"
+						<h:outputText for="branch" value="Branch"
 							styleClass="input-label mandatory" />
-						<p:selectOneMenu id="branch"
-							value="#{ManageCarActionBean.car.carBranch}">
-							<f:selectItems value="#{ManageCarActionBean.branches}"
-								var="branch" itemLabel="#{branch}" itemValue="#{branch}" />
-						</p:selectOneMenu>
+						<p:inputText id="branch" value="#{ManageCarActionBean.car.branch}"
+							required="true" />
 
 						<p:outputLabel />
 						<p:message for="category" display="text" />
-						<p:outputLabel for="category" value="Category"
+						<h:outputText for="category" value="Category"
 							styleClass="input-label mandatory" />
-						<p:selectOneMenu id="category"
-							value="#{ManageCarActionBean.car.category}">
-							<f:selectItems value="#{ManageCarActionBean.categories}"
-								var="cat" itemLabel="#{cat}" itemValue="#{cat}" />
-						</p:selectOneMenu>
-
-						<!-- <p:outputLabel />
-						<p:message for="carImage" display="text" />
-						<h:outputText value="Car Photo:" />
-						<p:fileUpload
-							fileUploadListener="#{ManageCarActionBean.handleFileUpload}"
-							mode="advanced" auto="true" label="Choose Photo"
-							allowTypes="/(\.|\/)(jpg|png|jpeg)$/" update="carImage" />
-
-
-						<p:graphicImage id="carImage"
-							value="#{ManageCarActionBean.car.photoPath}"
-							rendered="#{not empty ManageCarActionBean.car.photoPath}"
-							width="200" height="150" />
- -->
+						<p:inputText id="category"
+							value="#{ManageCarActionBean.car.category}" required="true" />
+						
 					</p:panelGrid>
 
 
@@ -136,96 +117,84 @@
 				</h:panelGrid>
 			</p:panel>
 		</h:form>
-
+		
 		<h:form id="carTableForm">
-			<!-- Add New Car Link -->
-			<h:panelGrid>
-				<p:commandLink action="#{carRentalBean.createNewCar}"
-					immediate="true" update=":carEntryForm">
-					<h:panelGrid columns="2">
-						<h:graphicImage name="images/add.png" styleClass="addIcon" />
-						<h:outputText value="Add New Car" styleClass="command-link" />
-					</h:panelGrid>
-				</p:commandLink>
-			</h:panelGrid>
-			<br />
+    <!-- Add New Car Link -->
+    <h:panelGrid>
+        <p:commandLink action="#{carRentalBean.createNewCar}" immediate="true" update=":carEntryForm">
+            <h:panelGrid columns="2">
+                <h:graphicImage name="images/add.png" styleClass="addIcon" />
+                <h:outputText value="Add New Car" styleClass="command-link" />
+            </h:panelGrid>
+        </p:commandLink>
+    </h:panelGrid>
+    <br />
 
-			<!-- Car Data Table -->
-			<p:dataTable var="car" value="#{ManageCarActionBean.carList}"
-				id="carTable" paginator="true" rows="10" style="width:100%"
-				widgetVar="carTable"
-				paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-				rowsPerPageTemplate="5,10,15" rowKey="#{car.carId}" reflow="true"
-				rowIndexVar="var" paginatorPosition="bottom">
+    <!-- Car Data Table -->
+    <p:dataTable var="car" value="#{ManageCarActionBean.carList}" id="carTable" paginator="true" rows="10"
+                 style="width:100%" widgetVar="carTable"
+                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                 rowsPerPageTemplate="5,10,15" rowKey="#{car.carId}" reflow="true" rowIndexVar="var" paginatorPosition="bottom">
 
-				<!-- Row Number -->
-				<p:column headerText="No" width="2%">
-					<h:outputText value="#{var + 1}" />
-				</p:column>
+        <!-- Row Number -->
+        <p:column headerText="No" width="2%">
+            <h:outputText value="#{var + 1}" />
+        </p:column>
 
-				<!-- Car ID -->
-				<p:column headerText="Car ID" filterBy="#{car.carId}"
-					filterMatchMode="contains">
-					<h:outputText value="#{car.carId}" />
-				</p:column>
+        <!-- Car ID -->
+        <p:column headerText="Car ID" filterBy="#{car.carId}" filterMatchMode="contains">
+            <h:outputText value="#{car.carId}" />
+        </p:column>
 
-				<!-- Car Type -->
-				<p:column headerText="Type" filterBy="#{car.type}"
-					filterMatchMode="contains">
-					<h:outputText value="#{car.type}" />
-				</p:column>
+        <!-- Car Type -->
+        <p:column headerText="Type" filterBy="#{car.type}" filterMatchMode="contains">
+            <h:outputText value="#{car.type}" />
+        </p:column>
 
-				<!-- Car Make -->
-				<p:column headerText="Make" filterBy="#{car.make}"
-					filterMatchMode="contains">
-					<h:outputText value="#{car.make}" />
-				</p:column>
+        <!-- Car Make -->
+        <p:column headerText="Make" filterBy="#{car.make}" filterMatchMode="contains">
+            <h:outputText value="#{car.make}" />
+        </p:column>
 
-				<!-- Car Model -->
-				<p:column headerText="Model" filterBy="#{car.model}"
-					filterMatchMode="contains">
-					<h:outputText value="#{car.model}" />
-				</p:column>
+        <!-- Car Model -->
+        <p:column headerText="Model" filterBy="#{car.model}" filterMatchMode="contains">
+            <h:outputText value="#{car.model}" />
+        </p:column>
 
-				<!-- Year -->
-				<p:column headerText="Year" filterBy="#{car.year}"
-					filterMatchMode="contains">
-					<h:outputText value="#{car.year}" />
-				</p:column>
+        <!-- Year -->
+        <p:column headerText="Year" filterBy="#{car.year}" filterMatchMode="contains">
+            <h:outputText value="#{car.year}" />
+        </p:column>
 
-				<!-- Status -->
-				<p:column headerText="Status" filterBy="#{car.status}"
-					filterMatchMode="contains">
-					<h:outputText value="#{car.status}" />
-				</p:column>
+        <!-- Status -->
+        <p:column headerText="Status" filterBy="#{car.status}" filterMatchMode="contains">
+            <h:outputText value="#{car.status}" />
+        </p:column>
 
-				<!-- Base Rate -->
-				<p:column headerText="Base Rate" filterBy="#{car.baseRate}"
-					filterMatchMode="contains">
-					<h:outputText value="#{car.baseRate}" />
-				</p:column>
+        <!-- Base Rate -->
+        <p:column headerText="Base Rate" filterBy="#{car.baseRate}" filterMatchMode="contains">
+            <h:outputText value="#{car.baseRate}" />
+        </p:column>
 
-				<!-- Edit Button -->
-				<p:column style="width:4%;">
-					<p:commandButton styleClass="green-button" icon="fa fa-paint-brush"
-						action="#{ManageCarActionBean.prepareUpdateCar(car)}"
-						process="@this" update=":carEntryForm" />
-				</p:column>
+        <!-- Edit Button -->
+        <p:column style="width:4%;">
+            <p:commandButton styleClass="green-button" icon="fa fa-paint-brush"
+                             action="#{ManageCarActionBean.prepareUpdateCar(car)}"
+                             process="@this" update=":carEntryForm" />
+        </p:column>
 
-				<!-- Delete Button -->
-				<p:column style="width:4%;">
-					<p:commandButton styleClass="red-button" icon="fa fa-times"
-						action="#{ManageCarActionBean.deleteCar(car)}"
-						oncomplete="PF('carTable').filter();"
-						update=":carEntryForm :carTableForm">
-						<p:confirm header="Confirmation"
-							message="Are you sure you want to delete this car?"
-							icon="fa fa-exclamation-triangle" />
-					</p:commandButton>
-				</p:column>
+        <!-- Delete Button -->
+        <p:column style="width:4%;">
+            <p:commandButton styleClass="red-button" icon="fa fa-times"
+                             action="#{ManageCarActionBean.deleteCar(car)}"
+                             oncomplete="PF('carTable').filter();"
+                             update=":carEntryForm :carTableForm">
+                <p:confirm header="Confirmation" message="Are you sure you want to delete this car?" icon="fa fa-exclamation-triangle" />
+            </p:commandButton>
+        </p:column>
 
-			</p:dataTable>
-		</h:form>
-
+    </p:dataTable>
+</h:form>
+		
 	</ui:define>
 </ui:composition>

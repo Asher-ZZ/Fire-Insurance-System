@@ -1,13 +1,31 @@
 package org.ace.accounting.web.system;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.List;
+
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
-
+import org.primefaces.event.FileUploadEvent;
+import org.primefaces.model.UploadedFile;
+import org.ace.accounting.common.validation.ErrorMessage;
+import org.ace.accounting.common.validation.MessageId;
+import org.ace.accounting.common.validation.ValidationResult;
+import org.ace.accounting.system.branch.Branch;
 import org.ace.accounting.system.car.Car;
+import org.ace.accounting.system.car.enumTypes.CarBranch;
+import org.ace.accounting.system.car.enumTypes.Category;
 import org.ace.accounting.system.car.service.interfaces.ICarService;
 import org.ace.java.component.SystemException;
 import org.ace.java.web.common.BaseBean;
@@ -22,13 +40,23 @@ public class ManageCarActionBean extends BaseBean {
     @ManagedProperty(value = "#{CarService}")
     private ICarService carService;
     
+   
+
+	private List<Car> carList;
+    
 	private static final long serialVersionUID = 1L;
 	
 	 @PostConstruct
 	    public void init() {
 	        createNewCar();
+	        rebindData();
 	    }
+	 
+	 public void rebindData() {
+			carList = carService.findAll();
+		}
 
+	 
 	    public void createNewCar() {
 	        car = new Car();
 	        createNew = true;
@@ -51,6 +79,44 @@ public class ManageCarActionBean extends BaseBean {
 	                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", e.getMessage()));
 	        }
 	    }
+
+	    
+
+		/*
+		 * public void handleFileUpload(FileUploadEvent event) { try { uploadedFile =
+		 * event.getFile(); String fileName = uploadedFile.getFileName();
+		 * 
+		 * // Path inside your deployed project String folder =
+		 * FacesContext.getCurrentInstance().getExternalContext()
+		 * .getRealPath("/resources/images/cars/");
+		 * 
+		 * File dir = new File(folder); if (!dir.exists()) { dir.mkdirs(); }
+		 * 
+		 * Path filePath = Paths.get(folder, fileName);
+		 * Files.copy(uploadedFile.getInputstream(), filePath,
+		 * StandardCopyOption.REPLACE_EXISTING);
+		 * 
+		 * // Save relative path in Car entity car.setPhotoPath("resources/images/cars/"
+		 * + fileName);
+		 * 
+		 * } catch (IOException e) { e.printStackTrace();
+		 * FacesContext.getCurrentInstance().addMessage(null, new
+		 * FacesMessage(FacesMessage.SEVERITY_ERROR, "Upload failed", e.getMessage()));
+		 * } }
+		 */
+	    public String deleteCar(Car car) {
+			
+				try {
+					carService.deleteCar(car);
+					addInfoMessage(null, MessageId.DELETE_SUCCESS, car.getType());
+				} catch (SystemException ex) {
+					handleSysException(ex);
+				}
+			 
+			createNewCar();
+			rebindData();
+			return null;
+		}
 
 	    public Car getCar() {
 			return car;
@@ -84,4 +150,18 @@ public class ManageCarActionBean extends BaseBean {
 	        createNewCar();
 	    }
 
+		 public List<Car> getCarList() {
+				return carList;
+			}
+
+			public void setCarList(List<Car> carList) {
+				this.carList = carList;
+			}
+			
+			public CarBranch[] getBranches() {
+			    return CarBranch.values();
+			}
+			public Category[] getCategories() {
+			    return Category.values();
+			}
 }
