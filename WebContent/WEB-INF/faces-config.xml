@@ -161,6 +161,12 @@
    <redirect/>
   </navigation-case>
   
+  <navigation-case>
+   <from-outcome>rentalForm</from-outcome>
+   <to-view-id>/ui/system/ManageCustomerReservation.xhtml</to-view-id>
+   <redirect/>
+  </navigation-case>
+  
     <navigation-case>
    <from-outcome>policySearchForm</from-outcome>
    <to-view-id>/ui/system/manageFirePolicyEnquiryForm.xhtml</to-view-id>

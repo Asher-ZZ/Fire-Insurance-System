@@ -70,7 +70,7 @@ public class LoginBean extends BaseBean {
 
 		User user = new User();
 		user = (User) getParam(ParamId.LOGIN_USER);
-		// User user = userService.findUser(username);
+		//User user = userService.findUser(username);
 
 		for (Role role : user.getRoles()) {
 			if (role.getName().equals("Admin")) {

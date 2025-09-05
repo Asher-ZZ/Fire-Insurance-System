@@ -30,12 +30,11 @@
 						<h:outputText for="status" value="Status"
 							styleClass="input-label mandatory" />
 						<p:selectOneMenu id="status"
-							value="#{ManageCarActionBean.car.status}" required="true">
+							value="#{ManageCarActionBean.car.carStatus}" required="true">
 							<f:selectItem itemLabel="Select Status" itemValue=""
 								noSelectionOption="true" />
-							<f:selectItem itemLabel="Available" itemValue="Available" />
-							<f:selectItem itemLabel="Rented" itemValue="Rented" />
-							<f:selectItem itemLabel="Maintenance" itemValue="Maintenance" />
+							<f:selectItems value="#{ManageCarActionBean.carStatuses}"
+								var="s" itemLabel="#{s}" itemValue="#{s}" />
 						</p:selectOneMenu>
 
 						<p:outputLabel />
@@ -92,7 +91,7 @@
 							styleClass="input-label mandatory" />
 						<p:selectOneMenu id="branch"
 							value="#{ManageCarActionBean.car.carBranch}">
-							<f:selectItems value="#{ManageCarActionBean.branches}"
+							<f:selectItems value="#{ManageCarActionBean.carBranches}"
 								var="branch" itemLabel="#{branch}" itemValue="#{branch}" />
 						</p:selectOneMenu>
 
@@ -194,9 +193,9 @@
 				</p:column>
 
 				<!-- Status -->
-				<p:column headerText="Status" filterBy="#{car.status}"
+				<p:column headerText="Status" filterBy="#{car.carStatus}"
 					filterMatchMode="contains">
-					<h:outputText value="#{car.status}" />
+					<h:outputText value="#{car.carStatus}" />
 				</p:column>
 
 				<!-- Base Rate -->
@@ -208,7 +207,7 @@
 				<!-- Edit Button -->
 				<p:column style="width:4%;">
 					<p:commandButton styleClass="green-button" icon="fa fa-paint-brush"
-						action="#{ManageCarActionBean.prepareUpdateCar(car)}"
+						action="#{CarActionBean.prepareUpdateCar(car)}"
 						process="@this" update=":carEntryForm" />
 				</p:column>
 

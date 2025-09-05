@@ -7,6 +7,7 @@ import org.ace.accounting.common.BasicEntity;
 import org.ace.accounting.common.SaleChannel;
 import org.ace.accounting.common.TableName;
 import org.ace.accounting.system.car.enumTypes.CarBranch;
+import org.ace.accounting.system.car.enumTypes.CarStatus;
 import org.ace.accounting.system.car.enumTypes.Category;
 import org.ace.java.component.idgen.service.IDInterceptor;
 
@@ -33,11 +34,12 @@ public class Car implements Serializable {
     @Column(name = "Type")
     private String type;
 
-    
+    @Enumerated(EnumType.STRING)
     @Column(name = "Status")
-    private String status; 
+    private CarStatus carStatus; 
 
-    @Column(name = "Make")
+
+	@Column(name = "Make")
     private String make;
 
     @Column(name = "Model")
@@ -92,14 +94,6 @@ public class Car implements Serializable {
 
     public void setType(String type) {
         this.type = type;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
     }
 
     public String getMake() {
@@ -183,6 +177,17 @@ public class Car implements Serializable {
         this.version = version;
     }
     
+    public CarStatus getCarStatus() {
+		return carStatus;
+	}
+
+	public void setCarStatus(CarStatus carStatus) {
+		this.carStatus = carStatus;
+	}
+
+	public void setCarId(String carId) {
+		this.carId = carId;
+	}
 	/*
 	 * public String getPhotoPath() { return photoPath; } public void
 	 * setPhotoPath(String photoPath) { this.photoPath = photoPath; }

@@ -6,195 +6,75 @@
 	template="/common/commonLayout.xhtml">
 
 	<ui:define name="content">
-		<h:form id="carEntryForm">
+		<h:form id="rentalForm">
 
-			<p:growl globalOnly="true" showDetail="true" escape="false" />
-			<!-- <p:messages autoUpdate="true" /> -->
+        <h2>Personal Information</h2>
+        <h:panelGrid columns="2" cellpadding="5">
+            <h:outputLabel for="name" value="Name:" />
+            <h:inputText id="name" value="#{rentalBean.name}" required="true" />
 
-			<p:panel header="Car Information" styleClass="ui-fluid">
-				<p:panelGrid columns="2" columnClasses="ui-grid-col-6,ui-grid-col-6"
-					layout="grid" styleClass="ui-panelgrid-blank">
-					<p:panelGrid columns="2"
-						columnClasses="ui-grid-col-3,ui-grid-col-9" layout="grid"
-						styleClass="ui-panelgrid-blank ui-fluid">
-						<p:outputLabel />
-						<p:message for="type" display="text" />
-						<h:outputText for="type" value="Type"
-							styleClass="input-label mandatory" />
-						<p:inputText id="type" value="#{ManageCarActionBean.car.type}"
-							required="true" label="Type"
-							requiredMessage="Please Enter Car Type" />
+            <h:outputLabel for="email" value="Email:" />
+            <h:inputText id="email" value="#{rentalBean.email}" required="true" >
+                <f:validateRegex pattern="[^@]+@[^\.]+\..+" />
+            </h:inputText>
 
-						<p:outputLabel />
-						<p:message for="status" display="text" />
-						<h:outputText for="status" value="Status"
-							styleClass="input-label mandatory" />
-						<p:selectOneMenu id="status"
-							value="#{ManageCarActionBean.car.status}" required="true">
-							<f:selectItem itemLabel="Select Status" itemValue=""
-								noSelectionOption="true" />
-							<f:selectItem itemLabel="Available" itemValue="Available" />
-							<f:selectItem itemLabel="Rented" itemValue="Rented" />
-							<f:selectItem itemLabel="Maintenance" itemValue="Maintenance" />
-						</p:selectOneMenu>
+            <h:outputLabel for="phone" value="Phone Number:" />
+            <h:inputText id="phone" value="#{rentalBean.phoneNumber}" required="true" />
 
-						<p:outputLabel />
-						<p:message for="make" display="text" />
-						<h:outputText for="make" value="Make"
-							styleClass="input-label mandatory" />
-						<p:inputText id="make" value="#{ManageCarActionBean.car.make}"
-							required="true" />
+            <h:outputLabel for="license" value="Driver Licence:" />
+            <h:inputText id="license" value="#{rentalBean.driverLicence}" required="true" />
 
-						<p:outputLabel />
-						<p:message for="model" display="text" />
-						<h:outputText for="model" value="Model"
-							styleClass="input-label mandatory" />
-						<p:inputText id="model" value="#{ManageCarActionBean.car.model}"
-							required="true" />
+            <h:outputLabel for="address" value="Address:" />
+            <h:inputTextarea id="address" value="#{rentalBean.address}" rows="3" cols="30" required="true" />
 
-						<p:outputLabel />
-						<p:message for="year" display="text" />
-						<h:outputText for="year" value="Year"
-							styleClass="input-label mandatory" />
-						<p:inputNumber id="year" value="#{ManageCarActionBean.car.year}"
-							required="true" decimalPlaces="0" />
-					</p:panelGrid>
-					<p:panelGrid columns="2"
-						columnClasses="ui-grid-col-3,ui-grid-col-9" layout="grid"
-						styleClass="ui-panelgrid-blank ui-fluid">
-						<p:outputLabel />
-						<p:message for="regNo" display="text" />
-						<h:outputText for="regNo" value="Registration No"
-							styleClass="input-label mandatory" />
-						<p:inputText id="regNo"
-							value="#{ManageCarActionBean.car.registrationNo}" required="true" />
+            <h:outputLabel for="gender" value="Gender:" />
+            <h:selectOneMenu id="gender" value="#{rentalBean.gender}" required="true">
+                <f:selectItem itemLabel="Select" itemValue="" />
+                <f:selectItem itemLabel="Male" itemValue="Male" />
+                <f:selectItem itemLabel="Female" itemValue="Female" />
+                <f:selectItem itemLabel="Other" itemValue="Other" />
+            </h:selectOneMenu>
 
+            <h:outputLabel for="idType" value="ID Type:" />
+            <h:selectOneMenu id="idType" value="#{rentalBean.idType}" required="true">
+                <f:selectItem itemLabel="Select" itemValue="" />
+                <f:selectItem itemLabel="NRC" itemValue="NRC" />
+                <f:selectItem itemLabel="Passport" itemValue="Passport" />
+            </h:selectOneMenu>
 
+            <h:outputLabel for="idNumber" value="ID Number:" />
+            <h:inputText id="idNumber" value="#{rentalBean.idNumber}" required="true" />
 
-						<p:outputLabel />
-						<p:message for="passenger" display="text" />
-						<h:outputText for="passenger" value="Passenger Capacity"
-							styleClass="input-label mandatory" />
-						<p:inputNumber id="passenger"
-							value="#{ManageCarActionBean.car.passenger}" required="true"
-							decimalPlaces="0" />
+            <h:outputLabel for="dob" value="Date of Birth:" />
+            <h:inputText id="dob" value="#{rentalBean.dateOfBirth}" required="true">
+                <f:convertDateTime pattern="yyyy-MM-dd"/>
+            </h:inputText>
+        </h:panelGrid>
 
-						<p:outputLabel />
-						<p:message for="baseRate" display="text" />
-						<h:outputText for="baseRate" value="Base Rate"
-							styleClass="input-label mandatory" />
-						<p:inputNumber id="baseRate"
-							value="#{ManageCarActionBean.car.baseRate}" required="true"
-							decimalPlaces="2" />
+        <h2>Vehicle Information</h2>
+        <h:panelGrid columns="2" cellpadding="5">
+            <h:outputLabel for="vehicleType" value="Vehicle Type:" />
+            <h:selectOneMenu id="vehicleType" value="#{rentalBean.vehicleType}" required="true">
+                <f:selectItem itemLabel="Select" itemValue="" />
+                <f:selectItems value="#{rentalBean.availableVehicles}" var="car" 
+                               itemLabel="#{car.make} #{car.model}" itemValue="#{car.carId}" />
+            </h:selectOneMenu>
 
-						<p:outputLabel />
-						<p:message for="branch" display="text" />
-						<h:outputText for="branch" value="Branch"
-							styleClass="input-label mandatory" />
-						<p:inputText id="branch" value="#{ManageCarActionBean.car.branch}"
-							required="true" />
+            <h:outputLabel for="startDate" value="Start Date:" />
+            <h:inputText id="startDate" value="#{rentalBean.startDate}" required="true">
+                <f:convertDateTime pattern="yyyy-MM-dd"/>
+            </h:inputText>
 
-						<p:outputLabel />
-						<p:message for="category" display="text" />
-						<h:outputText for="category" value="Category"
-							styleClass="input-label mandatory" />
-						<p:inputText id="category"
-							value="#{ManageCarActionBean.car.category}" required="true" />
-						
-					</p:panelGrid>
+            <h:outputLabel for="endDate" value="End Date:" />
+            <h:inputText id="endDate" value="#{rentalBean.endDate}" required="true">
+                <f:convertDateTime pattern="yyyy-MM-dd"/>
+            </h:inputText>
+        </h:panelGrid>
 
-
-				</p:panelGrid>
-
-				<p:separator />
-				<h:panelGrid columns="3" style="margin-top:-2px;">
-					<p:commandButton id="addBtn" value="Save" icon="pi pi-save"
-						action="#{ManageCarActionBean.saveCar}" update=":carEntryForm"
-						style="margin-right:10px" />
-					<p:commandButton id="resetBtn" value="Reset" icon="pi pi-refresh"
-						action="#{ManageCarActionBean.resetCar}" immediate="true"
-						process="@this" update=":carEntryForm" />
-				</h:panelGrid>
-			</p:panel>
-		</h:form>
+        <h:commandButton value="Submit" action="#{rentalBean.submit}" />
+    </h:form>
 		
-		<h:form id="carTableForm">
-    <!-- Add New Car Link -->
-    <h:panelGrid>
-        <p:commandLink action="#{carRentalBean.createNewCar}" immediate="true" update=":carEntryForm">
-            <h:panelGrid columns="2">
-                <h:graphicImage name="images/add.png" styleClass="addIcon" />
-                <h:outputText value="Add New Car" styleClass="command-link" />
-            </h:panelGrid>
-        </p:commandLink>
-    </h:panelGrid>
-    <br />
-
-    <!-- Car Data Table -->
-    <p:dataTable var="car" value="#{ManageCarActionBean.carList}" id="carTable" paginator="true" rows="10"
-                 style="width:100%" widgetVar="carTable"
-                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                 rowsPerPageTemplate="5,10,15" rowKey="#{car.carId}" reflow="true" rowIndexVar="var" paginatorPosition="bottom">
-
-        <!-- Row Number -->
-        <p:column headerText="No" width="2%">
-            <h:outputText value="#{var + 1}" />
-        </p:column>
-
-        <!-- Car ID -->
-        <p:column headerText="Car ID" filterBy="#{car.carId}" filterMatchMode="contains">
-            <h:outputText value="#{car.carId}" />
-        </p:column>
-
-        <!-- Car Type -->
-        <p:column headerText="Type" filterBy="#{car.type}" filterMatchMode="contains">
-            <h:outputText value="#{car.type}" />
-        </p:column>
-
-        <!-- Car Make -->
-        <p:column headerText="Make" filterBy="#{car.make}" filterMatchMode="contains">
-            <h:outputText value="#{car.make}" />
-        </p:column>
-
-        <!-- Car Model -->
-        <p:column headerText="Model" filterBy="#{car.model}" filterMatchMode="contains">
-            <h:outputText value="#{car.model}" />
-        </p:column>
-
-        <!-- Year -->
-        <p:column headerText="Year" filterBy="#{car.year}" filterMatchMode="contains">
-            <h:outputText value="#{car.year}" />
-        </p:column>
-
-        <!-- Status -->
-        <p:column headerText="Status" filterBy="#{car.status}" filterMatchMode="contains">
-            <h:outputText value="#{car.status}" />
-        </p:column>
-
-        <!-- Base Rate -->
-        <p:column headerText="Base Rate" filterBy="#{car.baseRate}" filterMatchMode="contains">
-            <h:outputText value="#{car.baseRate}" />
-        </p:column>
-
-        <!-- Edit Button -->
-        <p:column style="width:4%;">
-            <p:commandButton styleClass="green-button" icon="fa fa-paint-brush"
-                             action="#{ManageCarActionBean.prepareUpdateCar(car)}"
-                             process="@this" update=":carEntryForm" />
-        </p:column>
-
-        <!-- Delete Button -->
-        <p:column style="width:4%;">
-            <p:commandButton styleClass="red-button" icon="fa fa-times"
-                             action="#{ManageCarActionBean.deleteCar(car)}"
-                             oncomplete="PF('carTable').filter();"
-                             update=":carEntryForm :carTableForm">
-                <p:confirm header="Confirmation" message="Are you sure you want to delete this car?" icon="fa fa-exclamation-triangle" />
-            </p:commandButton>
-        </p:column>
-
-    </p:dataTable>
-</h:form>
+		
 		
 	</ui:define>
 </ui:composition>
