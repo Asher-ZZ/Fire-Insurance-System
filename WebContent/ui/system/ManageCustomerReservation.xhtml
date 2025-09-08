@@ -7,74 +7,121 @@
 
 	<ui:define name="content">
 		<h:form id="rentalForm">
+			<p:growl globalOnly="true" showDetail="true" escape="false" />
 
-        <h2>Personal Information</h2>
-        <h:panelGrid columns="2" cellpadding="5">
-            <h:outputLabel for="name" value="Name:" />
-            <h:inputText id="name" value="#{rentalBean.name}" required="true" />
+			<!-- Personal Information -->
+			<p:panel header="Personal Information" styleClass="ui-fluid">
+				<p:panelGrid columns="2" columnClasses="ui-grid-col-6,ui-grid-col-6"
+					layout="grid" styleClass="ui-panelgrid-blank">
 
-            <h:outputLabel for="email" value="Email:" />
-            <h:inputText id="email" value="#{rentalBean.email}" required="true" >
-                <f:validateRegex pattern="[^@]+@[^\.]+\..+" />
-            </h:inputText>
+					<p:panelGrid columns="2"
+						columnClasses="ui-grid-col-4,ui-grid-col-8" layout="grid"
+						styleClass="ui-panelgrid-blank ui-fluid">
 
-            <h:outputLabel for="phone" value="Phone Number:" />
-            <h:inputText id="phone" value="#{rentalBean.phoneNumber}" required="true" />
+						<p:outputLabel />
+						<p:message for="name" display="text" />
+						<h:outputText value="Name" styleClass="input-label mandatory" />
+						<p:inputText id="name" value="#{rentalBean.name}" required="true"
+							label="Name" />
 
-            <h:outputLabel for="license" value="Driver Licence:" />
-            <h:inputText id="license" value="#{rentalBean.driverLicence}" required="true" />
+						<p:outputLabel />
+						<p:message for="email" display="text" />
+						<h:outputText value="Email" />
+						<p:inputText id="email" value="#{rentalBean.email}"
+							required="true" label="Email">
+							<f:validateRegex pattern="[^@]+@[^\\.]+\\..+" />
+						</p:inputText>
 
-            <h:outputLabel for="address" value="Address:" />
-            <h:inputTextarea id="address" value="#{rentalBean.address}" rows="3" cols="30" required="true" />
+						<p:outputLabel />
+						<p:message for="phone" display="text" />
+						<h:outputText value="Phone Number" />
+						<p:inputText id="phone" value="#{rentalBean.phoneNumber}"
+							required="true" label="Phone Number" />
 
-            <h:outputLabel for="gender" value="Gender:" />
-            <h:selectOneMenu id="gender" value="#{rentalBean.gender}" required="true">
-                <f:selectItem itemLabel="Select" itemValue="" />
-                <f:selectItem itemLabel="Male" itemValue="Male" />
-                <f:selectItem itemLabel="Female" itemValue="Female" />
-                <f:selectItem itemLabel="Other" itemValue="Other" />
-            </h:selectOneMenu>
+						<p:outputLabel />
+						<p:message for="license" display="text" />
+						<h:outputText value="Driver Licence" />
+						<p:inputText id="license" value="#{rentalBean.driverLicence}"
+							required="true" label="Driver Licence" />
 
-            <h:outputLabel for="idType" value="ID Type:" />
-            <h:selectOneMenu id="idType" value="#{rentalBean.idType}" required="true">
-                <f:selectItem itemLabel="Select" itemValue="" />
-                <f:selectItem itemLabel="NRC" itemValue="NRC" />
-                <f:selectItem itemLabel="Passport" itemValue="Passport" />
-            </h:selectOneMenu>
+						<p:outputLabel />
+						<p:message for="address" display="text" />
+						<h:outputText value="Address" />
+						<p:inputTextarea id="address" value="#{rentalBean.address}"
+							rows="3" autoResize="true" required="true" label="Address" />
+					</p:panelGrid>
+					<p:panelGrid columns="2"
+						columnClasses="ui-grid-col-4,ui-grid-col-8" layout="grid"
+						styleClass="ui-panelgrid-blank ui-fluid">
+						<p:outputLabel />
+						<p:message for="gender" display="text" />
+						<h:outputText value="Gender" />
+						<p:selectOneMenu id="gender" value="#{rentalBean.gender}"
+							required="true">
+							<f:selectItem itemLabel="Select" itemValue=""
+								noSelectionOption="true" />
+							<f:selectItem itemLabel="Male" itemValue="Male" />
+							<f:selectItem itemLabel="Female" itemValue="Female" />
+							<f:selectItem itemLabel="Other" itemValue="Other" />
+						</p:selectOneMenu>
 
-            <h:outputLabel for="idNumber" value="ID Number:" />
-            <h:inputText id="idNumber" value="#{rentalBean.idNumber}" required="true" />
+						<p:outputLabel />
+						<p:message for="idType" display="text" />
+						<h:outputText value="ID Type" />
+						<p:selectOneMenu id="idType" value="#{rentalBean.idType}"
+							required="true">
+							<f:selectItem itemLabel="Select" itemValue=""
+								noSelectionOption="true" />
+							<f:selectItem itemLabel="NRC" itemValue="NRC" />
+							<f:selectItem itemLabel="Passport" itemValue="Passport" />
+						</p:selectOneMenu>
 
-            <h:outputLabel for="dob" value="Date of Birth:" />
-            <h:inputText id="dob" value="#{rentalBean.dateOfBirth}" required="true">
-                <f:convertDateTime pattern="yyyy-MM-dd"/>
-            </h:inputText>
-        </h:panelGrid>
+						<p:outputLabel />
+						<p:message for="idNumber" display="text" />
+						<h:outputText value="ID Number" />
+						<p:inputText id="idNumber" value="#{rentalBean.idNumber}"
+							required="true" label="ID Number" />
 
-        <h2>Vehicle Information</h2>
-        <h:panelGrid columns="2" cellpadding="5">
-            <h:outputLabel for="vehicleType" value="Vehicle Type:" />
-            <h:selectOneMenu id="vehicleType" value="#{rentalBean.vehicleType}" required="true">
-                <f:selectItem itemLabel="Select" itemValue="" />
-                <f:selectItems value="#{rentalBean.availableVehicles}" var="car" 
-                               itemLabel="#{car.make} #{car.model}" itemValue="#{car.carId}" />
-            </h:selectOneMenu>
+						<p:outputLabel />
+						<p:message for="dob" display="text" />
+						<h:outputText value="Date of Birth" />
+						<p:calendar id="dob" value="#{rentalBean.dateOfBirth}"
+							pattern="yyyy-MM-dd" required="true" showIcon="true" />
 
-            <h:outputLabel for="startDate" value="Start Date:" />
-            <h:inputText id="startDate" value="#{rentalBean.startDate}" required="true">
-                <f:convertDateTime pattern="yyyy-MM-dd"/>
-            </h:inputText>
+						<p:outputLabel />
+						<p:message for="vehicleType" display="text" />
+						<h:outputText value="Vehicle Type" />
+						<p:selectOneMenu id="vehicleType"
+							value="#{rentalBean.vehicleType}" required="true">
+							<f:selectItem itemLabel="Select" itemValue=""
+								noSelectionOption="true" />
+							<f:selectItems value="#{rentalBean.availableVehicles}" var="car"
+								itemLabel="#{car.make} #{car.model}" itemValue="#{car.carId}" />
+						</p:selectOneMenu>
 
-            <h:outputLabel for="endDate" value="End Date:" />
-            <h:inputText id="endDate" value="#{rentalBean.endDate}" required="true">
-                <f:convertDateTime pattern="yyyy-MM-dd"/>
-            </h:inputText>
-        </h:panelGrid>
+						<p:outputLabel />
+						<p:message for="startDate" display="text" />
+						<h:outputText value="Start Date" />
+						<p:calendar id="startDate" value="#{rentalBean.startDate}"
+							pattern="yyyy-MM-dd" required="true" showIcon="true" />
 
-        <h:commandButton value="Submit" action="#{rentalBean.submit}" />
-    </h:form>
-		
-		
-		
+						<p:outputLabel />
+						<p:message for="endDate" display="text" />
+						<h:outputText value="End Date" />
+						<p:calendar id="endDate" value="#{rentalBean.endDate}"
+							pattern="yyyy-MM-dd" required="true" showIcon="true" />
+					</p:panelGrid>
+				</p:panelGrid>
+			</p:panel>
+			<!-- Buttons -->
+			<h:panelGrid columns="2" style="margin-top:15px;">
+				<p:commandButton value="Submit" icon="pi pi-check"
+					action="#{rentalBean.submit}" update=":rentalForm"
+					style="margin-right:10px" />
+				<p:commandButton value="Reset" icon="pi pi-refresh" type="reset"
+					process="@this" />
+			</h:panelGrid>
+
+		</h:form>
 	</ui:define>
 </ui:composition>

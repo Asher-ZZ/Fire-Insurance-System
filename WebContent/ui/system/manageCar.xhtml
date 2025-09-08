@@ -33,8 +33,8 @@
 							value="#{ManageCarActionBean.car.carStatus}" required="true">
 							<f:selectItem itemLabel="Select Status" itemValue=""
 								noSelectionOption="true" />
-							<f:selectItems value="#{ManageCarActionBean.carStatuses}"
-								var="s" itemLabel="#{s}" itemValue="#{s}" />
+							<f:selectItems value="#{ManageCarActionBean.carStatuses}" var="s"
+								itemLabel="#{s}" itemValue="#{s}" />
 						</p:selectOneMenu>
 
 						<p:outputLabel />
@@ -113,7 +113,6 @@
 							mode="advanced" auto="true" label="Choose Photo"
 							allowTypes="/(\.|\/)(jpg|png|jpeg)$/" update="carImage" />
 
-
 						<p:graphicImage id="carImage"
 							value="#{ManageCarActionBean.car.photoPath}"
 							rendered="#{not empty ManageCarActionBean.car.photoPath}"
@@ -126,13 +125,20 @@
 
 				<p:separator />
 				<h:panelGrid columns="3" style="margin-top:-2px;">
-					<p:commandButton id="addBtn" value="Save" icon="pi pi-save"
-						action="#{ManageCarActionBean.saveCar}" update=":carEntryForm"
+					<p:commandButton id="addBtn" value="Add" icon="pi pi-save"
+						rendered="#{ManageCarActionBean.createNew}"
+						action="#{ManageCarActionBean.addCar()}" update=":carEntryForm"
 						style="margin-right:10px" />
+					<p:commandButton id="editBtn" value="#{label['COMMON_UPDATE_BTN']}"
+						action="#{ManageCarActionBean.updateCar()}"
+						rendered="#{!ManageCarActionBean.createNew}"
+						update=":carEntryForm" style="width:70px;"
+						oncomplete="PF('carTable').clearFilters();" />
 					<p:commandButton id="resetBtn" value="Reset" icon="pi pi-refresh"
 						action="#{ManageCarActionBean.resetCar}" immediate="true"
 						process="@this" update=":carEntryForm" />
 				</h:panelGrid>
+
 			</p:panel>
 		</h:form>
 
@@ -206,25 +212,28 @@
 
 				<!-- Edit Button -->
 				<p:column style="width:4%;">
-					<p:commandButton styleClass="green-button" icon="fa fa-paint-brush"
-						action="#{CarActionBean.prepareUpdateCar(car)}"
-						process="@this" update=":carEntryForm" />
-				</p:column>
-
-				<!-- Delete Button -->
+				<p:commandButton styleClass="green-button" icon="fa fa-paint-brush"
+					action="#{ManageCarActionBean.prepareUpdateCar(car)}"
+					process="@this" update=":carEntryForm" />
+</p:column>
 				<p:column style="width:4%;">
 					<p:commandButton styleClass="red-button" icon="fa fa-times"
 						action="#{ManageCarActionBean.deleteCar(car)}"
-						oncomplete="PF('carTable').filter();"
-						update=":carEntryForm :carTableForm">
+						update=":carTableForm:carTable :carEntryForm">
 						<p:confirm header="Confirmation"
 							message="Are you sure you want to delete this car?"
 							icon="fa fa-exclamation-triangle" />
 					</p:commandButton>
 				</p:column>
 
+
 			</p:dataTable>
 		</h:form>
-
+		<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+			<p:commandButton value="Yes" type="button"
+				styleClass="ui-confirmdialog-yes" icon="pi pi-check" />
+			<p:commandButton value="No" type="button"
+				styleClass="ui-confirmdialog-no" icon="pi pi-times" />
+		</p:confirmDialog>
 	</ui:define>
 </ui:composition>

@@ -55,11 +55,10 @@ public class ManageCarActionBean extends BaseBean {
     private IReservationService reservationService;
 
     private List<Car> carList;
+    private List<Car> selectedCarList;
     private List<Car> availableCars;
     
-    
-    
-	public IRenterService getRenterService() {
+public IRenterService getRenterService() {
 		return renterService;
 	}
 
@@ -84,8 +83,9 @@ public class ManageCarActionBean extends BaseBean {
 	 @PostConstruct
 	    public void init() {
 	        createNewCar();
-	        createNewRenter();
-	        createNewReservation();
+			 /*
+			 * createNewRenter(); createNewReservation();
+			 */
 	        rebindData();
 	    }
 	 
@@ -99,19 +99,14 @@ public class ManageCarActionBean extends BaseBean {
 	        createNew = true;
 	    }
 	    
-
-	    public void createNewRenter() {
-	        renter = new Renter();
-	        createNew = true;
-	    }
+		/*
+		 * public void createNewRenter() { renter = new Renter(); createNew = true; }
+		 * 
+		 * 
+		 * public void createNewReservation() { reservation = new Reservation();
+		 * createNew = true; }
+		 */
 	    
-
-	    public void createNewReservation() {
-	        reservation = new Reservation();
-	        createNew = true;
-	    }
-	    
-
 	    public void saveCar() {
 	        try {
 	            if (createNew) {
@@ -129,52 +124,52 @@ public class ManageCarActionBean extends BaseBean {
 	                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", e.getMessage()));
 	        }
 	    }
-
-	    public void saveRenter() {
-	        try {
-	            renterService.addNewRenter(renter);
-	            addInfoMessage(null, "Success", "Renter registered successfully");
-	        } catch (SystemException e) {
-	            addErrorMessage(null, e.getMessage());
-	        }
-	    }
 	    
-		/*
-		 * public void saveReservation() { try { // Ensure renter is saved first if
-		 * (renter.getId() == null) { saveRenter(); }
-		 * 
-		 * reservation.setRenter(renter);
-		 * 
-		 * // Set the selected car Car selectedCar =
-		 * carService.findCarById(reservation.getCar().getCarId());
-		 * reservation.setCar(selectedCar);
-		 * 
-		 * // Save reservation reservationService.addNewReservation(reservation);
-		 * 
-		 * // Mark car as unavailable selectedCar.setAvailable(false);
-		 * carService.updateCar(selectedCar);
-		 * 
-		 * addInfoMessage(null, "Success", "Reservation created successfully");
-		 * 
-		 * createNewRenter(); createNewReservation(); ;
-		 * 
-		 * } catch (SystemException e) { addErrorMessage(null, e.getMessage()); } }
-		 */
+	    public void addCar() {
+			try {
+				carService.addNewCar(car);
+				addInfoMessage(null, MessageId.INSERT_SUCCESS, car.getType());
+				createNewCar();
+				rebindData();
+			} catch (SystemException ex) {
+				handleSysException(ex);
+			}
+		}
 
+		/*
+		 * public void saveRenter() { try { renterService.addNewRenter(renter);
+		 * addInfoMessage(null, "Success", "Renter registered successfully"); } catch
+		 * (SystemException e) { addErrorMessage(null, e.getMessage()); } }
+		 */
+	    
 		
-	    public String deleteCar(Car car) {
-			
+	    public void deleteCar(Car car) {	
 				try {
 					carService.deleteCar(car);
 					addInfoMessage(null, MessageId.DELETE_SUCCESS, car.getType());
+					createNewCar(); 
+					rebindData();
 				} catch (SystemException ex) {
 					handleSysException(ex);
 				}
-			 
-			createNewCar();
-			rebindData();
-			return null;
+			
 		}
+	    
+	    public void updateCar() {
+	    	System.out.println("DEBUG >> Car before update: " + car);
+			try {
+				carService.updateCar(car);
+				addInfoMessage(null, MessageId.UPDATE_SUCCESS, car.getType());
+				createNewCar();
+				rebindData();
+			} catch (SystemException ex) {
+				handleSysException(ex);
+			}
+		}
+	    public void prepareUpdateCar(Car car) {
+	        this.car = car;
+	        this.createNew = false;
+	    }
 
 	    public Car getCar() {
 			return car;
@@ -250,5 +245,13 @@ public class ManageCarActionBean extends BaseBean {
 
 			public void setAvailableCars(List<Car> availableCars) {
 				this.availableCars = availableCars;
+			}
+
+			public List<Car> getSelectedCarList() {
+				return selectedCarList;
+			}
+
+			public void setSelectedCarList(List<Car> selectedCarList) {
+				this.selectedCarList = selectedCarList;
 			}
 }

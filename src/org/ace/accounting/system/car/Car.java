@@ -57,7 +57,6 @@ public class Car implements Serializable {
     @Column(name = "BaseRate")
     private Double baseRate;
 
- 
 	@Enumerated(EnumType.STRING)
     @Column(name = "Branch")
     private CarBranch carBranch;
