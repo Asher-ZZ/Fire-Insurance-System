@@ -5,6 +5,7 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import org.ace.accounting.system.car.Car;
+import org.ace.accounting.system.car.enumTypes.CarStatus;
 import org.ace.accounting.system.car.persistence.interfaces.ICarDAO;
 import org.ace.accounting.system.car.service.interfaces.ICarService;
 import org.ace.java.component.SystemException;
@@ -21,21 +22,23 @@ public class CarService extends BaseService implements ICarService {
     private ICarDAO carDAO;
 
     @Transactional(propagation = Propagation.REQUIRED)
-    public void addNewCar(Car car) throws SystemException{
+    public Car addNewCar(Car car) throws SystemException{
         try {
             carDAO.insert(car);
         } catch (DAOException e) {
             throw new SystemException(e.getErrorCode(), "Failed to insert Car", e);
         }
+        return car;
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
-    public void updateCar(Car car) throws SystemException {
+    public Car updateCar(Car car) throws SystemException {
         try {
             carDAO.update(car);
         } catch (DAOException e) {
             throw new SystemException(e.getErrorCode(), "Failed to update Car", e);
         } 
+        return car;
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
@@ -45,10 +48,11 @@ public class CarService extends BaseService implements ICarService {
         } catch (DAOException e) {
             throw new SystemException(e.getErrorCode(), "Failed to delete Car", e);
         }
+        
     }
 
     @Transactional(propagation = Propagation.REQUIRED, readOnly = true)
-    public Car findById(Long id)throws SystemException {
+    public Car findById(String id)throws SystemException {
         try {
             return carDAO.findById(id);
         } catch (DAOException e) {
@@ -64,4 +68,9 @@ public class CarService extends BaseService implements ICarService {
             throw new SystemException(e.getErrorCode(), "Failed to find all Cars", e);
         }
     }
+
+	@Override
+	public List<Car> findAvailableCars() {
+		return carDAO.findByStatus(CarStatus.AVAILABLE);
+	}
 }

@@ -54,41 +54,77 @@
 						columnClasses="ui-grid-col-4,ui-grid-col-8" layout="grid"
 						styleClass="ui-panelgrid-blank ui-fluid">
 						<p:outputLabel />
+
 						<p:message for="gender" display="text" />
 						<h:outputText value="Gender" />
-						<p:selectOneMenu id="gender" value="#{rentalBean.gender}"
+						<p:selectOneMenu id="gender"
+							value="#{ManageReservationActionBean.renter.gender}"
 							required="true">
 							<f:selectItem itemLabel="Select" itemValue=""
 								noSelectionOption="true" />
-							<f:selectItem itemLabel="Male" itemValue="Male" />
-							<f:selectItem itemLabel="Female" itemValue="Female" />
-							<f:selectItem itemLabel="Other" itemValue="Other" />
+							<f:selectItems value="#{ManageReservationActionBean.genders}"
+								var="g" itemLabel="#{g}" itemValue="#{g}" />
 						</p:selectOneMenu>
 
 						<p:outputLabel />
 						<p:message for="idType" display="text" />
 						<h:outputText value="ID Type" />
-						<p:selectOneMenu id="idType" value="#{rentalBean.idType}"
-							required="true">
-							<f:selectItem itemLabel="Select" itemValue=""
-								noSelectionOption="true" />
+						<p:selectOneRadio id="idType"
+							value="#{ManageReservationActionBean.renter.idType}"
+							required="true" layout="lineDirection">
 							<f:selectItem itemLabel="NRC" itemValue="NRC" />
-							<f:selectItem itemLabel="Passport" itemValue="Passport" />
-						</p:selectOneMenu>
+							<f:selectItem itemLabel="Passport" itemValue="PASSPORT" />
+							<p:ajax update="idPanel" process="@this" />
+						</p:selectOneRadio>
 
-						<p:outputLabel />
-						<p:message for="idNumber" display="text" />
-						<h:outputText value="ID Number" />
-						<p:inputText id="idNumber" value="#{rentalBean.idNumber}"
-							required="true" label="ID Number" />
+						<h:panelGroup id="idPanel">
+							<h:panelGrid columns="2"
+								rendered="#{ManageReservationActionBean.renter.idType eq 'NRC'}"
+								style="margin-top:10px;width:100%;">
+								<p:selectOneMenu value="#{rentalBean.nrcState}">
+									<f:selectItem itemLabel="- Select State -" itemValue="" />
+									<f:selectItem itemLabel="1" itemValue="1" />
+									<f:selectItem itemLabel="2" itemValue="2" />
+									<f:selectItem itemLabel="3" itemValue="3" />
+									<!-- add all 14 states/regions -->
+								</p:selectOneMenu>
 
-						<p:outputLabel />
+								<p:selectOneMenu value="#{rentalBean.nrcTownship}">
+									<f:selectItem itemLabel="- Select Township -" itemValue="" />
+									<f:selectItem itemLabel="Taunggyi" itemValue="TGI" />
+									<f:selectItem itemLabel="Yangon" itemValue="YGN" />
+									<!-- etc -->
+								</p:selectOneMenu>
+
+								<p:selectOneMenu value="#{rentalBean.nrcType}">
+									<f:selectItem itemLabel="- Select Type -" itemValue="" />
+									<f:selectItem itemLabel="(N)" itemValue="N" />
+									<f:selectItem itemLabel="(P)" itemValue="P" />
+								</p:selectOneMenu>
+
+								<p:inputText value="#{rentalBean.nrcNumber}"
+									placeholder="000000" maxlength="6" style="width:100%;" />
+							</h:panelGrid>
+
+							<h:panelGrid columns="2"
+								rendered="#{ManageReservationActionBean.renter.idType eq 'PASSPORT'}"
+								style="margin-top:10px;width:100%;">
+								<h:outputText value="ID Number:" />
+								<p:inputText
+									value="#{ManageReservationActionBean.renter.idNumber}"
+									style="width:100%" />
+							</h:panelGrid>
+
+						</h:panelGroup>
+
+
+
 						<p:message for="dob" display="text" />
 						<h:outputText value="Date of Birth" />
 						<p:calendar id="dob" value="#{rentalBean.dateOfBirth}"
 							pattern="yyyy-MM-dd" required="true" showIcon="true" />
 
-						<p:outputLabel />
+						<!-- <p:outputLabel />
 						<p:message for="vehicleType" display="text" />
 						<h:outputText value="Vehicle Type" />
 						<p:selectOneMenu id="vehicleType"
@@ -97,7 +133,36 @@
 								noSelectionOption="true" />
 							<f:selectItems value="#{rentalBean.availableVehicles}" var="car"
 								itemLabel="#{car.make} #{car.model}" itemValue="#{car.carId}" />
-						</p:selectOneMenu>
+						</p:selectOneMenu> -->
+<p:outputLabel />
+						<p:message display="text" for="vehicleId" />
+						<h:outputText styleClass="mandatory input-label" value="Vehicle" />
+
+						<p:panelGrid styleClass="ui-panelgrid-blank"
+							id="vehiclePanelGroup">
+							<div style="margin-top: -5px; margin-left: -5px;"
+								class="ui-g ui-fluid">
+								<div class="ui-inputgroup ui-g-12 ui-lg-12">
+
+									<!-- Open Vehicle Dialog -->
+									<p:commandButton styleClass="green-button" icon="fa fa-search"
+										actionListener="#{ManageReservationActionBean.openVehicleDialog}"
+										id="selectVehicleDialogLink" process="@this"
+										oncomplete="PF('vehicleDialog').show()" />
+
+									<!-- Selected Vehicle Display -->
+									<p:inputText id="vehicleId"
+										value="#{ManageReservationActionBean.reservation.car == null ? '' : ManageReservationActionBean.reservation.car.make.concat(' ').concat(ManageReservationActionBean.reservation.car.model)}"
+										readonly="true" />
+
+									<!-- Clear Vehicle -->
+									<p:commandButton styleClass="red-button" icon="fa fa-times"
+										action="#{ManageReservationActionBean.reservation.setCar(null)}"
+										process="@this" update="vehicleId" />
+								</div>
+							</div>
+						</p:panelGrid>
+
 
 						<p:outputLabel />
 						<p:message for="startDate" display="text" />
@@ -123,5 +188,43 @@
 			</h:panelGrid>
 
 		</h:form>
+		
+		<p:dialog appendTo="@(body)" id="vehicleDialog" header="Select Available Vehicle" widgetVar="vehicleDialog" modal="true" width="700">
+    <h:form id="vehicleDialogForm">
+        <p:dataTable value="#{ManageCarActionBean.availableCars}" var="car" selectionMode="single"
+                     selection="#{ManageReservationActionBean.selectedCar}" rowKey="#{car.id}"
+                     paginator="true" rows="5">
+<p:column headerText="No">
+                #{car.id}
+            </p:column>
+
+<p:column headerText="Type">
+                #{car.type}
+            </p:column>
+            <p:column headerText="Make">
+                #{car.make}
+            </p:column>
+            <p:column headerText="Model">
+                #{car.model}
+            </p:column>
+            <p:column headerText="Year">
+                #{car.year}
+            </p:column>
+            <p:column headerText="Passenger">
+                #{car.passenger}
+            </p:column>
+            <p:column headerText="Status">
+                #{car.carStatus}
+            </p:column>
+            
+        </p:dataTable>
+
+        <p:commandButton value="Select"
+                         actionListener="#{ManageReservationActionBean.returnVehicle}"
+                         oncomplete="PF('vehicleDialog').hide()"
+                         update=":rentalForm:vehicleId" />
+    </h:form>
+</p:dialog>
+		
 	</ui:define>
 </ui:composition>

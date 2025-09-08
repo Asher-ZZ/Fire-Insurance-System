@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import javax.persistence.*;
 
 import org.ace.accounting.common.BasicEntity;
+import org.ace.accounting.common.Gender;
 import org.ace.accounting.common.TableName;
 import org.ace.java.component.idgen.service.IDInterceptor;
 
@@ -44,10 +45,12 @@ public class Renter implements Serializable{
 	 @Column(name="Email")
 	    private String email;
 	    
+	 @Enumerated(EnumType.STRING)
 	 @Column(name="Gender")
-	    private String gender;
+	    private Gender gender;
 
-	 @Column(name="ID_Number")
+	
+	@Column(name="ID_Number")
 	    private String idNumber;
 
 	 @Column(name="ID_Type")  
@@ -98,12 +101,8 @@ public class Renter implements Serializable{
 		public void setEmail(String email) {
 			this.email = email;
 		}
-		public String getGender() {
-			return gender;
-		}
-		public void setGender(String gender) {
-			this.gender = gender;
-		}
+		
+		
 		public String getIdNumber() {
 			return idNumber;
 		}
@@ -134,6 +133,12 @@ public class Renter implements Serializable{
 		public void setVersion(Integer version) {
 			this.version = version;
 		}
+		 public Gender getGender() {
+				return gender;
+			}
+			public void setGender(Gender gender) {
+				this.gender = gender;
+			}
 		
 	 	
 }

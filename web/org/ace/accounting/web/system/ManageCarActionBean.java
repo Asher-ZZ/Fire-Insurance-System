@@ -1,14 +1,7 @@
 package org.ace.accounting.web.system;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
+
+
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -17,8 +10,6 @@ import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
-import org.primefaces.event.FileUploadEvent;
-import org.primefaces.model.UploadedFile;
 import org.ace.accounting.common.validation.ErrorMessage;
 import org.ace.accounting.common.validation.MessageId;
 import org.ace.accounting.common.validation.ValidationResult;
@@ -38,27 +29,27 @@ import org.ace.java.web.common.BaseBean;
 @ManagedBean(name = "ManageCarActionBean")
 @ViewScoped
 public class ManageCarActionBean extends BaseBean {
-	
-    private Car car;
-    private Renter renter;
-    private Reservation reservation;
-    
-    private boolean createNew = true;
-    
-    @ManagedProperty(value = "#{CarService}")
-    private ICarService carService;
-    
-    @ManagedProperty(value = "#{RenterService}")
-    private IRenterService renterService;
 
-    @ManagedProperty(value = "#{ReservationService}")
-    private IReservationService reservationService;
+	private Car car;
+	private Renter renter;
+	private Reservation reservation;
 
-    private List<Car> carList;
-    private List<Car> selectedCarList;
-    private List<Car> availableCars;
-    
-public IRenterService getRenterService() {
+	private boolean createNew = true;
+
+	@ManagedProperty(value = "#{CarService}")
+	private ICarService carService;
+
+	@ManagedProperty(value = "#{RenterService}")
+	private IRenterService renterService;
+
+	@ManagedProperty(value = "#{ReservationService}")
+	private IReservationService reservationService;
+
+	private List<Car> carList;
+	private List<Car> selectedCarList;
+	private List<Car> availableCars;
+
+	public IRenterService getRenterService() {
 		return renterService;
 	}
 
@@ -79,179 +70,145 @@ public IRenterService getRenterService() {
 	}
 
 	private static final long serialVersionUID = 1L;
-	
-	 @PostConstruct
-	    public void init() {
-	        createNewCar();
-			 /*
-			 * createNewRenter(); createNewReservation();
-			 */
-	        rebindData();
-	    }
-	 
-	 public void rebindData() {
-			carList = carService.findAll();
-		} 
 
-	 
-	    public void createNewCar() {
-	        car = new Car();
-	        createNew = true;
-	    }
-	    
-		/*
-		 * public void createNewRenter() { renter = new Renter(); createNew = true; }
-		 * 
-		 * 
-		 * public void createNewReservation() { reservation = new Reservation();
-		 * createNew = true; }
-		 */
-	    
-	    public void saveCar() {
-	        try {
-	            if (createNew) {
-	                carService.addNewCar(car);
-	                FacesContext.getCurrentInstance().addMessage(null, 
-	                    new FacesMessage(FacesMessage.SEVERITY_INFO, "Success", "Car added successfully"));
-	            } else {
-	                carService.updateCar(car);
-	                FacesContext.getCurrentInstance().addMessage(null, 
-	                    new FacesMessage(FacesMessage.SEVERITY_INFO, "Success", "Car updated successfully"));
-	            }
-	            createNewCar();
-	        } catch (SystemException e) {
-	            FacesContext.getCurrentInstance().addMessage(null, 
-	                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", e.getMessage()));
-	        }
-	    }
-	    
-	    public void addCar() {
-			try {
-				carService.addNewCar(car);
-				addInfoMessage(null, MessageId.INSERT_SUCCESS, car.getType());
-				createNewCar();
-				rebindData();
-			} catch (SystemException ex) {
-				handleSysException(ex);
-			}
+	@PostConstruct
+	public void init() {
+		createNewCar();
+		rebindData();
+	}
+
+	public void rebindData() {
+		carList = carService.findAll();
+		availableCars = carService.findAvailableCars();
+	}
+
+	public void createNewCar() {
+		car = new Car();
+		createNew = true;
+	}
+
+	public void addCar() {
+		try {
+			carService.addNewCar(car);
+			addInfoMessage(null, MessageId.INSERT_SUCCESS, car.getType());
+			createNewCar();
+			rebindData();
+		} catch (SystemException ex) {
+			handleSysException(ex);
+		}
+	}
+
+
+	public void deleteCar(Car car) {
+		try {
+			carService.deleteCar(car);
+			addInfoMessage(null, MessageId.DELETE_SUCCESS, car.getType());
+			createNewCar();
+			rebindData();
+		} catch (SystemException ex) {
+			handleSysException(ex);
 		}
 
-		/*
-		 * public void saveRenter() { try { renterService.addNewRenter(renter);
-		 * addInfoMessage(null, "Success", "Renter registered successfully"); } catch
-		 * (SystemException e) { addErrorMessage(null, e.getMessage()); } }
-		 */
-	    
-		
-	    public void deleteCar(Car car) {	
-				try {
-					carService.deleteCar(car);
-					addInfoMessage(null, MessageId.DELETE_SUCCESS, car.getType());
-					createNewCar(); 
-					rebindData();
-				} catch (SystemException ex) {
-					handleSysException(ex);
-				}
-			
+	}
+
+	public void updateCar() {
+		System.out.println("DEBUG >> Car before update: " + car);
+		try {
+			carService.updateCar(car);
+			addInfoMessage(null, MessageId.UPDATE_SUCCESS, car.getType());
+			createNewCar();
+			rebindData();
+		} catch (SystemException ex) {
+			handleSysException(ex);
 		}
-	    
-	    public void updateCar() {
-	    	System.out.println("DEBUG >> Car before update: " + car);
-			try {
-				carService.updateCar(car);
-				addInfoMessage(null, MessageId.UPDATE_SUCCESS, car.getType());
-				createNewCar();
-				rebindData();
-			} catch (SystemException ex) {
-				handleSysException(ex);
-			}
-		}
-	    public void prepareUpdateCar(Car car) {
-	        this.car = car;
-	        this.createNew = false;
-	    }
+	}
 
-	    public Car getCar() {
-			return car;
-		}
+	public void prepareUpdateCar(Car car) {
+		this.car = car;
+		this.createNew = false;
+	}
 
-		public void setCar(Car car) {
-			this.car = car;
-		}
+	public Car getCar() {
+		return car;
+	}
 
-		public boolean isCreateNew() {
-			return createNew;
-		}
+	public void setCar(Car car) {
+		this.car = car;
+	}
 
-		public void setCreateNew(boolean createNew) {
-			this.createNew = createNew;
-		}
+	public boolean isCreateNew() {
+		return createNew;
+	}
 
-		public ICarService getCarService() {
-			return carService;
-		}
+	public void setCreateNew(boolean createNew) {
+		this.createNew = createNew;
+	}
 
-		public void setCarService(ICarService carService) {
-			this.carService = carService;
-		}
+	public ICarService getCarService() {
+		return carService;
+	}
 
-		public static long getSerialversionuid() {
-			return serialVersionUID;
-		}
+	public void setCarService(ICarService carService) {
+		this.carService = carService;
+	}
 
-		public void resetCar() {
-	        createNewCar();
-	    }
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
 
-		 public List<Car> getCarList() {
-				return carList;
-			}
+	public void resetCar() {
+		createNewCar();
+	}
 
-			public void setCarList(List<Car> carList) {
-				this.carList = carList;
-			}
-			
-			public Renter gerRenter() {
-				return renter;
-			}
+	public List<Car> getCarList() {
+		return carList;
+	}
 
-			public void setRenter(Renter renter) {
-				this.renter = renter;
-			}
+	public void setCarList(List<Car> carList) {
+		this.carList = carList;
+	}
 
-			public CarBranch[] getCarBranches() {
-			    return CarBranch.values();
-			}
-			
-			public Category[] getCategories() {
-			    return Category.values();
-			}
-			
-			public CarStatus[] getCarStatuses() {
-			    return CarStatus.values();
-			}
+	public Renter gerRenter() {
+		return renter;
+	}
 
-			public Reservation getReservation() {
-				return reservation;
-			}
+	public void setRenter(Renter renter) {
+		this.renter = renter;
+	}
 
-			public void setReservation(Reservation reservation) {
-				this.reservation = reservation;
-			}
+	public CarBranch[] getCarBranches() {
+		return CarBranch.values();
+	}
 
-			public List<Car> getAvailableCars() {
-				return availableCars;
-			}
+	public Category[] getCategories() {
+		return Category.values();
+	}
 
-			public void setAvailableCars(List<Car> availableCars) {
-				this.availableCars = availableCars;
-			}
+	public CarStatus[] getCarStatuses() {
+		return CarStatus.values();
+	}
 
-			public List<Car> getSelectedCarList() {
-				return selectedCarList;
-			}
+	public Reservation getReservation() {
+		return reservation;
+	}
 
-			public void setSelectedCarList(List<Car> selectedCarList) {
-				this.selectedCarList = selectedCarList;
-			}
+	public void setReservation(Reservation reservation) {
+		this.reservation = reservation;
+	}
+
+	public List<Car> getAvailableCars() {
+		return availableCars;
+	}
+
+	public void setAvailableCars(List<Car> availableCars) {
+		this.availableCars = availableCars;
+	}
+
+	public List<Car> getSelectedCarList() {
+		return selectedCarList;
+	}
+
+	public void setSelectedCarList(List<Car> selectedCarList) {
+		this.selectedCarList = selectedCarList;
+	}
 }

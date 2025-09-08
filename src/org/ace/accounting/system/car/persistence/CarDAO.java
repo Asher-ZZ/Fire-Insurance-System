@@ -8,6 +8,7 @@ import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 
 import org.ace.accounting.system.car.Car;
+import org.ace.accounting.system.car.enumTypes.CarStatus;
 import org.ace.accounting.system.car.persistence.interfaces.ICarDAO;
 import org.ace.java.component.persistence.BasicDAO;
 import org.ace.java.component.persistence.exception.DAOException;
@@ -54,7 +55,7 @@ public class CarDAO extends BasicDAO implements ICarDAO {
     }
 
     @Transactional(propagation = Propagation.REQUIRED, readOnly = true)
-    public Car findById(Long id) throws DAOException {
+    public Car findById(String id) throws DAOException {
         Car result = null;
         try {
             result = em.find(Car.class, id);
@@ -80,4 +81,12 @@ public class CarDAO extends BasicDAO implements ICarDAO {
         }
         return result;
     }
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Car> findByStatus(CarStatus status) throws DAOException {
+		 Query q = em.createQuery("SELECT c FROM Car c WHERE c.carStatus = :status");
+		    q.setParameter("status", status);
+		    return q.getResultList();
+	}
 }
