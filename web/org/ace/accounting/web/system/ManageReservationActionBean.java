@@ -8,13 +8,13 @@ import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 
 import org.ace.accounting.common.Gender;
-import org.ace.accounting.system.branch.Branch;
 import org.ace.accounting.system.car.Car;
 import org.ace.accounting.system.car.service.interfaces.ICarService;
 import org.ace.accounting.system.customer.Renter;
 import org.ace.accounting.system.reservation.Reservation;
 import org.ace.java.web.common.BaseBean;
 import org.primefaces.event.SelectEvent;
+import org.primefaces.PrimeFaces;
 
 @ManagedBean(name = "ManageReservationActionBean")
 @ViewScoped
@@ -23,37 +23,44 @@ public class ManageReservationActionBean extends BaseBean {
 	private Car car;
 	private Renter renter;
 	private Reservation reservation;
-	private Car selectedCar;
+	private Car selectedCar = new Car();
 	private List<Car> availableCars;
-	
+	private List<Car> carList;
+
 	@ManagedProperty(value = "#{CarService}")
 	private ICarService carService;
-	
+
 	public void openVehicleDialog() {
-		  availableCars = carService.findAvailableCars();
+		availableCars = carService.findAvailableCars();
 	}
-	
-	private boolean createNew=true;
-	
-	
+
+	private boolean createNew = true;
+
 	private Gender gender;
-	
+
 	@PostConstruct
 	public void init() {
-	    createNewRenter();
+		createNewRenter();
+		createNewReservation();
+		carList = carService.findAll();
 	}
-	
-	private void createNewRenter() {
-		this.renter = new Renter();
-		
+
+	private void createNewReservation() {
+		createNew = true;
+		reservation = new Reservation();
+
 	}
+
 	
-	public void returnVehicle(SelectEvent event) {
-		Car selectedCar = (Car) event.getObject();
-        reservation.setCar(selectedCar);
+	 private void createNewRenter() { 
+		 this.renter = new Renter();
+	 }
+	 
+
+	public void returnCar(SelectEvent event) {
+		Car car = (Car) event.getObject();
+		reservation.setCar(car);
 	}
-	
-	
 
 	public ICarService getCarService() {
 		return carService;
@@ -66,36 +73,43 @@ public class ManageReservationActionBean extends BaseBean {
 	public Car getCar() {
 		return car;
 	}
+
 	public void setCar(Car car) {
 		this.car = car;
 	}
+
 	public boolean isCreateNew() {
 		return createNew;
 	}
+
 	public void setCreateNew(boolean createNew) {
 		this.createNew = createNew;
 	}
+
 	public Gender getGender() {
 		return gender;
 	}
-	
+
 	public void setGender(Gender gender) {
 		this.gender = gender;
 	}
-	
+
 	public Gender[] getGenders() {
-	    return Gender.values();
+		return Gender.values();
 	}
 
 	public Renter getRenter() {
 		return renter;
 	}
+
 	public void setRenter(Renter renter) {
 		this.renter = renter;
 	}
+
 	public Reservation getReservation() {
 		return reservation;
 	}
+
 	public void setReservation(Reservation reservation) {
 		this.reservation = reservation;
 	}
@@ -114,5 +128,13 @@ public class ManageReservationActionBean extends BaseBean {
 
 	public void setAvailableCars(List<Car> availableCars) {
 		this.availableCars = availableCars;
+	}
+
+	public List<Car> getCarList() {
+		return carList;
+	}
+
+	public void setCarList(List<Car> carList) {
+		this.carList = carList;
 	}
 }

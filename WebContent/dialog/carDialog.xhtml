@@ -1,0 +1,66 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/common/dialogLayout.xhtml">
+	<ui:define name="content">
+		<title><ui:insert name="title">Select Car</ui:insert></title>
+		<h:form style="margin">
+
+			<p:dataTable id="carTable" paginator="true"
+				paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+				rowIndexVar="index" rows="15" rowsPerPageTemplate="5,10,15,20,25,30"
+				value="#{CarDialogActionBean.carList}" var="car"
+				widgetVar="carTable"
+				emptyMessage="Nothing found with given criteria" style="padding:10px 10px;"
+				paginatorPosition="bottom">
+				<!-- Row Number -->
+				<p:column headerText="No" width="2%">
+					<h:outputText value="#{var + 1}" />
+				</p:column>
+				<!-- Car ID -->
+			
+
+				<!-- Car Type -->
+				<p:column headerText="Type" 
+					>
+					<h:outputText value="#{car.type}" />
+				</p:column>
+
+				<!-- Car Make -->
+				<p:column headerText="Make" filterBy="#{car.make}"
+					filterMatchMode="contains">
+					<h:outputText value="#{car.make}" />
+				</p:column>
+
+				<!-- Car Model -->
+				<p:column headerText="Model" filterBy="#{car.model}"
+					filterMatchMode="contains">
+					<h:outputText value="#{car.model}" />
+				</p:column>
+
+				<!-- Year -->
+				<p:column headerText="Year" filterBy="#{car.year}"
+					filterMatchMode="contains">
+					<h:outputText value="#{car.year}" />
+				</p:column>
+
+				<!-- Status -->
+				<p:column headerText="Status" filterBy="#{car.carStatus}"
+					filterMatchMode="contains">
+					<h:outputText value="#{car.carStatus}" />
+				</p:column>
+
+				<!-- Base Rate -->
+				<p:column headerText="Base Rate" filterBy="#{car.baseRate}"
+					filterMatchMode="contains">
+					<h:outputText value="#{car.baseRate}" />
+				</p:column>
+<p:column style="width:30px;text-align: center;">
+					<p:commandButton action="#{CarDialogActionBean.selectCar(Car)}" styleClass="green-button" icon="fa fa-check" immediate="true" />
+				</p:column>
+			</p:dataTable>
+		</h:form>
+	</ui:define>
+</ui:composition>

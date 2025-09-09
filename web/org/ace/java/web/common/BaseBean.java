@@ -197,6 +197,11 @@ public class BaseBean {
          * getDialogOptions(800, 500, 100, 100), null);
          */
     }
+    
+    public void selectedCar() {
+    	PrimeFaces.current().dialog().openDynamic(DialogId.CAR_DIALOG, getDialogOptions(), null);
+    }
+    
     // select occupation
     public void selectOccupation() {
     	PrimeFaces.current().dialog().openDynamic(DialogId.OCCUPATION_DIALOG, getDialogOptions(), null);

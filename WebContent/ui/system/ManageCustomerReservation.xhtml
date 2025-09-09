@@ -124,45 +124,30 @@
 						<p:calendar id="dob" value="#{rentalBean.dateOfBirth}"
 							pattern="yyyy-MM-dd" required="true" showIcon="true" />
 
-						<!-- <p:outputLabel />
-						<p:message for="vehicleType" display="text" />
-						<h:outputText value="Vehicle Type" />
-						<p:selectOneMenu id="vehicleType"
-							value="#{rentalBean.vehicleType}" required="true">
-							<f:selectItem itemLabel="Select" itemValue=""
-								noSelectionOption="true" />
-							<f:selectItems value="#{rentalBean.availableVehicles}" var="car"
-								itemLabel="#{car.make} #{car.model}" itemValue="#{car.carId}" />
-						</p:selectOneMenu> -->
-<p:outputLabel />
-						<p:message display="text" for="vehicleId" />
+
+						<p:outputLabel />
+						 <p:message display="text" for="carId" />
 						<h:outputText styleClass="mandatory input-label" value="Vehicle" />
-
-						<p:panelGrid styleClass="ui-panelgrid-blank"
-							id="vehiclePanelGroup">
+						<p:panelGrid styleClass="ui-panelgrid-blank" id="carPanelGroup">
 							<div style="margin-top: -5px; margin-left: -5px;"
-								class="ui-g ui-fluid">
-								<div class="ui-inputgroup ui-g-12 ui-lg-12">
-
-									<!-- Open Vehicle Dialog -->
+								class="ui-g ui-fluid" id="carPanelGroup">
+								<div class="ui-inputgroup ui-g-12 ui-lg-12 ui-lg-12">
 									<p:commandButton styleClass="green-button" icon="fa fa-search"
-										actionListener="#{ManageReservationActionBean.openVehicleDialog}"
-										id="selectVehicleDialogLink" process="@this"
-										oncomplete="PF('vehicleDialog').show()" />
-
-									<!-- Selected Vehicle Display -->
-									<p:inputText id="vehicleId"
-										value="#{ManageReservationActionBean.reservation.car == null ? '' : ManageReservationActionBean.reservation.car.make.concat(' ').concat(ManageReservationActionBean.reservation.car.model)}"
+										actionListener="#{ManageReservationActionBean.selectedCar()}"
+										id="selectcarDialogLink" process="@this">
+										<p:ajax event="dialogReturn"
+											listener="#{ManageReservationActionBean.returnCar()}"
+											update="carId" />
+									</p:commandButton>
+									<p:inputText id="carId"
+										value="#{ManageReservationActionBean.selectedCar == null ? '' : ManageReservationActionBean.selectedCar.type}"
 										readonly="true" />
-
-									<!-- Clear Vehicle -->
 									<p:commandButton styleClass="red-button" icon="fa fa-times"
-										action="#{ManageReservationActionBean.reservation.setCar(null)}"
-										process="@this" update="vehicleId" />
+										action="#{ManageReservationActionBean.setSelectedCar(null)}"
+										process="@this" update="carId" />
 								</div>
 							</div>
 						</p:panelGrid>
-
 
 						<p:outputLabel />
 						<p:message for="startDate" display="text" />
@@ -188,43 +173,5 @@
 			</h:panelGrid>
 
 		</h:form>
-		
-		<p:dialog appendTo="@(body)" id="vehicleDialog" header="Select Available Vehicle" widgetVar="vehicleDialog" modal="true" width="700">
-    <h:form id="vehicleDialogForm">
-        <p:dataTable value="#{ManageCarActionBean.availableCars}" var="car" selectionMode="single"
-                     selection="#{ManageReservationActionBean.selectedCar}" rowKey="#{car.id}"
-                     paginator="true" rows="5">
-<p:column headerText="No">
-                #{car.id}
-            </p:column>
-
-<p:column headerText="Type">
-                #{car.type}
-            </p:column>
-            <p:column headerText="Make">
-                #{car.make}
-            </p:column>
-            <p:column headerText="Model">
-                #{car.model}
-            </p:column>
-            <p:column headerText="Year">
-                #{car.year}
-            </p:column>
-            <p:column headerText="Passenger">
-                #{car.passenger}
-            </p:column>
-            <p:column headerText="Status">
-                #{car.carStatus}
-            </p:column>
-            
-        </p:dataTable>
-
-        <p:commandButton value="Select"
-                         actionListener="#{ManageReservationActionBean.returnVehicle}"
-                         oncomplete="PF('vehicleDialog').hide()"
-                         update=":rentalForm:vehicleId" />
-    </h:form>
-</p:dialog>
-		
 	</ui:define>
 </ui:composition>

@@ -50,6 +50,10 @@
    <to-view-id>/dialog/coaDialog.xhtml</to-view-id>
   </navigation-case>
   <navigation-case>
+   <from-outcome>carDialog</from-outcome>
+   <to-view-id>/dialog/carDialog.xhtml</to-view-id>
+  </navigation-case>
+  <navigation-case>
    <from-outcome>formatFileCoaDialog</from-outcome>
    <to-view-id>/dialog/formatFileCoaDialog.xhtml</to-view-id>
   </navigation-case>
