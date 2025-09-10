@@ -1,7 +1,7 @@
 package org.ace.accounting.system.reservation;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.util.Date;
 import javax.persistence.*;
 
 import org.ace.accounting.common.BasicEntity;
@@ -28,21 +28,25 @@ public class Reservation implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE, generator = "RESERVATION_GEN")
     @Column(name = "ReserveID")
-    private Long reserveId;
+    private String id;
 
-    @ManyToOne
+   
+
+	@ManyToOne(cascade = CascadeType.ALL) 
     @JoinColumn(name = "RenterID")
     private Renter renter;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL) 
     @JoinColumn(name = "CarID")
     private Car car;
-
+    
+    @Temporal(TemporalType.DATE)
     @Column(name = "StartDate")
-    private LocalDateTime startDate;
+    private Date startDate;
 
+    @Temporal(TemporalType.DATE)
     @Column(name = "EndDate")
-    private LocalDateTime endDate;
+    private Date endDate;
 
     public Renter getRenter() {
 		return renter;
@@ -62,7 +66,7 @@ public class Reservation implements Serializable {
     @Column(name = "Status")
     private String status; // store enum as string
 
-    
+   
     @Column(name = "RentalType")
     private String rentalType; // store enum as string
 
@@ -75,13 +79,6 @@ public class Reservation implements Serializable {
 
     // Getters and setters
 
-    public Long getReserveId() {
-        return reserveId;
-    }
-
-    public void setReserveId(Long reserveId) {
-        this.reserveId = reserveId;
-    }
 
     public Renter getCustomer() {
         return renter;
@@ -99,23 +96,25 @@ public class Reservation implements Serializable {
         this.car = car;
     }
 
-    public LocalDateTime getStartDate() {
-        return startDate;
-    }
+    
 
-    public void setStartDate(LocalDateTime startDate) {
-        this.startDate = startDate;
-    }
+    public Date getStartDate() {
+		return startDate;
+	}
 
-    public LocalDateTime getEndDate() {
-        return endDate;
-    }
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
+	}
 
-    public void setEndDate(LocalDateTime endDate) {
-        this.endDate = endDate;
-    }
+	public Date getEndDate() {
+		return endDate;
+	}
 
-    public Double getDailyRate() {
+	public void setEndDate(Date endDate) {
+		this.endDate = endDate;
+	}
+
+	public Double getDailyRate() {
         return dailyRate;
     }
 
@@ -162,4 +161,11 @@ public class Reservation implements Serializable {
     public void setVersion(Integer version) {
         this.version = version;
     }
+    public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
 }

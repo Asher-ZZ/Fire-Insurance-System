@@ -1,47 +1,62 @@
 package org.ace.accounting.web.system;
 
+import java.util.*;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
+import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
+import javax.faces.bean.SessionScoped;
 import javax.faces.bean.ViewScoped;
+import javax.faces.context.FacesContext;
 
 import org.ace.accounting.common.Gender;
 import org.ace.accounting.system.car.Car;
 import org.ace.accounting.system.car.service.interfaces.ICarService;
 import org.ace.accounting.system.customer.Renter;
+import org.ace.accounting.system.customer.service.interfaces.IRenterService;
 import org.ace.accounting.system.reservation.Reservation;
+import org.ace.accounting.system.reservation.service.interfaces.IReservationService;
 import org.ace.java.web.common.BaseBean;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.PrimeFaces;
 
 @ManagedBean(name = "ManageReservationActionBean")
-@ViewScoped
+@SessionScoped
 public class ManageReservationActionBean extends BaseBean {
 
+	private boolean createNew = true;
 	private Car car;
 	private Renter renter;
 	private Reservation reservation;
 	private Car selectedCar = new Car();
 	private List<Car> availableCars;
 	private List<Car> carList;
+	private List<Reservation> reservationList;
+
+	
+
+	@ManagedProperty(value = "#{RenterService}")
+	private IRenterService renterService;
 
 	@ManagedProperty(value = "#{CarService}")
 	private ICarService carService;
+
+	@ManagedProperty(value = "#{ReservationService}")
+	private IReservationService reservationService;
 
 	public void openVehicleDialog() {
 		availableCars = carService.findAvailableCars();
 	}
 
-	private boolean createNew = true;
-
-	private Gender gender;
-
 	@PostConstruct
 	public void init() {
 		createNewRenter();
 		createNewReservation();
+		reservationList = new ArrayList<>();
 		carList = carService.findAll();
 	}
 
@@ -51,17 +66,83 @@ public class ManageReservationActionBean extends BaseBean {
 
 	}
 
+	private void createNewRenter() {
+		this.renter = new Renter();
+	}
+
+	public void addReservation() {
+		 if (reservation.getCar() == null || renter.getName() == null) {
+		        FacesContext.getCurrentInstance().addMessage(null,
+		            new FacesMessage(FacesMessage.SEVERITY_WARN, "Please select a car and enter renter info!", ""));
+		        return;
+		    }
+		Reservation temp = new Reservation();
+		temp.setCar(reservation.getCar()); // must be an existing car from DB
+		temp.setStartDate(reservation.getStartDate());
+		temp.setEndDate(reservation.getEndDate());
+		temp.setRenter(renter); // new Renter created from form
+
+		reservationList.add(temp);
+
+		// Reset form
+		reservation = new Reservation();
+		renter = new Renter();
+	}
+
+	public void resetForm() {
+		renter = new Renter();
+		reservation = new Reservation();
+	}
+
+	public void editReservation(Reservation r) {
+		// Option 1: copy data to the form for editing
+		this.reservation = r;
+		this.renter = r.getRenter();
+	}
+
 	
-	 private void createNewRenter() { 
-		 this.renter = new Renter();
-	 }
-	 
+	public void deleteReservation(Reservation r) {
+		reservationList.remove(r);
+		reservation = new Reservation();
+		
+
+	}
+
+	public IReservationService getReservationService() {
+		return reservationService;
+	}
+
+	public void setReservationService(IReservationService reservationService) {
+		this.reservationService = reservationService;
+	}
+
+	public void saveReservations() {
+		if (reservationList == null || reservationList.isEmpty()) {
+			FacesContext.getCurrentInstance().addMessage(null,
+					new FacesMessage(FacesMessage.SEVERITY_WARN, "No reservations to save!", ""));
+			return;
+		}
+
+		try {
+			for (Reservation r : reservationList) {
+				reservationService.addNewReservation(r); // Renter will also persist
+			}
+			reservationList.clear();
+			FacesContext.getCurrentInstance().addMessage(null,
+					new FacesMessage(FacesMessage.SEVERITY_INFO, "Reservations saved successfully!", ""));
+		} catch (Exception e) {
+			FacesContext.getCurrentInstance().addMessage(null,
+					new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error saving reservations!", e.getMessage()));
+			e.printStackTrace();
+		}
+	}
 
 	public void returnCar(SelectEvent event) {
 		Car car = (Car) event.getObject();
 		reservation.setCar(car);
 	}
 
+	
 	public ICarService getCarService() {
 		return carService;
 	}
@@ -86,17 +167,7 @@ public class ManageReservationActionBean extends BaseBean {
 		this.createNew = createNew;
 	}
 
-	public Gender getGender() {
-		return gender;
-	}
-
-	public void setGender(Gender gender) {
-		this.gender = gender;
-	}
-
-	public Gender[] getGenders() {
-		return Gender.values();
-	}
+	
 
 	public Renter getRenter() {
 		return renter;
@@ -137,4 +208,23 @@ public class ManageReservationActionBean extends BaseBean {
 	public void setCarList(List<Car> carList) {
 		this.carList = carList;
 	}
+
+	
+
+	public List<Reservation> getReservationList() {
+		return reservationList;
+	}
+
+	public void setReservationList(List<Reservation> reservationList) {
+		this.reservationList = reservationList;
+	}
+
+	public IRenterService getRenterService() {
+		return renterService;
+	}
+
+	public void setRenterService(IRenterService renterService) {
+		this.renterService = renterService;
+	}
+
 }

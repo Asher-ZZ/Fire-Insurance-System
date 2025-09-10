@@ -51,7 +51,7 @@ public class ReservationDAO extends BasicDAO implements IReservationDAO {
     }
 
     @Transactional(propagation = Propagation.REQUIRED, readOnly = true)
-    public Reservation findById(Long id) throws DAOException {
+    public Reservation findById(String id) throws DAOException {
         Reservation result = null;
         try {
             result = em.find(Reservation.class, id);

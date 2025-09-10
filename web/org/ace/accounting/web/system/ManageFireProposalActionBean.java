@@ -189,6 +189,7 @@ public class ManageFireProposalActionBean extends BaseBean {
 	        for (BuildingInfo b : buildings) {
 	            b.setFireProposal(fireProposal);
 	        }
+	        
 	        fireProposal.setBuildingList(buildings);
 
 	        calculatePolicyEndDate();

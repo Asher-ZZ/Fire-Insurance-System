@@ -12,7 +12,7 @@ public interface IReservationService {
 
     void deleteReservation(Reservation reservation) throws DAOException;
 
-    Reservation findById(Long id) throws DAOException;
+    Reservation findById(String id) throws DAOException;
 
     List<Reservation> findAll() throws DAOException;
 }

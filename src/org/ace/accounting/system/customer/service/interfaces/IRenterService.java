@@ -13,7 +13,7 @@ public interface IRenterService {
 
     void deleteRenter(Renter renter) throws DAOException;
 
-    Renter findById(Long id) throws DAOException;
+    Renter findById(String id) throws DAOException;
 
     List<Renter> findAll() throws DAOException;
 }

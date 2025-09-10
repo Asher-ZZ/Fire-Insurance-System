@@ -47,7 +47,7 @@ public class ReservationService implements IReservationService {
     }
 
     @Transactional(propagation = Propagation.REQUIRED, readOnly = true)
-    public Reservation findById(Long id) throws SystemException{
+    public Reservation findById(String id) throws SystemException{
         try {
             return reservationDAO.findById(id);
         } catch (DAOException e) {

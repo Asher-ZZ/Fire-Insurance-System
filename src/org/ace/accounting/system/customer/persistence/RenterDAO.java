@@ -52,7 +52,7 @@ public class RenterDAO extends BasicDAO implements IRenterDAO {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED, readOnly = true)
-    public Renter findById(Long id) throws DAOException {
+    public Renter findById(String id) throws DAOException {
         Renter result = null;
         try {
             result = em.find(Renter.class, id);
@@ -71,7 +71,7 @@ public class RenterDAO extends BasicDAO implements IRenterDAO {
     public List<Renter> findAll() throws DAOException {
         List<Renter> result = null;
         try {
-            Query q = em.createQuery("SELECT c FROM CarRenter c");
+            Query q = em.createQuery("SELECT c FROM Renter c");
             result = q.getResultList();
             em.flush();
         } catch (PersistenceException pe) {

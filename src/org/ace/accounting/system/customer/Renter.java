@@ -27,13 +27,15 @@ public class Renter implements Serializable{
 	private static final long serialVersionUID = 1L;
 	@Id
 	 @GeneratedValue(strategy = GenerationType.TABLE, generator = "RENTER_GEN")
+	
 	 @Column(name="RenterID")
-	 private Long renterId;
+	 private String id;
 	 
 	 @Column(name="Name")
 	    private String name;
 	 
-	 @Column(name="PhoneNumber")
+
+	@Column(name="PhoneNumber")
 	    private String phoneNumber;
 	 
 	 @Column(name="DriverLicence")
@@ -56,21 +58,18 @@ public class Renter implements Serializable{
 	 @Column(name="ID_Type")  
 	    private String idType;
 
-	 @Column(name="Date_Of_Birth") 
-	    private LocalDate dateOfBirth;
+	 
 
 	 @Embedded
 		private BasicEntity basicEntity;
 	 
+	
+		   
+		
 	 	@Version
 		@Column(name = "VERSION") 
 	    private Integer version;
-		public Long getRenterId() {
-			return renterId;
-		}
-		public void setRenterId(Long renterId) {
-			this.renterId = renterId;
-		}
+		
 		public String getName() {
 			return name;
 		}
@@ -115,12 +114,7 @@ public class Renter implements Serializable{
 		public void setIdType(String idType) {
 			this.idType = idType;
 		}
-		public LocalDate getDateOfBirth() {
-			return dateOfBirth;
-		}
-		public void setDateOfBirth(LocalDate dateOfBirth) {
-			this.dateOfBirth = dateOfBirth;
-		}
+		
 		public BasicEntity getBasicEntity() {
 			return basicEntity;
 		}
@@ -139,6 +133,12 @@ public class Renter implements Serializable{
 			public void setGender(Gender gender) {
 				this.gender = gender;
 			}
-		
+			 public String getId() {
+					return id;
+				}
+
+				public void setId(String id) {
+					this.id = id;
+				}
 	 	
 }

@@ -1,7 +1,5 @@
 package org.ace.accounting.web.system;
 
-
-
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -97,7 +95,6 @@ public class ManageCarActionBean extends BaseBean {
 			handleSysException(ex);
 		}
 	}
-
 
 	public void deleteCar(Car car) {
 		try {

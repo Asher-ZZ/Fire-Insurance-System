@@ -171,6 +171,11 @@
    <redirect/>
   </navigation-case>
   
+  <navigation-case>
+   <from-outcome>CarRenterForm</from-outcome>
+   <to-view-id>/ui/system/ManageCustomerInformation.xhtml</to-view-id>
+   <redirect/>
+  </navigation-case>
     <navigation-case>
    <from-outcome>policySearchForm</from-outcome>
    <to-view-id>/ui/system/manageFirePolicyEnquiryForm.xhtml</to-view-id>

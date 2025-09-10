@@ -54,7 +54,7 @@ public class RenterService extends BaseService implements IRenterService {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED, readOnly = true)
-    public Renter findById(Long id) throws DAOException {
+    public Renter findById(String id) throws DAOException {
         try {
             return renterDAO.findById(id);
         } catch (DAOException e) {

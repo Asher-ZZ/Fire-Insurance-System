@@ -10,7 +10,7 @@
 			<p:growl globalOnly="true" showDetail="true" escape="false" />
 
 			<!-- Personal Information -->
-			<p:panel header="Personal Information" styleClass="ui-fluid">
+			<p:panel header="Car Reservation Information" styleClass="ui-fluid">
 				<p:panelGrid columns="2" columnClasses="ui-grid-col-6,ui-grid-col-6"
 					layout="grid" styleClass="ui-panelgrid-blank">
 
@@ -18,115 +18,10 @@
 						columnClasses="ui-grid-col-4,ui-grid-col-8" layout="grid"
 						styleClass="ui-panelgrid-blank ui-fluid">
 
+						
+												
 						<p:outputLabel />
-						<p:message for="name" display="text" />
-						<h:outputText value="Name" styleClass="input-label mandatory" />
-						<p:inputText id="name" value="#{rentalBean.name}" required="true"
-							label="Name" />
-
-						<p:outputLabel />
-						<p:message for="email" display="text" />
-						<h:outputText value="Email" />
-						<p:inputText id="email" value="#{rentalBean.email}"
-							required="true" label="Email">
-							<f:validateRegex pattern="[^@]+@[^\\.]+\\..+" />
-						</p:inputText>
-
-						<p:outputLabel />
-						<p:message for="phone" display="text" />
-						<h:outputText value="Phone Number" />
-						<p:inputText id="phone" value="#{rentalBean.phoneNumber}"
-							required="true" label="Phone Number" />
-
-						<p:outputLabel />
-						<p:message for="license" display="text" />
-						<h:outputText value="Driver Licence" />
-						<p:inputText id="license" value="#{rentalBean.driverLicence}"
-							required="true" label="Driver Licence" />
-
-						<p:outputLabel />
-						<p:message for="address" display="text" />
-						<h:outputText value="Address" />
-						<p:inputTextarea id="address" value="#{rentalBean.address}"
-							rows="3" autoResize="true" required="true" label="Address" />
-					</p:panelGrid>
-					<p:panelGrid columns="2"
-						columnClasses="ui-grid-col-4,ui-grid-col-8" layout="grid"
-						styleClass="ui-panelgrid-blank ui-fluid">
-						<p:outputLabel />
-
-						<p:message for="gender" display="text" />
-						<h:outputText value="Gender" />
-						<p:selectOneMenu id="gender"
-							value="#{ManageReservationActionBean.renter.gender}"
-							required="true">
-							<f:selectItem itemLabel="Select" itemValue=""
-								noSelectionOption="true" />
-							<f:selectItems value="#{ManageReservationActionBean.genders}"
-								var="g" itemLabel="#{g}" itemValue="#{g}" />
-						</p:selectOneMenu>
-
-						<p:outputLabel />
-						<p:message for="idType" display="text" />
-						<h:outputText value="ID Type" />
-						<p:selectOneRadio id="idType"
-							value="#{ManageReservationActionBean.renter.idType}"
-							required="true" layout="lineDirection">
-							<f:selectItem itemLabel="NRC" itemValue="NRC" />
-							<f:selectItem itemLabel="Passport" itemValue="PASSPORT" />
-							<p:ajax update="idPanel" process="@this" />
-						</p:selectOneRadio>
-
-						<h:panelGroup id="idPanel">
-							<h:panelGrid columns="2"
-								rendered="#{ManageReservationActionBean.renter.idType eq 'NRC'}"
-								style="margin-top:10px;width:100%;">
-								<p:selectOneMenu value="#{rentalBean.nrcState}">
-									<f:selectItem itemLabel="- Select State -" itemValue="" />
-									<f:selectItem itemLabel="1" itemValue="1" />
-									<f:selectItem itemLabel="2" itemValue="2" />
-									<f:selectItem itemLabel="3" itemValue="3" />
-									<!-- add all 14 states/regions -->
-								</p:selectOneMenu>
-
-								<p:selectOneMenu value="#{rentalBean.nrcTownship}">
-									<f:selectItem itemLabel="- Select Township -" itemValue="" />
-									<f:selectItem itemLabel="Taunggyi" itemValue="TGI" />
-									<f:selectItem itemLabel="Yangon" itemValue="YGN" />
-									<!-- etc -->
-								</p:selectOneMenu>
-
-								<p:selectOneMenu value="#{rentalBean.nrcType}">
-									<f:selectItem itemLabel="- Select Type -" itemValue="" />
-									<f:selectItem itemLabel="(N)" itemValue="N" />
-									<f:selectItem itemLabel="(P)" itemValue="P" />
-								</p:selectOneMenu>
-
-								<p:inputText value="#{rentalBean.nrcNumber}"
-									placeholder="000000" maxlength="6" style="width:100%;" />
-							</h:panelGrid>
-
-							<h:panelGrid columns="2"
-								rendered="#{ManageReservationActionBean.renter.idType eq 'PASSPORT'}"
-								style="margin-top:10px;width:100%;">
-								<h:outputText value="ID Number:" />
-								<p:inputText
-									value="#{ManageReservationActionBean.renter.idNumber}"
-									style="width:100%" />
-							</h:panelGrid>
-
-						</h:panelGroup>
-
-
-
-						<p:message for="dob" display="text" />
-						<h:outputText value="Date of Birth" />
-						<p:calendar id="dob" value="#{rentalBean.dateOfBirth}"
-							pattern="yyyy-MM-dd" required="true" showIcon="true" />
-
-
-						<p:outputLabel />
-						 <p:message display="text" for="carId" />
+						<p:message display="text" for="carId" />
 						<h:outputText styleClass="mandatory input-label" value="Vehicle" />
 						<p:panelGrid styleClass="ui-panelgrid-blank" id="carPanelGroup">
 							<div style="margin-top: -5px; margin-left: -5px;"
@@ -136,14 +31,14 @@
 										actionListener="#{ManageReservationActionBean.selectedCar()}"
 										id="selectcarDialogLink" process="@this">
 										<p:ajax event="dialogReturn"
-											listener="#{ManageReservationActionBean.returnCar()}"
+											listener="#{ManageReservationActionBean.returnCar}"
 											update="carId" />
 									</p:commandButton>
 									<p:inputText id="carId"
-										value="#{ManageReservationActionBean.selectedCar == null ? '' : ManageReservationActionBean.selectedCar.type}"
+										value="#{ManageReservationActionBean.reservation.car == null ? '' : ManageReservationActionBean.reservation.car.type}"
 										readonly="true" />
 									<p:commandButton styleClass="red-button" icon="fa fa-times"
-										action="#{ManageReservationActionBean.setSelectedCar(null)}"
+										action="#{ManageReservationActionBean.reservation.setCar(null)}"
 										process="@this" update="carId" />
 								</div>
 							</div>
@@ -152,24 +47,76 @@
 						<p:outputLabel />
 						<p:message for="startDate" display="text" />
 						<h:outputText value="Start Date" />
-						<p:calendar id="startDate" value="#{rentalBean.startDate}"
-							pattern="yyyy-MM-dd" required="true" showIcon="true" />
+						<p:calendar id="startDate"
+							value="#{ManageReservationActionBean.reservation.startDate}"
+							pattern="yyyy-MM-dd" showIcon="true" />
 
 						<p:outputLabel />
 						<p:message for="endDate" display="text" />
 						<h:outputText value="End Date" />
-						<p:calendar id="endDate" value="#{rentalBean.endDate}"
-							pattern="yyyy-MM-dd" required="true" showIcon="true" />
+						<p:calendar id="endDate"
+							value="#{ManageReservationActionBean.reservation.endDate}"
+							pattern="yyyy-MM-dd" showIcon="true" />
 					</p:panelGrid>
 				</p:panelGrid>
+
+				<h:panelGrid columns="2" style="margin-top:15px;">
+					<p:commandButton value="Add"
+						action="#{ManageReservationActionBean.addReservation}"
+						process="rentalForm reservationTable"
+						update="rentalForm reservationTable" icon="pi pi-plus"
+						style="margin-right: 5px;" onstart="this.disabled=true;"
+						oncomplete="this.disabled=false;" />
+				</h:panelGrid>
+
+				<p:dataTable id="reservationTable"
+					value="#{ManageReservationActionBean.reservationList}" var="r"
+					style="margin-top:20px;" editable="true"
+					
+					emptyMessage="No reservations added yet.">
+
+					<p:column headerText="Name">
+						<h:outputText value="#{r.renter.name}" />
+					</p:column>
+					<p:column headerText="Email">
+						<h:outputText value="#{r.renter.email}" />
+					</p:column>
+					<p:column headerText="Phone">
+						<h:outputText value="#{r.renter.phoneNumber}" />
+					</p:column>
+					<p:column headerText="ID Number">
+						<h:outputText value="#{r.renter.finalNrc}" />
+					</p:column>
+					<p:column headerText="Car">
+						<h:outputText value="#{r.car.type}" />
+					</p:column>
+					<p:column headerText="Start Date">
+						<h:outputText value="#{r.startDate}">
+							<f:convertDateTime pattern="yyyy-MM-dd" />
+						</h:outputText>
+					</p:column>
+					<p:column headerText="End Date">
+						<h:outputText value="#{r.endDate}">
+							<f:convertDateTime pattern="yyyy-MM-dd" />
+						</h:outputText>
+					</p:column>
+					<p:column headerText="Actions" style="width:150px;">
+
+						<p:commandButton icon="fa fa-trash" title="Delete"
+                 actionListener="#{ManageReservationActionBean.deleteReservation(r)}"
+                 update="reservationTable"
+                 process="@this" />
+					</p:column>
+				</p:dataTable>
 			</p:panel>
 			<!-- Buttons -->
 			<h:panelGrid columns="2" style="margin-top:15px;">
 				<p:commandButton value="Submit" icon="pi pi-check"
-					action="#{rentalBean.submit}" update=":rentalForm"
-					style="margin-right:10px" />
+					action="#{ManageReservationActionBean.saveReservations}" 
+					update=":rentalForm" style="margin-right:10px" />
 				<p:commandButton value="Reset" icon="pi pi-refresh" type="reset"
-					process="@this" />
+					actionListener="#{ManageReservationActionBean.resetForm}"
+					process="@this" update="@form" />
 			</h:panelGrid>
 
 		</h:form>
