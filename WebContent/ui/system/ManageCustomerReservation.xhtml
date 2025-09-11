@@ -18,8 +18,31 @@
 						columnClasses="ui-grid-col-4,ui-grid-col-8" layout="grid"
 						styleClass="ui-panelgrid-blank ui-fluid">
 
-						
-												
+						<p:outputLabel />
+						<p:message display="text" for="renterId" />
+						<h:outputText styleClass="mandatory input-label"
+							value="Car Renter" />
+						<p:panelGrid styleClass="ui-panelgrid-blank" id="renterPanelGroup">
+							<div style="margin-top: -5px; margin-left: -5px;"
+								class="ui-g ui-fluid" id="renterPanelGroup">
+								<div class="ui-inputgroup ui-g-12 ui-lg-12 ui-lg-12">
+									<p:commandButton styleClass="green-button" icon="fa fa-search"
+										actionListener="#{ManageReservationActionBean.selectedRenter()}"
+										id="selectrenterDialogLink" process="@this">
+										<p:ajax event="dialogReturn"
+											listener="#{ManageReservationActionBean.returnRenter}"
+											update="renterId" />
+									</p:commandButton>
+									<p:inputText id="renterId"
+										value="#{ManageReservationActionBean.reservation.renter== null ? '' : ManageReservationActionBean.reservation.renter.name}"
+										readonly="true" />
+									<p:commandButton styleClass="red-button" icon="fa fa-times"
+										action="#{ManageReservationActionBean.reservation.setRenter(null)}"
+										process="@this" update="renterId" />
+								</div>
+							</div>
+						</p:panelGrid>
+
 						<p:outputLabel />
 						<p:message display="text" for="carId" />
 						<h:outputText styleClass="mandatory input-label" value="Vehicle" />
@@ -72,7 +95,6 @@
 				<p:dataTable id="reservationTable"
 					value="#{ManageReservationActionBean.reservationList}" var="r"
 					style="margin-top:20px;" editable="true"
-					
 					emptyMessage="No reservations added yet.">
 
 					<p:column headerText="Name">
@@ -83,9 +105,6 @@
 					</p:column>
 					<p:column headerText="Phone">
 						<h:outputText value="#{r.renter.phoneNumber}" />
-					</p:column>
-					<p:column headerText="ID Number">
-						<h:outputText value="#{r.renter.finalNrc}" />
 					</p:column>
 					<p:column headerText="Car">
 						<h:outputText value="#{r.car.type}" />
@@ -103,22 +122,88 @@
 					<p:column headerText="Actions" style="width:150px;">
 
 						<p:commandButton icon="fa fa-trash" title="Delete"
-                 actionListener="#{ManageReservationActionBean.deleteReservation(r)}"
-                 update="reservationTable"
-                 process="@this" />
+							actionListener="#{ManageReservationActionBean.deleteReservation(r)}"
+							update="reservationTable" process="@this" />
 					</p:column>
 				</p:dataTable>
 			</p:panel>
 			<!-- Buttons -->
 			<h:panelGrid columns="2" style="margin-top:15px;">
 				<p:commandButton value="Submit" icon="pi pi-check"
-					action="#{ManageReservationActionBean.saveReservations}" 
+					action="#{ManageReservationActionBean.saveReservations}"
 					update=":rentalForm" style="margin-right:10px" />
 				<p:commandButton value="Reset" icon="pi pi-refresh" type="reset"
 					actionListener="#{ManageReservationActionBean.resetForm}"
 					process="@this" update="@form" />
 			</h:panelGrid>
+			
+			<p:dataTable var="r" value="#{ManageReservationActionBean.reserveList}"
+				id="reserveTable" paginator="true" rows="10" style="width:100%"
+				widgetVar="reserveTable"
+				paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+				rowsPerPageTemplate="5,10,15" rowKey="#{r.id}" reflow="true"
+				rowIndexVar="var" paginatorPosition="bottom">
 
+				<!-- Row Number -->
+				<p:column headerText="No" width="2%">
+					<h:outputText value="#{var + 1}" />
+				</p:column>
+
+
+				<!-- Car Type -->
+				<p:column headerText="Customer Name" filterBy="#{r.renter.name}"
+					filterMatchMode="contains">
+					<h:outputText value="#{r.renter.name}" />
+				</p:column>
+
+				<!-- Car Make -->
+				<p:column headerText="Email" filterBy="#{r.renter.email}"
+					filterMatchMode="contains">
+					<h:outputText value="#{r.renter.email}" />
+				</p:column>
+
+				<!-- Car Model -->
+				<p:column headerText="Phone" filterBy="#{r.renter.phoneNumber}"
+					filterMatchMode="contains">
+					<h:outputText value="#{r.renter.phoneNumber}" />
+				</p:column>
+
+				<!-- Year -->
+				<p:column headerText="Car" filterBy="#{r.car.type}"
+					filterMatchMode="contains">
+					<h:outputText value="#{r.car.type}" />
+				</p:column>
+
+				<!-- Status -->
+				<p:column headerText="Start Date" filterBy="#{r.startDate}"
+					filterMatchMode="contains">
+					<h:outputText value="#{r.startDate}" />
+				</p:column>
+
+				<!-- Base Rate -->
+				<p:column headerText="End Date" filterBy="#{r.endDate}"
+					filterMatchMode="contains">
+					<h:outputText value="#{r.endDate}" />
+				</p:column>
+
+				<!-- Edit Button -->
+				<!-- <p:column style="width:4%;">
+					<p:commandButton styleClass="green-button" icon="fa fa-paint-brush"
+						action="#{ManageCarActionBean.prepareUpdateCar(car)}"
+						process="@this" update=":carEntryForm" />
+				</p:column>
+				<p:column style="width:4%;">
+					<p:commandButton styleClass="red-button" icon="fa fa-times"
+						action="#{ManageCarActionBean.deleteCar(car)}"
+						update=":carTableForm:carTable :carEntryForm">
+						<p:confirm header="Confirmation"
+							message="Are you sure you want to delete this car?"
+							icon="fa fa-exclamation-triangle" />
+					</p:commandButton>
+				</p:column> -->
+
+
+			</p:dataTable>
 		</h:form>
 	</ui:define>
 </ui:composition>

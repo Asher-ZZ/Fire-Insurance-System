@@ -13,18 +13,16 @@
 				rowIndexVar="index" rows="15" rowsPerPageTemplate="5,10,15,20,25,30"
 				value="#{CarDialogActionBean.carList}" var="car"
 				widgetVar="carTable"
-				emptyMessage="Nothing found with given criteria" style="padding:10px 10px;"
-				paginatorPosition="bottom">
+				emptyMessage="Nothing found with given criteria"
+				style="padding:10px 10px;" paginatorPosition="bottom">
 				<!-- Row Number -->
 				<p:column headerText="No" width="2%">
 					<h:outputText value="#{var + 1}" />
 				</p:column>
 				<!-- Car ID -->
-			
 
 				<!-- Car Type -->
-				<p:column headerText="Type" 
-					>
+				<p:column headerText="Type">
 					<h:outputText value="#{car.type}" />
 				</p:column>
 
@@ -57,8 +55,9 @@
 					filterMatchMode="contains">
 					<h:outputText value="#{car.baseRate}" />
 				</p:column>
-<p:column style="width:30px;text-align: center;">
-					<p:commandButton action="#{CarDialogActionBean.selectCar(car)}" styleClass="green-button" icon="fa fa-check" immediate="true" />
+				<p:column style="width:30px;text-align: center;">
+					<p:commandButton action="#{CarDialogActionBean.selectCar(car)}"
+						styleClass="green-button" icon="fa fa-check" immediate="true" />
 				</p:column>
 			</p:dataTable>
 		</h:form>

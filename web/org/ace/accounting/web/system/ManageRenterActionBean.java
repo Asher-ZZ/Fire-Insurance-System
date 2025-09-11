@@ -29,19 +29,18 @@ public class ManageRenterActionBean extends BaseBean implements Serializable {
 	private Renter renter;
 	private boolean createNew;
 	private Gender gender;
-	
-
 	private List<Renter> renterList;
 	private List<Renter> selectedRenterList;
 	private Map<String, List<String>> stateTownshipMap;
 	private List<String> states;
 	private List<String> townships;
-
+	private boolean hasDriverLicence;
 	private String selectedState;
 	private String selectedTownship;
 	private String selectedType;
 	private String nrcNumber;
 	private String finalNrc;
+	private String passportNumber;
 
 	@ManagedProperty(value = "#{RenterService}")
 	private IRenterService renterService;
@@ -75,7 +74,7 @@ public class ManageRenterActionBean extends BaseBean implements Serializable {
 	/** Add new renter */
 	public void addRenter() {
 		try {
-			generateFinalNRC();
+			generateFinalIDNumber();
 			renterService.addNewRenter(renter);
 			addInfoMessage(null, MessageId.INSERT_SUCCESS, renter.getName());
 			createNewRenter();
@@ -87,8 +86,11 @@ public class ManageRenterActionBean extends BaseBean implements Serializable {
 
 	/** Delete renter */
 	public void deleteRenter(Renter renter) {
+		System.out.println("DEBUG >> renter before delete: " + renter);
+
 		try {
 			renterService.deleteRenter(renter);
+			;
 			addInfoMessage(null, MessageId.DELETE_SUCCESS, renter.getName());
 			createNewRenter();
 			rebindData();
@@ -105,20 +107,35 @@ public class ManageRenterActionBean extends BaseBean implements Serializable {
 		}
 	}
 
-	public void generateFinalNRC() {
+	public void generateFinalIDNumber() {
 		if ("NRC".equalsIgnoreCase(renter.getIdType())) {
 			if (selectedState != null && selectedTownship != null && selectedType != null && nrcNumber != null) {
-
-				String formattedNRC = selectedState + "/" + selectedTownship + "(" + selectedType + ")" + nrcNumber;
-				renter.setIdNumber(formattedNRC);
+				renter.setIdNumber(selectedState + "/" + selectedTownship + "(" + selectedType + ")" + nrcNumber);
 			} else {
-				renter.setIdNumber(nrcNumber);
+				renter.setIdNumber(""); // never null
 			}
 		} else if ("PASSPORT".equalsIgnoreCase(renter.getIdType())) {
-			renter.setIdNumber(nrcNumber);
+			renter.setIdNumber(passportNumber != null ? passportNumber : "");
+		} else {
+			renter.setIdNumber(""); // fallback
 		}
 	}
-	
+
+	public void setHasDriverLicence(boolean hasDriverLicence) {
+		this.hasDriverLicence = hasDriverLicence;
+
+		if (renter != null) {
+			if (Boolean.TRUE.equals(hasDriverLicence)) {
+				// User has a license; keep existing value or empty
+				renter.setDriverLicence("");
+			} else {
+				// User does NOT have a license; set to "No"
+				renter.setDriverLicence("No");
+			}
+		}
+
+	}
+
 	/** Update renter */
 	public void updateRenter() {
 		try {
@@ -129,6 +146,10 @@ public class ManageRenterActionBean extends BaseBean implements Serializable {
 		} catch (SystemException ex) {
 			handleSysException(ex);
 		}
+	}
+
+	public boolean getHasDriverLicence() {
+		return hasDriverLicence;
 	}
 
 	/** Prepare renter for editing */
@@ -169,6 +190,7 @@ public class ManageRenterActionBean extends BaseBean implements Serializable {
 	public void setSelectedRenterList(List<Renter> selectedRenterList) {
 		this.selectedRenterList = selectedRenterList;
 	}
+
 	public Gender getGender() {
 		return gender;
 	}
@@ -176,7 +198,6 @@ public class ManageRenterActionBean extends BaseBean implements Serializable {
 	public void setGender(Gender gender) {
 		this.gender = gender;
 	}
-	
 
 	public Gender[] getGenders() {
 		return Gender.values();
@@ -248,5 +269,13 @@ public class ManageRenterActionBean extends BaseBean implements Serializable {
 
 	public IRenterService getRenterService() {
 		return renterService;
+	}
+
+	public String getPassportNumber() {
+		return passportNumber;
+	}
+
+	public void setPassportNumber(String passportNumber) {
+		this.passportNumber = passportNumber;
 	}
 }

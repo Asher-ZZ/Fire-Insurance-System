@@ -7,6 +7,8 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 
+import org.ace.accounting.system.car.Car;
+import org.ace.accounting.system.car.enumTypes.CarStatus;
 import org.ace.accounting.system.reservation.Reservation;
 import org.ace.accounting.system.reservation.persistence.interfaces.IReservationDAO;
 import org.ace.java.component.persistence.BasicDAO;
@@ -20,12 +22,23 @@ import org.springframework.transaction.annotation.Transactional;
 public class ReservationDAO extends BasicDAO implements IReservationDAO {
 
     @Transactional(propagation = Propagation.REQUIRED)
-    public void insert(Reservation reservation) throws DAOException {
+    public void insert(Reservation reservation) throws DAOException{
         try {
+            if (reservation.getCar() != null) {
+                reservation.setCar(em.getReference(reservation.getCar().getClass(), reservation.getCar().getId()));
+                Car car = reservation.getCar();
+                car.setCarStatus(CarStatus.RENTED);
+                em.merge(car);
+            }
+            if (reservation.getRenter() != null) {
+                reservation.setRenter(em.getReference(reservation.getRenter().getClass(), reservation.getRenter().getId()));
+            }
+
             em.persist(reservation);
-            em.flush();
-        } catch (PersistenceException pe) {
-            throw translate("Failed to insert Reservation", pe);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Error inserting reservation: " + e.getMessage());
         }
     }
 

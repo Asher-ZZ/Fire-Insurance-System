@@ -1,0 +1,53 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                template="/common/commonLayout.xhtml">
+
+    <ui:define name="content">
+        <h:form id="historyForm">
+            <p:growl globalOnly="true" showDetail="true" escape="false" />
+
+            <p:panel header="My Reservation History" styleClass="ui-fluid">
+
+                <p:dataTable id="historyTable" 
+                             value="#{CustomerReservationBean.reservationHistory}" 
+                             var="r"
+                             emptyMessage="You have no reservations."
+                             paginator="true"
+                             rows="10"
+                             style="margin-top:20px;">
+
+                    <p:column headerText="Car">
+                        <h:outputText value="#{r.car.type}" />
+                    </p:column>
+
+                    <p:column headerText="Start Date">
+                        <h:outputText value="#{r.startDate}">
+                            <f:convertDateTime pattern="yyyy-MM-dd" />
+                        </h:outputText>
+                    </p:column>
+
+                    <p:column headerText="End Date">
+                        <h:outputText value="#{r.endDate}">
+                            <f:convertDateTime pattern="yyyy-MM-dd" />
+                        </h:outputText>
+                    </p:column>
+
+                    <p:column headerText="Status">
+                        <h:outputText value="#{r.car.status}" />
+                    </p:column>
+
+                    <p:column headerText="Actions" style="width:150px;">
+                        <p:commandButton icon="fa fa-trash" title="Cancel Reservation"
+                                         actionListener="#{CustomerReservationBean.cancelReservation(r)}"
+                                         update="historyTable"
+                                         rendered="#{r.startDate gt now} and r.car.status eq 'RENTED' or r.car.status eq 'AVAILABLE'" />
+                    </p:column>
+                </p:dataTable>
+
+            </p:panel>
+        </h:form>
+    </ui:define>
+</ui:composition>

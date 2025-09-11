@@ -26,6 +26,9 @@ public class CarDAO extends BasicDAO implements ICarDAO {
     @Transactional(propagation = Propagation.REQUIRED)
     public void insert(Car car) throws DAOException {
         try {
+        	if (car.getCarStatus() == null) {
+                car.setCarStatus(CarStatus.AVAILABLE); // default
+            }
             em.persist(car);
             em.flush();
         } catch (PersistenceException pe) {

@@ -202,6 +202,10 @@ public class BaseBean {
     	PrimeFaces.current().dialog().openDynamic(DialogId.CAR_DIALOG, getDialogOptions(), null);
     }
     
+    public void selectedRenter() {
+    	PrimeFaces.current().dialog().openDynamic(DialogId.RENTER_DIALOG, getDialogOptions(), null);
+    }
+    
     // select occupation
     public void selectOccupation() {
     	PrimeFaces.current().dialog().openDynamic(DialogId.OCCUPATION_DIALOG, getDialogOptions(), null);

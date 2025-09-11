@@ -36,8 +36,16 @@ public class ManageReservationActionBean extends BaseBean {
 	private List<Car> availableCars;
 	private List<Car> carList;
 	private List<Reservation> reservationList;
-
+	private List<Reservation> reserveList;
 	
+public List<Reservation> getReserveList() {
+		return reserveList;
+	}
+
+	public void setReserveList(List<Reservation> reserveList) {
+		this.reserveList = reserveList;
+	}
+private List<Renter> renterList;
 
 	@ManagedProperty(value = "#{RenterService}")
 	private IRenterService renterService;
@@ -58,6 +66,9 @@ public class ManageReservationActionBean extends BaseBean {
 		createNewReservation();
 		reservationList = new ArrayList<>();
 		carList = carService.findAll();
+		renterList=renterService.findAll();
+        reserveList = reservationService.findAll();
+
 	}
 
 	private void createNewReservation() {
@@ -69,24 +80,24 @@ public class ManageReservationActionBean extends BaseBean {
 	private void createNewRenter() {
 		this.renter = new Renter();
 	}
+	
 
 	public void addReservation() {
-		 if (reservation.getCar() == null || renter.getName() == null) {
+		 if (reservation.getCar() == null || reservation.getRenter()== null) {
 		        FacesContext.getCurrentInstance().addMessage(null,
 		            new FacesMessage(FacesMessage.SEVERITY_WARN, "Please select a car and enter renter info!", ""));
 		        return;
 		    }
 		Reservation temp = new Reservation();
-		temp.setCar(reservation.getCar()); // must be an existing car from DB
+		temp.setRenter(reservation.getRenter());
+		temp.setCar(reservation.getCar());
 		temp.setStartDate(reservation.getStartDate());
 		temp.setEndDate(reservation.getEndDate());
-		temp.setRenter(renter); // new Renter created from form
 
 		reservationList.add(temp);
-
-		// Reset form
 		reservation = new Reservation();
-		renter = new Renter();
+		
+		
 	}
 
 	public void resetForm() {
@@ -141,90 +152,34 @@ public class ManageReservationActionBean extends BaseBean {
 		Car car = (Car) event.getObject();
 		reservation.setCar(car);
 	}
-
 	
-	public ICarService getCarService() {
-		return carService;
-	}
-
-	public void setCarService(ICarService carService) {
-		this.carService = carService;
-	}
-
-	public Car getCar() {
-		return car;
-	}
-
-	public void setCar(Car car) {
-		this.car = car;
-	}
-
-	public boolean isCreateNew() {
-		return createNew;
-	}
-
-	public void setCreateNew(boolean createNew) {
-		this.createNew = createNew;
+	public void returnRenter(SelectEvent event) {
+		Renter renter = (Renter) event.getObject();
+		reservation.setRenter(renter);
 	}
 
 	
-
-	public Renter getRenter() {
-		return renter;
-	}
-
-	public void setRenter(Renter renter) {
-		this.renter = renter;
-	}
-
-	public Reservation getReservation() {
-		return reservation;
-	}
-
-	public void setReservation(Reservation reservation) {
-		this.reservation = reservation;
-	}
-
-	public Car getSelectedCar() {
-		return selectedCar;
-	}
-
-	public void setSelectedCar(Car selectedCar) {
-		this.selectedCar = selectedCar;
-	}
-
-	public List<Car> getAvailableCars() {
-		return availableCars;
-	}
-
-	public void setAvailableCars(List<Car> availableCars) {
-		this.availableCars = availableCars;
-	}
-
-	public List<Car> getCarList() {
-		return carList;
-	}
-
-	public void setCarList(List<Car> carList) {
-		this.carList = carList;
-	}
-
-	
-
-	public List<Reservation> getReservationList() {
-		return reservationList;
-	}
-
-	public void setReservationList(List<Reservation> reservationList) {
-		this.reservationList = reservationList;
-	}
-
-	public IRenterService getRenterService() {
-		return renterService;
-	}
-
-	public void setRenterService(IRenterService renterService) {
-		this.renterService = renterService;
-	}
+	public ICarService getCarService() {return carService;}
+	public void setCarService(ICarService carService) {this.carService = carService;}
+	public Car getCar() {return car;}
+	public void setCar(Car car) {this.car = car;}
+	public boolean isCreateNew() {return createNew;}
+	public void setCreateNew(boolean createNew) {this.createNew = createNew;}
+	public Renter getRenter() {return renter;}
+	public void setRenter(Renter renter) {this.renter = renter;}
+	public Reservation getReservation() {return reservation;}
+	public void setReservation(Reservation reservation) {this.reservation = reservation;}
+	public Car getSelectedCar() {return selectedCar;}
+	public void setSelectedCar(Car selectedCar) {this.selectedCar = selectedCar;}
+	public List<Car> getAvailableCars() {return availableCars;}
+	public void setAvailableCars(List<Car> availableCars) {this.availableCars = availableCars;}
+	public List<Car> getCarList() {return carList;}
+	public void setCarList(List<Car> carList) {this.carList = carList;}
+	public List<Reservation> getReservationList() {return reservationList;}
+	public void setReservationList(List<Reservation> reservationList) {this.reservationList = reservationList;}
+	public IRenterService getRenterService() {return renterService;}
+	public void setRenterService(IRenterService renterService) {this.renterService = renterService;}
+	public List<Renter> getRenterList() {return renterList;}
+	public void setRenterList(List<Renter> renterList) {this.renterList = renterList;}
 
 }

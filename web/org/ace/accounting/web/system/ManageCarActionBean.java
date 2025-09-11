@@ -98,6 +98,7 @@ public class ManageCarActionBean extends BaseBean {
 
 	public void deleteCar(Car car) {
 		try {
+			
 			carService.deleteCar(car);
 			addInfoMessage(null, MessageId.DELETE_SUCCESS, car.getType());
 			createNewCar();

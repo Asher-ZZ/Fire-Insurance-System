@@ -31,7 +31,6 @@ public class Reservation implements Serializable {
     private String id;
 
    
-
 	@ManyToOne(cascade = CascadeType.ALL) 
     @JoinColumn(name = "RenterID")
     private Renter renter;
@@ -48,14 +47,6 @@ public class Reservation implements Serializable {
     @Column(name = "EndDate")
     private Date endDate;
 
-    public Renter getRenter() {
-		return renter;
-	}
-
-	public void setRenter(Renter renter) {
-		this.renter = renter;
-	}
-
 	@Column(name = "DailyRate")
     private Double dailyRate;
 
@@ -64,7 +55,7 @@ public class Reservation implements Serializable {
 
     
     @Column(name = "Status")
-    private String status; // store enum as string
+    private String ReserveStatus; // store enum as string
 
    
     @Column(name = "RentalType")
@@ -95,8 +86,7 @@ public class Reservation implements Serializable {
     public void setCar(Car car) {
         this.car = car;
     }
-
-    
+ 
 
     public Date getStartDate() {
 		return startDate;
@@ -130,15 +120,15 @@ public class Reservation implements Serializable {
         this.totalCost = totalCost;
     }
 
-    public String getStatus() {
-        return status;
-    }
+    public String getReserveStatus() {
+		return ReserveStatus;
+	}
 
-    public void setStatus(String status) {
-        this.status = status;
-    }
+	public void setReserveStatus(String reserveStatus) {
+		ReserveStatus = reserveStatus;
+	}
 
-    public String getRentalType() {
+	public String getRentalType() {
         return rentalType;
     }
 
@@ -168,4 +158,11 @@ public class Reservation implements Serializable {
 	public void setId(String id) {
 		this.id = id;
 	}
+	 public Renter getRenter() {
+			return renter;
+		}
+
+		public void setRenter(Renter renter) {
+			this.renter = renter;
+		}
 }

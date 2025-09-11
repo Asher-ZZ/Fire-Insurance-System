@@ -28,6 +28,7 @@ public class ReservationService implements IReservationService {
         }
     }
 
+    
     @Transactional(propagation = Propagation.REQUIRED)
     public void updateReservation(Reservation reservation) throws SystemException{
         try {
@@ -63,4 +64,6 @@ public class ReservationService implements IReservationService {
             throw new SystemException(e.getErrorCode(), "Failed to find all Reservations", e);
         }
     }
+    
+    
 }

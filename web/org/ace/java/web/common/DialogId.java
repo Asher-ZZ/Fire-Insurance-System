@@ -16,6 +16,8 @@ public class DialogId {
 	
 	public static final String CAR_DIALOG = "carDialog";
 	
+	public static final String RENTER_DIALOG = "renterDialog";
+	
 	public static final String YEARLY_POSTING_COA_DIALOG = "yearlyPostingCoaDialog";
 
 	public static final String FF_COA_DIALOG = "formatFileCoaDialog";

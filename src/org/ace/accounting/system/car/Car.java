@@ -36,7 +36,8 @@ public class Car implements Serializable {
 
 	@Enumerated(EnumType.STRING)
 	@Column(name = "Status")
-	private CarStatus carStatus;
+	private CarStatus carStatus = CarStatus.AVAILABLE; // default
+
 
 	@Column(name = "Make")
 	private String make;
@@ -154,6 +155,16 @@ public class Car implements Serializable {
 		return basicEntity;
 	}
 
+	
+
+	public CarStatus getCarStatus() {
+		return carStatus;
+	}
+
+	public void setCarStatus(CarStatus carStatus) {
+		this.carStatus = carStatus;
+	}
+
 	public void setBasicEntity(BasicEntity basicEntity) {
 		this.basicEntity = basicEntity;
 	}
@@ -166,12 +177,10 @@ public class Car implements Serializable {
 		this.version = version;
 	}
 
-	public CarStatus getCarStatus() {
-		return carStatus;
-	}
+	
 
-	public void setCarStatus(CarStatus carStatus) {
-		this.carStatus = carStatus;
+	public void setCarStatus(String string) {
+		
 	}
 
 

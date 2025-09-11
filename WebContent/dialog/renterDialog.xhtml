@@ -1,0 +1,35 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/common/dialogLayout.xhtml">
+	<ui:define name="content">
+		<title><ui:insert name="title">Select Car</ui:insert></title>
+		<h:form style="margin">
+
+			<p:dataTable id="renterTable" paginator="true"
+				paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+				rowIndexVar="index" rows="15" rowsPerPageTemplate="5,10,15,20,25,30"
+				value="#{RenterDialogActionBean.renterList}" var="renter"
+				widgetVar="renterTable"
+				emptyMessage="Nothing found with given criteria"
+				style="padding:10px 10px;" paginatorPosition="bottom">
+				<!-- Row Number -->
+				<p:column headerText="No" width="2%">
+					<h:outputText value="#{var + 1}" />
+				</p:column>
+
+				<p:column headerText="Name" filterBy="#{renter.name}"
+					filterMatchMode="contains">
+					<h:outputText value="#{renter.name}" />
+				</p:column>
+
+				<p:column style="width:30px;text-align: center;">
+					<p:commandButton action="#{RenterDialogActionBean.selectRenter(renter)}"
+						styleClass="green-button" icon="fa fa-check" immediate="true" />
+				</p:column>
+			</p:dataTable>
+		</h:form>
+	</ui:define>
+</ui:composition>
