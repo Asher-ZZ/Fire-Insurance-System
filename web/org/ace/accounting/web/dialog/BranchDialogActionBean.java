@@ -2,7 +2,6 @@ package org.ace.accounting.web.dialog;
 
 import java.util.List;
 
-
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
@@ -23,7 +22,7 @@ public class BranchDialogActionBean extends BaseBean {
 	public void setBranchService(IBranchService branchService) {
 		this.branchService = branchService;
 	}
-	
+
 	private List<Branch> branchList;
 
 	@PostConstruct

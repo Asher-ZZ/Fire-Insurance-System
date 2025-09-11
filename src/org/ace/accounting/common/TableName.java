@@ -23,6 +23,11 @@ public class TableName {
 	public static final String FIREPROPOSAL = "FIREPROPOSAL";
 
 	public static final String FIREPOLICY = "FIREPOLICY";
+	
+	public static final String CarRenter = "CarRenter";
+	public static final String Car = "Car";
+	public static final String Reservation = "Reservation";
+
 
 	/* public static final string = */
 

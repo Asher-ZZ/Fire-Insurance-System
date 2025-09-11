@@ -54,7 +54,7 @@ public class LoginBean extends BaseBean {
 
 	public String authenticate() {
 		boolean authenticate = userService.authenticate(username, password);
-		if (authenticate) {
+		if (authenticate) { 
 			User user = userService.findUser(username);
 			putParam(ParamId.LOGIN_USER, user);
 			userProcessService.registerUser(user);
@@ -70,7 +70,7 @@ public class LoginBean extends BaseBean {
 
 		User user = new User();
 		user = (User) getParam(ParamId.LOGIN_USER);
-		// User user = userService.findUser(username);
+		//User user = userService.findUser(username);
 
 		for (Role role : user.getRoles()) {
 			if (role.getName().equals("Admin")) {

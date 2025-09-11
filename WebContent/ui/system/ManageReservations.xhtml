@@ -1,0 +1,84 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                template="/common/commonLayout.xhtml">
+
+    <ui:define name="content">
+        <h:form id="adminReservationForm">
+            <p:growl id="growl" globalOnly="true" showDetail="true" />
+
+            <!-- Reservation List Panel -->
+            <p:panel header="Manage Reservations" styleClass="ui-fluid">
+                
+                <p:dataTable id="reservationTable"
+                             value="#{ManageReservationActionBean.reserveList}"
+                             var="res"
+                             paginator="true"
+                             rows="10"
+                             emptyMessage="No reservations found."
+                             styleClass="ui-datatable-gridlines">
+
+                    <!-- Customer Info -->
+                    <p:column headerText="Customer Name">
+                        <h:outputText value="#{res.renter.name}" />
+                    </p:column>
+                    <p:column headerText="Email">
+                        <h:outputText value="#{res.renter.email}" />
+                    </p:column>
+                    <p:column headerText="Phone">
+                        <h:outputText value="#{res.renter.phoneNumber}" />
+                    </p:column>
+
+                    <!-- Car Info -->
+                    <p:column headerText="Car">
+                        <h:outputText value="#{res.car.type}" />
+                    </p:column>
+
+                    <!-- Reservation Dates -->
+                    <p:column headerText="Start Date">
+                        <h:outputText value="#{res.startDate}">
+                            <f:convertDateTime pattern="yyyy-MM-dd" />
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="End Date">
+                        <h:outputText value="#{res.endDate}">
+                            <f:convertDateTime pattern="yyyy-MM-dd" />
+                        </h:outputText>
+                    </p:column>
+
+                    <!-- Status Column -->
+                    <p:column headerText="Status">
+                        <h:outputText value="#{res.reserveStatus}">
+                            <f:passThroughAttribute name="style" 
+                                value="#{res.reserveStatus eq 'Approved' ? 'color:green;' : res.reserveStatus eq 'Rejected' ? 'color:red;' : 'color:orange;'}"/>
+                        </h:outputText>
+                    </p:column>
+
+                    <!-- Action Buttons -->
+                    <p:column headerText="Actions" style="width:200px;">
+                        <p:commandButton value="Approve" icon="fa fa-check"
+                                         styleClass="ui-button-success"
+                                         action="#{AdminReservationBean.approve(res)}"
+                                         update="reservationTable"
+                                         disabled="#{res.reserveStatus eq 'Approved'}" />
+
+                        <p:commandButton value="Reject" icon="fa fa-times"
+                                         styleClass="ui-button-danger"
+                                         action="#{AdminReservationBean.reject(res)}"
+                                         update="reservationTable"
+                                         disabled="#{res.reserveStatus eq 'Rejected'}" />
+                        
+                        <p:commandButton value="Delete" icon="fa fa-trash"
+                                         action="#{AdminReservationBean.deleteReservation(res)}"
+                                         update="reservationTable"
+                                         styleClass="ui-button-secondary" />
+                    </p:column>
+
+                </p:dataTable>
+            </p:panel>
+
+        </h:form>
+    </ui:define>
+</ui:composition>

@@ -1,0 +1,270 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/common/commonLayout.xhtml">
+
+	<ui:define name="content">
+		<h:form id="CarRenterForm">
+			<p:growl globalOnly="true" showDetail="true" escape="false" />
+
+			<!-- Personal Information -->
+			<p:panel header="Personal Information" styleClass="ui-fluid">
+				<p:panelGrid columns="2" columnClasses="ui-grid-col-6,ui-grid-col-6"
+					layout="grid" styleClass="ui-panelgrid-blank">
+
+					<p:panelGrid columns="2"
+						columnClasses="ui-grid-col-4,ui-grid-col-8" layout="grid"
+						styleClass="ui-panelgrid-blank ui-fluid">
+
+						<p:outputLabel />
+						<p:message for="name" display="text" />
+						<h:outputText value="Name" styleClass="input-label mandatory" />
+						<p:inputText id="name"
+							value="#{ManageRenterActionBean.renter.name}" required="true"
+							label="Name" />
+
+						<p:outputLabel />
+						<p:message for="email" display="text" />
+						<h:outputText value="Email" />
+						<p:inputText id="email"
+							value="#{ManageRenterActionBean.renter.email}" required="true"
+							label="Email" />
+
+						<p:outputLabel />
+						<p:message for="phone" display="text" />
+						<h:outputText value="Phone Number" />
+						<p:inputText id="phone"
+							value="#{ManageRenterActionBean.renter.phoneNumber}"
+							required="true" label="Phone Number" />
+
+						<p:outputLabel />
+						<p:message for="hasLicence" display="text" />
+						<h:outputText value="Do you have a Driver Licence?" />
+						<p:selectOneRadio id="hasLicence"
+							value="#{ManageRenterActionBean.hasDriverLicence}"
+							layout="lineDirection">
+							<f:selectItem itemLabel="Yes" itemValue="true" />
+							<f:selectItem itemLabel="No" itemValue="false" />
+							<p:ajax update="licensePanel" process="@this" />
+						</p:selectOneRadio>
+						<h:outputText value="" />
+						<h:panelGrid id="licensePanel" columns="2">
+
+							<h:panelGroup
+								rendered="#{ManageRenterActionBean.hasDriverLicence}">
+								<p:inputText id="license"
+									value="#{ManageRenterActionBean.renter.driverLicence}"
+									label="Driver Licence"
+									rendered="#{ManageRenterActionBean.hasDriverLicence}" />
+								<h:outputText value="No"
+									rendered="#{not ManageRenterActionBean.hasDriverLicence}" />
+							</h:panelGroup>
+						</h:panelGrid>
+						
+						
+						<h:outputText value="" />
+						<p:message for="address" display="text" />
+						<h:outputText value="Address" />
+						<p:inputTextarea id="address"
+							value="#{ManageRenterActionBean.renter.address}" rows="3"
+							autoResize="true" required="true" label="Address" />
+					</p:panelGrid>
+
+					<p:panelGrid columns="2"
+						columnClasses="ui-grid-col-4,ui-grid-col-8" layout="grid"
+						styleClass="ui-panelgrid-blank ui-fluid">
+
+						<p:outputLabel />
+						<p:message for="gender" display="text" />
+						<h:outputText value="Gender" />
+						<p:selectOneMenu id="gender"
+							value="#{ManageRenterActionBean.renter.gender}" required="true">
+							<f:selectItem itemLabel="Select" itemValue=""
+								noSelectionOption="true" />
+							<f:selectItems value="#{ManageRenterActionBean.genders}" var="g"
+								itemLabel="#{g}" itemValue="#{g}" />
+						</p:selectOneMenu>
+
+						<h:outputText value="ID Type:" />
+        <p:selectOneRadio id="idType"
+                          value="#{ManageRenterActionBean.renter.idType}"
+                          layout="lineDirection">
+            <f:selectItem itemLabel="NRC" itemValue="NRC" />
+            <f:selectItem itemLabel="Passport" itemValue="PASSPORT" />
+            <p:ajax listener="#{ManageRenterActionBean.generateFinalIDNumber}" update="idPanel idNumber" />
+        </p:selectOneRadio>
+
+        <!-- ID Number Panel -->
+        <h:outputText value="ID Number:" />
+        <h:panelGrid id="idPanel" columns="1">
+
+            <!-- NRC Form (4 inputs) -->
+            <h:panelGrid columns="4"
+                         rendered="#{ManageRenterActionBean.renter.idType eq 'NRC'}"
+                         style="margin-top:5px;width:100%;">
+                <p:selectOneMenu id="state"
+                                 value="#{ManageRenterActionBean.selectedState}" required="true">
+                    <f:selectItem itemLabel="- Select State -" itemValue="" />
+                    <f:selectItems value="#{ManageRenterActionBean.states}" var="state" itemLabel="#{state}" itemValue="#{state}" />
+                    <p:ajax listener="#{ManageRenterActionBean.onStateChange}"
+										update="township" />
+                    <p:ajax listener="#{ManageRenterActionBean.generateFinalIDNumber}" update=":CarRenterForm:idNumber" />
+                </p:selectOneMenu>
+
+                <p:selectOneMenu id="township"
+                                 value="#{ManageRenterActionBean.selectedTownship}" required="true">
+                    <f:selectItem itemLabel="- Select Township -" itemValue="" />
+                    <f:selectItems value="#{ManageRenterActionBean.townships}" var="t" itemLabel="#{t}" itemValue="#{t}" />
+                    <p:ajax listener="#{ManageRenterActionBean.generateFinalIDNumber}" update=":CarRenterForm:idNumber" />
+                </p:selectOneMenu>
+
+                <p:selectOneMenu id="type"
+                                 value="#{ManageRenterActionBean.selectedType}" required="true">
+                    <f:selectItem itemLabel="- Select Type -" itemValue="" />
+                    <f:selectItem itemLabel="(N)" itemValue="N" />
+                    <f:selectItem itemLabel="(P)" itemValue="P" />
+                    <p:ajax listener="#{ManageRenterActionBean.generateFinalIDNumber}" update=":CarRenterForm:idNumber" />
+                </p:selectOneMenu>
+
+                <p:inputText id="nrcNumber"
+                             value="#{ManageRenterActionBean.nrcNumber}"
+                             placeholder="000000" maxlength="6" required="true">
+                    <p:ajax event="keyup" listener="#{ManageRenterActionBean.generateFinalIDNumber}" update=":CarRenterForm:idNumber" />
+                </p:inputText>
+            </h:panelGrid>
+
+            <!-- Passport Form (1 input) -->
+            <h:panelGrid columns="1"
+                         rendered="#{ManageRenterActionBean.renter.idType eq 'PASSPORT'}"
+                         style="margin-top:5px;width:100%;">
+                <p:inputText id="passportNumber"
+                             value="#{ManageRenterActionBean.passportNumber}"
+                             placeholder="Enter Passport Number" required="true">
+                    <p:ajax event="keyup" listener="#{ManageRenterActionBean.generateFinalIDNumber}" update=":CarRenterForm:idNumber" />
+                </p:inputText>
+            </h:panelGrid>
+
+        </h:panelGrid>
+
+        <!-- Display Final ID Number -->
+        <h:outputText value="Final ID Number:" />
+        <h:outputText id="idNumber" value="#{ManageRenterActionBean.renter.idNumber}" />
+
+					</p:panelGrid>
+				</p:panelGrid>
+
+				<!-- Buttons -->
+				<h:panelGrid columns="2" style="margin-top:15px;">
+					<p:commandButton value="Submit" icon="pi pi-check"
+						action="#{ManageRenterActionBean.addRenter}"
+						rendered="#{ManageRenterActionBean.createNew}"
+						update=":CarRenterForm" style="margin-right:10px" />
+					<p:commandButton id="editBtn" value="Update"
+						action="#{ManageRenterActionBean.updateRenter()}"
+						rendered="#{!ManageRenterActionBean.createNew}"
+						update=":CarRenterForm :renterTableForm" style="width:70px;"
+						oncomplete="PF('renterTable').clearFilters();" />
+					<p:commandButton value="Reset" icon="pi pi-refresh" type="reset"
+						actionListener="#{ManageRenterActionBean.createNewRenter}"
+						process="@this" update="@form" />
+				</h:panelGrid>
+			</p:panel>
+		</h:form>
+
+		<h:form id="renterTableForm">
+			<!-- Add New Car Link -->
+			<h:panelGrid>
+				<p:commandLink action="#{ManageRenterActionBean.createNewRenter}"
+					immediate="true" update=":CarRenterForm">
+					<h:panelGrid columns="2">
+						<h:graphicImage name="images/add.png" styleClass="addIcon" />
+						<h:outputText value="Add New Customer" styleClass="command-link" />
+					</h:panelGrid>
+				</p:commandLink>
+			</h:panelGrid>
+			<br />
+
+			<!-- Car Data Table -->
+			<p:dataTable var="r" value="#{ManageRenterActionBean.renterList}"
+				id="renterTable" paginator="true" rows="10" style="width:100%"
+				widgetVar="renterTable"
+				paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+				rowsPerPageTemplate="5,10,15" rowKey="#{renter.id}" reflow="true"
+				rowIndexVar="var" paginatorPosition="bottom">
+
+				<!-- Row Number -->
+				<p:column headerText="No" width="2%">
+					<h:outputText value="#{var + 1}" />
+				</p:column>
+
+
+				<!-- Car Type -->
+				<p:column headerText="Name" filterBy="#{r.name}"
+					filterMatchMode="contains">
+					<h:outputText value="#{r.name}" />
+				</p:column>
+
+
+				<p:column headerText="Email" filterBy="#{r.name}"
+					filterMatchMode="contains">
+					<h:outputText value="#{r.name}" />
+				</p:column>
+
+
+				<p:column headerText="Phone No" filterBy="#{r.phoneNumber}"
+					filterMatchMode="contains">
+					<h:outputText value="#{r.phoneNumber}" />
+				</p:column>
+
+				<p:column headerText="Driver Licence" filterBy="#{r.driverLicence}"
+					filterMatchMode="contains">
+					<h:outputText value="#{r.driverLicence}" />
+				</p:column>
+				<!-- Year -->
+				<p:column headerText="Email" filterBy="#{r.email}"
+					filterMatchMode="contains">
+					<h:outputText value="#{r.email}" />
+				</p:column>
+
+				<!-- Status -->
+				<p:column headerText="ID Type" filterBy="#{r.idType}"
+					filterMatchMode="contains">
+					<h:outputText value="#{r.idType}" />
+				</p:column>
+
+				<!-- Base Rate -->
+				<p:column headerText="ID Number" filterBy="#{r.idNumber}"
+					filterMatchMode="contains">
+					<h:outputText value="#{r.idNumber}" />
+				</p:column>
+
+				<!-- Edit Button -->
+				<p:column style="width:4%;">
+					<p:commandButton styleClass="green-button" icon="fa fa-paint-brush"
+						action="#{ManageRenterActionBean.prepareUpdateRenter(r)}"
+						process="@this" update=":CarRenterForm" />
+				</p:column>
+				<p:column style="width:4%;">
+					<p:commandButton styleClass="red-button" icon="fa fa-times"
+						action="#{ManageRenterActionBean.deleteRenter(r)}"
+						update=":renterTableForm:renterTable :CarRenterForm">
+						<p:confirm header="Confirmation"
+							message="Are you sure you want to delete this Car Renter Person?"
+							icon="fa fa-exclamation-triangle" />
+					</p:commandButton>
+				</p:column>
+
+
+			</p:dataTable>
+		</h:form>
+		<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+			<p:commandButton value="Yes" type="button"
+				styleClass="ui-confirmdialog-yes" icon="pi pi-check" />
+			<p:commandButton value="No" type="button"
+				styleClass="ui-confirmdialog-no" icon="pi pi-times" />
+		</p:confirmDialog>
+
+	</ui:define>
+</ui:composition>

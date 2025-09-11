@@ -1,3 +1,6 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:ui="http://java.sun.com/jsf/facelets"
 	xmlns:h="http://java.sun.com/jsf/html"
@@ -144,20 +147,10 @@
 									update="paymentType" process="@this" />
 							</p:selectOneMenu>
 
-							<!-- <p:outputLabel />
-							<p:message for="branch" display="text" />
-							<h:outputText value="Branch" styleClass="mandatory input-label" />
-							<p:selectOneMenu id="branch"
-								value="#{ManageFireProposalActionBean.fireProposal.branch}"
-								required="true" requiredMessage="Branch is required.">
-								<f:selectItem itemLabel="Select Branch" itemValue=""
-									noSelectionOption="true" />
-								<f:selectItems value="#{ManageFireProposalActionBean.branches}"
-									var="branch" itemLabel="#{branch}" itemValue="#{branch}" />
-							</p:selectOneMenu> -->
 							<p:outputLabel />
 							<p:message display="text" for="branchId" />
-							<h:outputText styleClass="input-label" value="BRANCH" />
+							<h:outputText styleClass="mandatory input-label" value="BRANCH" />
+							
 							<p:panelGrid styleClass="ui-panelgrid-blank"
 								id="branchPanelGroup">
 								<div style="margin-top: -5px; margin-left: -5px;"
@@ -477,7 +470,7 @@
 					</h:panelGrid>
 
 					<!-- Action Buttons -->
-				<p:commandButton value="Add"
+						<p:commandButton value="Add"
 							action="#{ManageFireProposalActionBean.addBuilding}"
 							process="buildingForm buildingTable" update="buildingForm buildingTable" icon="pi pi-plus"
 							style="margin-right: 5px;" onstart="this.disabled=true;"
@@ -576,7 +569,7 @@
 						<!-- Editable Add-On Premium -->
 						<p:column headerText="Add-On Premium (Period)"
 							style="text-align:right;">
-							<p:inputText value="#{building.addOnPremiumPeriod}">
+							<p:inputText value="#{building.addOnPremiumPeriod}" >
 								<f:convertNumber minFractionDigits="2" />
 								<p:ajax event="blur"
 									listener="#{ManageFireProposalActionBean.recalculatePremiums}"
@@ -604,7 +597,7 @@
 					<!-- Total Premium Summary -->
 					<p:panelGrid columns="2" styleClass="ui-fluid"
 						style="margin-top: 10px;">
-						<h:outputText value="Total Premium (Period): "
+						<h:outputText value="Total:"
 							styleClass="input-label" />
 						<h:outputText id="totalPremiumOutput"
 							value="#{ManageFireProposalActionBean.fireProposal.totalPremiumPeriod}">
@@ -656,7 +649,7 @@
 					</p:confirmDialog>
 					
 			<p:commandButton value="Download Report" id="downloadBtn"
-                 action="#{ManageFireProposalActionBean.generateLetter}"
+                 action="#{ManageFireProposalActionBean.generateFireProposalReport}"
                  icon="pi pi-download"
                  disabled="#{!ManageFireProposalActionBean.saved}"
                  ajax="false" />

@@ -104,7 +104,7 @@ public class FireProposal implements Serializable, Cloneable {
 	 * @Column(name = "TOTALSUMINSURED", precision = 15, scale = 2)
 	 * private Double totalSumInsured = 0.0;
 	 */
-	@Column(name = "TOTALPREMIUMPERIOD", precision = 15, scale = 2)
+	@Column(name = "TOTAL", precision = 15, scale = 2)
 	private Double totalPremiumPeriod = 0.0;
 
 	// Constructors

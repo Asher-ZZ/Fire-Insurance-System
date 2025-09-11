@@ -1,12 +1,17 @@
-<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
-	xmlns:p="http://primefaces.org/ui" template="/common/dialogLayout.xhtml">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
+xmlns:ui="http://java.sun.com/jsf/facelets" 
+xmlns:h="http://java.sun.com/jsf/html"
+ xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui" 
+	template="/common/dialogLayout.xhtml">
+	
 	<ui:define name="content">
 		<title><ui:insert name="title">Select Branch</ui:insert></title>
 		<h:form style="margin">
 			<p:dataTable id="branchTable" paginator="true"
 				paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}" rowIndexVar="index" rows="15"
 				rowsPerPageTemplate="5,10,15,20,25,30" value="#{BranchDialogActionBean.branchList}" var="branch" widgetVar="branchTable" emptyMessage="Nothing found with given criteria"
-				style="padding: 10px 10px;" paginatorPosition="bottom">
+				style=" padding: 10px 10px;" paginatorPosition="bottom">
 				<p:column headerText="No" style="width:50px;">
 					<h:outputText value="#{index + 1}" />
 				</p:column>

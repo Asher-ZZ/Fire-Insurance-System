@@ -1,0 +1,227 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/common/commonLayout.xhtml">
+
+	<ui:define name="content">
+		<h:form id="carEntryForm">
+
+			<p:growl globalOnly="true" showDetail="true" escape="false" />
+			<!-- <p:messages autoUpdate="true" /> -->
+
+			<p:panel header="Car Information" styleClass="ui-fluid">
+				<p:panelGrid columns="2" columnClasses="ui-grid-col-6,ui-grid-col-6"
+					layout="grid" styleClass="ui-panelgrid-blank">
+					<p:panelGrid columns="2"
+						columnClasses="ui-grid-col-3,ui-grid-col-9" layout="grid"
+						styleClass="ui-panelgrid-blank ui-fluid">
+						<p:outputLabel />
+						<p:message for="type" display="text" />
+						<h:outputText for="type" value="Type"
+							styleClass="input-label mandatory" />
+						<p:inputText id="type" value="#{ManageCarActionBean.car.type}"
+							required="true" label="Type"
+							requiredMessage="Please Enter Car Type" />
+
+						<p:outputLabel />
+						<p:message for="status" display="text" />
+						<h:outputText for="status" value="Status"
+							styleClass="input-label mandatory" />
+						<p:selectOneMenu id="status"
+							value="#{ManageCarActionBean.car.carStatus}" required="true">
+							<f:selectItem itemLabel="Select Status" itemValue=""
+								noSelectionOption="true" />
+							<f:selectItems value="#{ManageCarActionBean.carStatuses}" var="s"
+								itemLabel="#{s}" itemValue="#{s}" />
+						</p:selectOneMenu>
+
+						<p:outputLabel />
+						<p:message for="make" display="text" />
+						<h:outputText for="make" value="Make"
+							styleClass="input-label mandatory" />
+						<p:inputText id="make" value="#{ManageCarActionBean.car.make}"
+							required="true" />
+
+						<p:outputLabel />
+						<p:message for="model" display="text" />
+						<h:outputText for="model" value="Model"
+							styleClass="input-label mandatory" />
+						<p:inputText id="model" value="#{ManageCarActionBean.car.model}"
+							required="true" />
+
+						<p:outputLabel />
+						<p:message for="year" display="text" />
+						<h:outputText for="year" value="Year"
+							styleClass="input-label mandatory" />
+						<p:inputNumber id="year" value="#{ManageCarActionBean.car.year}"
+							required="true" decimalPlaces="0" />
+					</p:panelGrid>
+					<p:panelGrid columns="2"
+						columnClasses="ui-grid-col-3,ui-grid-col-9" layout="grid"
+						styleClass="ui-panelgrid-blank ui-fluid">
+						<p:outputLabel />
+						<p:message for="regNo" display="text" />
+						<h:outputText for="regNo" value="Registration No"
+							styleClass="input-label mandatory" />
+						<p:inputText id="regNo"
+							value="#{ManageCarActionBean.car.registrationNo}" required="true" />
+
+
+
+						<p:outputLabel />
+						<p:message for="passenger" display="text" />
+						<h:outputText for="passenger" value="Passenger Capacity"
+							styleClass="input-label mandatory" />
+						<p:inputNumber id="passenger"
+							value="#{ManageCarActionBean.car.passenger}" required="true"
+							decimalPlaces="0" />
+
+						<p:outputLabel />
+						<p:message for="baseRate" display="text" />
+						<h:outputText for="baseRate" value="Base Rate"
+							styleClass="input-label mandatory" />
+						<p:inputNumber id="baseRate"
+							value="#{ManageCarActionBean.car.baseRate}" required="true"
+							decimalPlaces="2" />
+						<p:outputLabel />
+						<p:message for="branch" display="text" />
+						<p:outputLabel for="branch" value="Branch"
+							styleClass="input-label mandatory" />
+						<p:selectOneMenu id="branch"
+							value="#{ManageCarActionBean.car.carBranch}">
+							<f:selectItems value="#{ManageCarActionBean.carBranches}"
+								var="branch" itemLabel="#{branch}" itemValue="#{branch}" />
+						</p:selectOneMenu>
+
+						<p:outputLabel />
+						<p:message for="category" display="text" />
+						<p:outputLabel for="category" value="Category"
+							styleClass="input-label mandatory" />
+						<p:selectOneMenu id="category"
+							value="#{ManageCarActionBean.car.category}">
+							<f:selectItems value="#{ManageCarActionBean.categories}"
+								var="cat" itemLabel="#{cat}" itemValue="#{cat}" />
+						</p:selectOneMenu>
+
+		
+					</p:panelGrid>
+
+
+				</p:panelGrid>
+
+				<p:separator />
+				<h:panelGrid columns="3" style="margin-top:-2px;">
+					<p:commandButton id="addBtn" value="Add" icon="pi pi-save"
+						rendered="#{ManageCarActionBean.createNew}"
+						action="#{ManageCarActionBean.addCar()}" update=":carEntryForm :carTableForm"
+						style="margin-right:10px" />
+					<p:commandButton id="editBtn" value="Update"
+						action="#{ManageCarActionBean.updateCar()}"
+						rendered="#{!ManageCarActionBean.createNew}"
+						update=":carEntryForm :carTableForm" style="width:70px;"
+						oncomplete="PF('carTable').clearFilters();" />
+					<p:commandButton id="resetBtn" value="Reset" icon="pi pi-refresh"
+						action="#{ManageCarActionBean.resetCar}" immediate="true"
+						process="@this" update=":carEntryForm" />
+				</h:panelGrid>
+
+			</p:panel>
+		</h:form>
+
+		<h:form id="carTableForm">
+			<!-- Add New Car Link -->
+			<h:panelGrid>
+				<p:commandLink action="#{carRentalBean.createNewCar}"
+					immediate="true" update=":carEntryForm">
+					<h:panelGrid columns="2">
+						<h:graphicImage name="images/add.png" styleClass="addIcon" />
+						<h:outputText value="Add New Car" styleClass="command-link" />
+					</h:panelGrid>
+				</p:commandLink>
+			</h:panelGrid>
+			<br />
+
+			<!-- Car Data Table -->
+			<p:dataTable var="car" value="#{ManageCarActionBean.carList}"
+				id="carTable" paginator="true" rows="10" style="width:100%"
+				widgetVar="carTable"
+				paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+				rowsPerPageTemplate="5,10,15" rowKey="#{car.id}" reflow="true"
+				rowIndexVar="var" paginatorPosition="bottom">
+
+				<!-- Row Number -->
+				<p:column headerText="No" width="2%">
+					<h:outputText value="#{var + 1}" />
+				</p:column>
+
+				<!-- Car ID -->
+				<p:column headerText="Car ID" filterBy="#{car.id}"
+					filterMatchMode="contains">
+					<h:outputText value="#{car.id}" disabled="true"/>
+				</p:column>
+
+				<!-- Car Type -->
+				<p:column headerText="Type" filterBy="#{car.type}"
+					filterMatchMode="contains">
+					<h:outputText value="#{car.type}" />
+				</p:column>
+
+				<!-- Car Make -->
+				<p:column headerText="Make" filterBy="#{car.make}"
+					filterMatchMode="contains">
+					<h:outputText value="#{car.make}" />
+				</p:column>
+
+				<!-- Car Model -->
+				<p:column headerText="Model" filterBy="#{car.model}"
+					filterMatchMode="contains">
+					<h:outputText value="#{car.model}" />
+				</p:column>
+
+				<!-- Year -->
+				<p:column headerText="Year" filterBy="#{car.year}"
+					filterMatchMode="contains">
+					<h:outputText value="#{car.year}" />
+				</p:column>
+
+				<!-- Status -->
+				<p:column headerText="Status" filterBy="#{car.carStatus}"
+					filterMatchMode="contains">
+					<h:outputText value="#{car.carStatus}" />
+				</p:column>
+
+				<!-- Base Rate -->
+				<p:column headerText="Base Rate" filterBy="#{car.baseRate}"
+					filterMatchMode="contains">
+					<h:outputText value="#{car.baseRate}" />
+				</p:column>
+
+				<!-- Edit Button -->
+				<p:column style="width:4%;">
+					<p:commandButton styleClass="green-button" icon="fa fa-paint-brush"
+						action="#{ManageCarActionBean.prepareUpdateCar(car)}"
+						process="@this" update=":carEntryForm" />
+				</p:column>
+				<p:column style="width:4%;">
+					<p:commandButton styleClass="red-button" icon="fa fa-times"
+						action="#{ManageCarActionBean.deleteCar(car)}"
+						update=":carTableForm:carTable :carEntryForm">
+						<p:confirm header="Confirmation"
+							message="Are you sure you want to delete this car?"
+							icon="fa fa-exclamation-triangle" />
+					</p:commandButton>
+				</p:column>
+
+
+			</p:dataTable>
+		</h:form>
+		<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+			<p:commandButton value="Yes" type="button"
+				styleClass="ui-confirmdialog-yes" icon="pi pi-check" />
+			<p:commandButton value="No" type="button"
+				styleClass="ui-confirmdialog-no" icon="pi pi-times" />
+		</p:confirmDialog>
+	</ui:define>
+</ui:composition>
