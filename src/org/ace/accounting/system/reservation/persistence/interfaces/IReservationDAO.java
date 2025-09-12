@@ -10,7 +10,7 @@ public interface IReservationDAO {
     void update(Reservation reservation) throws DAOException;
 
     void delete(Reservation reservation) throws DAOException;
-
+    
     Reservation findById(String id) throws DAOException;
 
     List<Reservation> findAll() throws DAOException;

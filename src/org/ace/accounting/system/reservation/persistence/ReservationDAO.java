@@ -27,7 +27,7 @@ public class ReservationDAO extends BasicDAO implements IReservationDAO {
             if (reservation.getCar() != null) {
                 reservation.setCar(em.getReference(reservation.getCar().getClass(), reservation.getCar().getId()));
                 Car car = reservation.getCar();
-                car.setCarStatus(CarStatus.RENTED);
+                car.setCarStatus(CarStatus.PENDING);
                 em.merge(car);
             }
             if (reservation.getRenter() != null) {
@@ -54,14 +54,39 @@ public class ReservationDAO extends BasicDAO implements IReservationDAO {
 
     @Transactional(propagation = Propagation.REQUIRED)
     public void delete(Reservation reservation) throws DAOException {
+        if (reservation == null || reservation.getId() == null) {
+            throw new DAOException("Reservation to delete is null or has no ID.", null, null);
+        }
+
         try {
-            reservation = em.merge(reservation);
-            em.remove(reservation);
+            Reservation managedReservation = em.find(Reservation.class, reservation.getId());
+            if (managedReservation == null) {
+                throw new DAOException("Reservation not found with ID: " + reservation.getId(), null, null);
+            }
+
+            // Update Car status
+            Car car = managedReservation.getCar();
+            if (car != null) {
+                Car managedCar = em.find(Car.class, car.getId());
+                if (managedCar != null) {
+                    managedCar.setCarStatus(CarStatus.AVAILABLE);
+                    em.merge(managedCar);
+                }
+            }
+
+            // Remove reservation
+            em.remove(managedReservation);
             em.flush();
+
         } catch (PersistenceException pe) {
             throw translate("Failed to delete Reservation", pe);
         }
     }
+
+
+
+   
+
 
     @Transactional(propagation = Propagation.REQUIRED, readOnly = true)
     public Reservation findById(String id) throws DAOException {

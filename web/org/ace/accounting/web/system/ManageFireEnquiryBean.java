@@ -194,7 +194,6 @@ public class ManageFireEnquiryBean implements Serializable {
 
 
 	// Validate search criteria
-	// Validate search criteria
 	private boolean isValidSearchCriteria() {
 	    if (policyNo != null && !policyNo.trim().isEmpty()) {
 	        return true;

@@ -65,6 +65,7 @@ public class Car implements Serializable {
 	@Column(name = "Category")
 	private Category category;
 
+	
 	/*
 	 * @Column(name = "PhotoPath") private String photoPath;
 	 */

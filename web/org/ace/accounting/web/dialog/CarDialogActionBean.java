@@ -25,10 +25,12 @@ public class CarDialogActionBean extends BaseBean {
 	}
 
 	private List<Car> carList;
-
+	private List<Car> availableCars;
 	@PostConstruct
 	public void init() {
 		carList =carService.findAll();
+		availableCars = carService.findAvailableCars();
+
 	}
 
 	public List<Car> getCarList() {
@@ -38,6 +40,14 @@ public class CarDialogActionBean extends BaseBean {
 	public void selectCar(Car car) {
 		PrimeFaces.current().dialog().closeDynamic(car);
 		/* RequestContext.getCurrentInstance().closeDialog(branch); */
+	}
+
+	public List<Car> getAvailableCars() {
+		return availableCars;
+	}
+
+	public void setAvailableCars(List<Car> availableCars) {
+		this.availableCars = availableCars;
 	}
 
 }

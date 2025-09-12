@@ -1,5 +1,6 @@
 package org.ace.accounting.web.system;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -31,7 +32,15 @@ public class ManageCarActionBean extends BaseBean {
 	private Car car;
 	private Renter renter;
 	private Reservation reservation;
+	private String location;
+	private List<String> carTypes;   // dynamic car types from DB
+	private String selectedCarType; 
+	private java.util.Date pickupDate;
+	private java.util.Date returnDate;
 
+	private List<Car> filteredCars;
+
+	
 	private boolean createNew = true;
 
 	@ManagedProperty(value = "#{CarService}")
@@ -47,25 +56,7 @@ public class ManageCarActionBean extends BaseBean {
 	private List<Car> selectedCarList;
 	private List<Car> availableCars;
 
-	public IRenterService getRenterService() {
-		return renterService;
-	}
 
-	public void setRenterService(IRenterService renterService) {
-		this.renterService = renterService;
-	}
-
-	public IReservationService getReservationService() {
-		return reservationService;
-	}
-
-	public void setReservationService(IReservationService reservationService) {
-		this.reservationService = reservationService;
-	}
-
-	public Renter getRenter() {
-		return renter;
-	}
 
 	private static final long serialVersionUID = 1L;
 
@@ -73,7 +64,21 @@ public class ManageCarActionBean extends BaseBean {
 	public void init() {
 		createNewCar();
 		rebindData();
+        availableCars = carService.findAvailableCars();
+
+		 prepareCarTypes();
+		 filteredCars = availableCars;
 	}
+	
+	private void prepareCarTypes() {
+	    carTypes = new ArrayList<>();
+	    for (Car c : carList) {
+	        if (!carTypes.contains(c.getType())) {
+	            carTypes.add(c.getType());
+	        }
+	    }
+	}
+
 
 	public void rebindData() {
 		carList = carService.findAll();
@@ -124,6 +129,31 @@ public class ManageCarActionBean extends BaseBean {
 	public void prepareUpdateCar(Car car) {
 		this.car = car;
 		this.createNew = false;
+	}
+	
+	public void searchCars() {
+	    filteredCars = new ArrayList<>();
+	    for (Car c : availableCars) {
+	        boolean matches = true;
+
+	        // filter by type
+	        if (selectedCarType != null && !selectedCarType.isEmpty()) {
+	            if (!c.getType().equals(selectedCarType)) {
+	                matches = false;
+	            }
+	        }
+
+	        // filter by branch
+	        if (car.getCarBranch() != null) {
+	            if (!c.getCarBranch().equals(car.getCarBranch())) {
+	                matches = false;
+	            }
+	        }
+
+	        if (matches) {
+	            filteredCars.add(c);
+	        }
+	    }
 	}
 
 	public Car getCar() {
@@ -209,4 +239,73 @@ public class ManageCarActionBean extends BaseBean {
 	public void setSelectedCarList(List<Car> selectedCarList) {
 		this.selectedCarList = selectedCarList;
 	}
+
+	public List<String> getCarTypes() {
+		return carTypes;
+	}
+
+	public void setCarTypes(List<String> carTypes) {
+		this.carTypes = carTypes;
+	}
+
+	public String getSelectedCarType() {
+		return selectedCarType;
+	}
+
+	public void setSelectedCarType(String selectedCarType) {
+		this.selectedCarType = selectedCarType;
+	}
+	
+	public IRenterService getRenterService() {
+		return renterService;
+	}
+
+	public void setRenterService(IRenterService renterService) {
+		this.renterService = renterService;
+	}
+
+	public IReservationService getReservationService() {
+		return reservationService;
+	}
+
+	public void setReservationService(IReservationService reservationService) {
+		this.reservationService = reservationService;
+	}
+
+	public Renter getRenter() {
+		return renter;
+	}
+	
+	public String getLocation() {
+		return location;
+	}
+
+	public void setLocation(String location) {
+		this.location = location;
+	}
+
+	public java.util.Date getPickupDate() {
+		return pickupDate;
+	}
+
+	public void setPickupDate(java.util.Date pickupDate) {
+		this.pickupDate = pickupDate;
+	}
+
+	public java.util.Date getReturnDate() {
+		return returnDate;
+	}
+
+	public void setReturnDate(java.util.Date returnDate) {
+		this.returnDate = returnDate;
+	}
+
+	public List<Car> getFilteredCars() {
+		return filteredCars;
+	}
+
+	public void setFilteredCars(List<Car> filteredCars) {
+		this.filteredCars = filteredCars;
+	}
+
 }

@@ -31,11 +31,11 @@ public class Reservation implements Serializable {
     private String id;
 
    
-	@ManyToOne(cascade = CascadeType.ALL) 
+	@ManyToOne
     @JoinColumn(name = "RenterID")
     private Renter renter;
 
-    @ManyToOne(cascade = CascadeType.ALL) 
+    @ManyToOne
     @JoinColumn(name = "CarID")
     private Car car;
     

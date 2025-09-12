@@ -6,14 +6,62 @@
                 template="/common/commonLayout.xhtml">
 
     <ui:define name="content">
+    
         <h:form id="adminReservationForm">
             <p:growl id="growl" globalOnly="true" showDetail="true" />
+
+ <p:panel  styleClass="ui-panel-shadow" style="margin-bottom:20px; border:none;">
+        <!-- Reservation Start Date From -->
+        <h:outputLabel for="startDateFrom" value="Start Date From:" />
+        <p:calendar id="startDateFrom"
+                    value="#{manageActionBean.startDateFrom}"
+                    pattern="dd-MM-yyyy" navigator="true" showOn="button"
+                    yearRange="c-10:c+10" style="width:150px;" />
+
+        <!-- Reservation End Date To -->
+        <h:outputLabel for="endDateTo" value="End Date To:" />
+        <p:calendar id="endDateTo"
+                    value="#{managActionBean.endDateTo}"
+                    pattern="dd-MM-yyyy" navigator="true" showOn="button"
+                    yearRange="c-10:c+10" style="width:150px;" />
+
+        <!-- Customer Name -->
+        <h:outputLabel for="customerName" value="Customer Name:" />
+        <p:inputText id="customerName" 
+                     value="#{manaActionBean.customerName}" 
+                     style="width:200px;" />
+
+        <!-- Car Type -->
+        <h:outputLabel for="carType" value="Car Type:" />
+        <p:selectOneMenu id="carType" 
+                         value="#{managenActionBean.selectedCarType}" 
+                         style="width:200px;">
+            <f:selectItem itemLabel="Any" itemValue="" />
+            <f:selectItems value="#{manageActionBean.carTypes}" var="type" 
+                           itemLabel="#{type}" itemValue="#{type}" />
+        </p:selectOneMenu>
+
+        <!-- Status -->
+        <h:outputLabel for="status" value="Status:" />
+        <p:selectOneMenu id="status" value="#{manageRActionBean.selectedStatus}" style="width:200px;">
+            <f:selectItem itemLabel="All" itemValue="" />
+            <f:selectItem itemLabel="Pending" itemValue="Pending" />
+            <f:selectItem itemLabel="Approved" itemValue="Approved" />
+            <f:selectItem itemLabel="Rejected" itemValue="Rejected" />
+        </p:selectOneMenu>
+
+        <!-- Search Button -->
+        <h:outputLabel />
+        <p:commandButton value="Search" icon="fa fa-search"
+                         action="#{manageActionBean.searchReservations}"
+                         update="reservationTable" styleClass="btn-search" />
+</p:panel>
 
             <!-- Reservation List Panel -->
             <p:panel header="Manage Reservations" styleClass="ui-fluid">
                 
                 <p:dataTable id="reservationTable"
-                             value="#{ManageReservationActionBean.reserveList}"
+                             value="#{ManageActionBean.reserveList}"
                              var="res"
                              paginator="true"
                              rows="10"

@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
@@ -25,26 +26,44 @@ import org.primefaces.event.SelectEvent;
 import org.primefaces.PrimeFaces;
 
 @ManagedBean(name = "ManageReservationActionBean")
-@SessionScoped
+@ViewScoped
 public class ManageReservationActionBean extends BaseBean {
 
 	private boolean createNew = true;
 	private Car car;
 	private Renter renter;
-	private Reservation reservation;
+	private Reservation reservation=new Reservation();
 	private Car selectedCar = new Car();
 	private List<Car> availableCars;
 	private List<Car> carList;
 	private List<Reservation> reservationList;
 	private List<Reservation> reserveList;
+	private Double totalBaseRate;
 	
-public List<Reservation> getReserveList() {
-		return reserveList;
-	}
+	 public void calculateTotalCost() {
+	        Date startDate = reservation.getStartDate();
+	        Date endDate = reservation.getEndDate();
 
-	public void setReserveList(List<Reservation> reserveList) {
-		this.reserveList = reserveList;
-	}
+	        if (selectedCar != null) {
+	            reservation.setDailyRate(selectedCar.getBaseRate()); 
+	        }
+
+	        if (startDate != null && endDate != null && !endDate.before(startDate)) {
+	            long diffInMillies = endDate.getTime() - startDate.getTime();
+	            long days = TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS);
+
+	            // Inclusive of both start & end date
+	            days = days + 1;
+
+	            double total = days * reservation.getDailyRate();
+	            reservation.setTotalCost(total);
+	        } else {
+	            reservation.setTotalCost(0.0);
+	        }
+	    }
+
+
+
 private List<Renter> renterList;
 
 	@ManagedProperty(value = "#{RenterService}")
@@ -68,7 +87,11 @@ private List<Renter> renterList;
 		carList = carService.findAll();
 		renterList=renterService.findAll();
         reserveList = reservationService.findAll();
-
+        loadReservations();
+	}
+	
+	public void loadReservations() {
+	    reserveList = reservationService.findAll(); // load fresh from DB
 	}
 
 	private void createNewReservation() {
@@ -93,11 +116,49 @@ private List<Renter> renterList;
 		temp.setCar(reservation.getCar());
 		temp.setStartDate(reservation.getStartDate());
 		temp.setEndDate(reservation.getEndDate());
+		  if (reservation.getCar() != null) {
+		        temp.setDailyRate(reservation.getCar().getBaseRate());
+		    }
 
+		    // ✅ Calculate totalCost
+		    if (temp.getStartDate() != null && temp.getEndDate() != null && !temp.getEndDate().before(temp.getStartDate())) {
+		        long diffInMillies = temp.getEndDate().getTime() - temp.getStartDate().getTime();
+		        long days = TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS);
+
+		        // inclusive
+		        days = days + 1;
+
+		        double total = days * temp.getDailyRate();
+		        temp.setTotalCost(total);
+		    } else {
+		        temp.setTotalCost(0.0);
+		    }
 		reservationList.add(temp);
-		reservation = new Reservation();
+		createNewReservation();
+			
+	}
+
+	public void saveReservations() {
+		if (reservationList == null || reservationList.isEmpty()) {
+			FacesContext.getCurrentInstance().addMessage(null,
+					new FacesMessage(FacesMessage.SEVERITY_WARN, "No reservations to save!", ""));
+			return;
+		}
 		
-		
+		try {
+			for (Reservation r : reservationList) {
+				reservationService.addNewReservation(r); // Renter will also persist
+			}
+			reservationList.clear();
+			createNewReservation();
+			loadReservations();
+			FacesContext.getCurrentInstance().addMessage(null,
+					new FacesMessage(FacesMessage.SEVERITY_INFO, "Reservations saved successfully!", ""));
+		} catch (Exception e) {
+			FacesContext.getCurrentInstance().addMessage(null,
+					new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error saving reservations!", e.getMessage()));
+			e.printStackTrace();
+		}
 	}
 
 	public void resetForm() {
@@ -115,39 +176,24 @@ private List<Renter> renterList;
 	public void deleteReservation(Reservation r) {
 		reservationList.remove(r);
 		reservation = new Reservation();
-		
 
 	}
-
-	public IReservationService getReservationService() {
-		return reservationService;
+	
+	public void deleteReservationFromDB(Reservation reservationToDelete) {
+	    try {
+	        reservationService.deleteReservation(reservationToDelete); // service layer handles JPA delete
+	        FacesContext.getCurrentInstance().addMessage(null,
+	            new FacesMessage(FacesMessage.SEVERITY_INFO, "Reservation deleted successfully!", ""));
+	        createNewReservation();
+	        loadReservations();
+	    } catch (Exception e) {
+	        FacesContext.getCurrentInstance().addMessage(null,
+	            new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error deleting reservation!", e.getMessage()));
+	        e.printStackTrace();
+	    }
+	   
 	}
-
-	public void setReservationService(IReservationService reservationService) {
-		this.reservationService = reservationService;
-	}
-
-	public void saveReservations() {
-		if (reservationList == null || reservationList.isEmpty()) {
-			FacesContext.getCurrentInstance().addMessage(null,
-					new FacesMessage(FacesMessage.SEVERITY_WARN, "No reservations to save!", ""));
-			return;
-		}
-
-		try {
-			for (Reservation r : reservationList) {
-				reservationService.addNewReservation(r); // Renter will also persist
-			}
-			reservationList.clear();
-			FacesContext.getCurrentInstance().addMessage(null,
-					new FacesMessage(FacesMessage.SEVERITY_INFO, "Reservations saved successfully!", ""));
-		} catch (Exception e) {
-			FacesContext.getCurrentInstance().addMessage(null,
-					new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error saving reservations!", e.getMessage()));
-			e.printStackTrace();
-		}
-	}
-
+	
 	public void returnCar(SelectEvent event) {
 		Car car = (Car) event.getObject();
 		reservation.setCar(car);
@@ -158,7 +204,8 @@ private List<Renter> renterList;
 		reservation.setRenter(renter);
 	}
 
-	
+	public List<Reservation> getReserveList() {return reserveList;}
+	public void setReserveList(List<Reservation> reserveList) {this.reserveList = reserveList;}
 	public ICarService getCarService() {return carService;}
 	public void setCarService(ICarService carService) {this.carService = carService;}
 	public Car getCar() {return car;}
@@ -181,5 +228,9 @@ private List<Renter> renterList;
 	public void setRenterService(IRenterService renterService) {this.renterService = renterService;}
 	public List<Renter> getRenterList() {return renterList;}
 	public void setRenterList(List<Renter> renterList) {this.renterList = renterList;}
+	public Double getTotalBaseRate() {return totalBaseRate;}
+	public void setTotalBaseRate(Double totalBaseRate) {this.totalBaseRate = totalBaseRate;}
+	public IReservationService getReservationService() {return reservationService;}
+	public void setReservationService(IReservationService reservationService) {this.reservationService = reservationService;}
 
 }
