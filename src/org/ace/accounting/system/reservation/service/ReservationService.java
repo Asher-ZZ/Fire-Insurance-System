@@ -1,9 +1,8 @@
 package org.ace.accounting.system.reservation.service;
 
-import java.math.BigDecimal;
+
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 
@@ -11,6 +10,7 @@ import org.ace.accounting.dto.ReservationDTO;
 import org.ace.accounting.system.car.Car;
 import org.ace.accounting.system.car.enumTypes.CarStatus;
 import org.ace.accounting.system.car.enumTypes.ReserveStatus;
+import org.ace.accounting.system.car.persistence.interfaces.ICarDAO;
 import org.ace.accounting.system.reservation.Reservation;
 import org.ace.accounting.system.reservation.persistence.interfaces.IReservationDAO;
 import org.ace.accounting.system.reservation.service.interfaces.IReservationService;
@@ -26,6 +26,9 @@ public class ReservationService extends BaseService implements IReservationServi
 
     @Resource(name = "ReservationDAO")
     private IReservationDAO reservationDAO;
+    
+    @Resource(name = "CarDAO")
+    private ICarDAO carDAO;
 
     @Transactional(propagation = Propagation.REQUIRED)
     public void addNewReservation(Reservation reservation) throws SystemException{
@@ -47,9 +50,17 @@ public class ReservationService extends BaseService implements IReservationServi
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
-    public void deleteReservation(Reservation reservation) throws SystemException{
+    public void deleteReservation(Reservation reservation) throws SystemException {
         try {
+            if (reservation.getCar() != null) {
+                Car car = reservation.getCar();
+                car.setCarStatus(CarStatus.AVAILABLE); 
+                carDAO.update(car); 
+            }
+
+            // Step 2: Delete the reservation
             reservationDAO.delete(reservation);
+
         } catch (DAOException e) {
             throw new SystemException(e.getErrorCode(), "Failed to delete Reservation", e);
         }
@@ -100,30 +111,7 @@ public class ReservationService extends BaseService implements IReservationServi
         updateReservation(res);
     }
     
-    
-    @Transactional(readOnly = true)
-    public List<ReservationDTO> findByCriteria(Date start, Date end,
-            String name,
-            String carType,
-            String status) {
-List<Reservation> entities =
-reservationDAO.findByCriteria(start, end, name, carType, status);
-
-return entities.stream()
-.map(res -> new ReservationDTO(
-res.getRenter() != null ? res.getRenter().getName() : "",
-res.getRenter() != null ? res.getRenter().getEmail() : "",
-res.getRenter() != null ? res.getRenter().getPhoneNumber() : "",
-res.getCar() != null ? res.getCar().getType() : "",
-res.getStartDate(),
-res.getEndDate(),
-res.getReserveStatus(),
-res.getTotalCost() != null
-? BigDecimal.valueOf(res.getTotalCost())
-: BigDecimal.ZERO
-))
-.collect(Collectors.toList());
-}
+   
 
 
 

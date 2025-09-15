@@ -42,13 +42,12 @@
         </p:selectOneMenu>
 
        <!--  Status -->
-        <h:outputLabel for="status" value="Status:" />
-        <p:selectOneMenu id="status" value="#{manageRActionBean.selectedStatus}" style="width:200px;">
-            <f:selectItem itemLabel="All" itemValue="" />
-            <f:selectItem itemLabel="Pending" itemValue="Pending" />
-            <f:selectItem itemLabel="Approved" itemValue="Approved" />
-            <f:selectItem itemLabel="Rejected" itemValue="Rejected" />
-        </p:selectOneMenu>
+        <h:outputLabel for="status" value="Status:" /> 
+<p:selectOneMenu id="status" value="#{ReservationEnquiryBean.selectedStatus}" style="width:200px">
+    <f:selectItem itemLabel="All" itemValue="#{null}" />
+    <f:selectItems value="#{ReservationEnquiryBean.allStatuses}" var="st"
+                   itemLabel="#{st}" itemValue="#{st}" />
+</p:selectOneMenu>
 
         <!-- Search Button -->
         <h:outputLabel />
@@ -61,7 +60,7 @@
             <p:panel header="Manage Reservations" styleClass="ui-fluid">
                 
                 <p:dataTable id="reservationTable"
-                             value="#{ManageReservationActionBean.reserveList}"
+                             value="#{ReservationEnquiryBean.reservations}"
                              var="res"
                              paginator="true"
                              rows="10"
@@ -70,18 +69,18 @@
 
                     <!-- Customer Info -->
                     <p:column headerText="Customer Name">
-                        <h:outputText value="#{res.renter.name}" />
+                        <h:outputText value="#{res.customerName}" />
                     </p:column>
                     <p:column headerText="Email">
-                        <h:outputText value="#{res.renter.email}" />
+                        <h:outputText value="#{res.email}" />
                     </p:column>
                     <p:column headerText="Phone">
-                        <h:outputText value="#{res.renter.phoneNumber}" />
+                        <h:outputText value="#{res.phoneNumber}" />
                     </p:column>
 
                     <!-- Car Info -->
                     <p:column headerText="Car">
-                        <h:outputText value="#{res.car.type}" />
+                        <h:outputText value="#{res.carType}" />
                     </p:column>
 
                     <!-- Reservation Dates -->
@@ -99,8 +98,8 @@
                     <!-- Status Column -->
                     <p:column headerText="Status">
                         <h:outputText value="#{res.reserveStatus}">
-                           <!--  <f:passThroughAttribute name="style" 
-                                value="#{res.reserveStatus eq 'Approved' ? 'color:green;' : res.reserveStatus eq 'Rejected' ? 'color:red;' : 'color:orange;'}"/> -->
+                            <f:passThroughAttribute name="style" 
+                                value="#{res.reserveStatus eq 'APPROVED' ? 'color:green;' : res.reserveStatus eq 'REJECTED' ? 'color:red;' : 'color:orange;'}"/>  -->
                         </h:outputText>
                     </p:column>
 
@@ -108,26 +107,26 @@
                     <p:column headerText="Actions" style="width:200px;">
                         <p:commandButton value="Approve" icon="fa fa-check"
                                          styleClass="ui-button-success"
-                                         action="#{ManageReservationActionBean.approve(res)}"
-                                         update="reservationTable"/>
-                                    <!--      disabled="#{res.reserveStatus eq 'Approved'}"  -->
+                                         action="#{ReservationEnquiryBean.approve(res)}"
+                                         update="reservationTable" disabled="#{res.reserveStatus eq 'APPROVED'}" />
+                                    
 
                         <p:commandButton value="Reject" icon="fa fa-times"
                                          styleClass="ui-button-danger"
-                                         action="#{ManageReservationActionBean.reject(res)}"
-                                         update="reservationTable"/>
-                                         <!-- disabled="#{res.reserveStatus eq 'Rejected'}" --> 
+                                         action="#{ReservationEnquiryBean.reject()}"
+                                         update="reservationTable" disabled="#{res.reserveStatus eq 'REJECTED'}"/>
+                                   
                         
-                        <p:commandButton value="Delete" icon="fa fa-trash"
-                                         action="#{ManageReservationActionBean.deleteReservationFromDB(res)}"
+                         <p:commandButton value="Delete" icon="fa fa-trash"
+                                         action="#{ReservationEnquiryBean.deleteReservation(res)}"
                                          update="reservationTable"
                                          styleClass="ui-button-secondary" />
                                          
-                                      <p:commandButton icon="fa fa-file-pdf-o"
+                                    <p:commandButton icon="fa fa-file-pdf-o"
                      title="Download Letter"
                      action="#{AdminReservationBean.generateLetter(res)}"
                      ajax="false"
-                     rendered="#{res.reserveStatus eq 'APPROVED' or res.reserveStatus eq 'REJECTED'}"/>
+                     rendered="#{res.reserveStatus eq 'APPROVED' or res.reserveStatus eq 'REJECTED'}"/> 
                     </p:column>
 
                 </p:dataTable>

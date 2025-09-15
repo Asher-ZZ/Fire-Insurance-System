@@ -1,14 +1,20 @@
 package org.ace.accounting.system.car.persistence;
 
+import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
+import java.util.*;
 
 import javax.annotation.Resource;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 
 import org.ace.accounting.system.car.Car;
+import org.ace.accounting.system.car.enumTypes.CarBranch;
 import org.ace.accounting.system.car.enumTypes.CarStatus;
+import org.ace.accounting.system.car.enumTypes.ReserveStatus;
 import org.ace.accounting.system.car.persistence.interfaces.ICarDAO;
 import org.ace.java.component.persistence.BasicDAO;
 import org.ace.java.component.persistence.exception.DAOException;
@@ -92,4 +98,54 @@ public class CarDAO extends BasicDAO implements ICarDAO {
 		    q.setParameter("status", status);
 		    return q.getResultList();
 	}
+	
+	 @Transactional(readOnly = true)
+	 public List<Car> findAvailableCars(String branch, String carType, Date startDate, Date endDate) throws DAOException {
+		    try {
+		        StringBuilder hql = new StringBuilder("SELECT c FROM Car c WHERE 1=1");
+
+		        if (branch != null && !branch.trim().isEmpty()) {
+		            hql.append(" AND c.carBranch = :branch");
+		        }
+
+		        if (carType != null && !carType.trim().isEmpty()) {
+		            hql.append(" AND c.type = :carType");
+		        }
+
+		        if (startDate != null && endDate != null) {
+		            hql.append(" AND NOT EXISTS ( " +
+		                       "SELECT r FROM Reservation r " +
+		                       "WHERE r.car = c " +
+		                       "AND (r.reserveStatus = :submittedStatus OR r.reserveStatus = :rentedStatus) " +
+		                       "AND r.startDate <= :endDate " +
+		                       "AND r.endDate >= :startDate" +
+		                       ")");
+		        }
+
+		        TypedQuery<Car> query = em.createQuery(hql.toString(), Car.class);
+
+		        if (branch != null && !branch.trim().isEmpty()) {
+		            query.setParameter("branch", CarBranch.valueOf(branch));
+		        }
+
+		        if (carType != null && !carType.trim().isEmpty()) {
+		            query.setParameter("carType", carType);
+		        }
+
+		        if (startDate != null && endDate != null) {
+		            query.setParameter("submittedStatus", ReserveStatus.SUBMITTED);
+		            query.setParameter("rentedStatus", ReserveStatus.RENTED);
+		            query.setParameter("startDate", startDate);
+		            query.setParameter("endDate", endDate);
+		        }
+
+		        return query.getResultList();
+		    } catch (Exception e) {
+		        throw new DAOException("Failed to find available cars", carType, e);
+		    }
+		}
+
+
+
+
 }

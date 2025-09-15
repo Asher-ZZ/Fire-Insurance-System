@@ -10,43 +10,41 @@ import java.util.Date;
 public class ReservationDTO implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
-    private String customerName;
+    private String id;
+	private String customerName;
     private String email;
     private String phoneNumber;
     private String carType;
     private Date startDate;
     private Date endDate;
-    private ReserveStatus status;
-    private BigDecimal totalCost;
+    private ReserveStatus reserveStatus;
+    private Double totalCost;
 
-    // --- No-arg constructor (needed for JSF / serialization) ---
     public ReservationDTO() {
     }
 
-    // --- All-args constructor ---
+   
     public ReservationDTO(
+    		String id,
             String customerName,
             String email,
             String phoneNumber,
             String carType,
             Date startDate,
             Date endDate,
-            ReserveStatus status,
-            BigDecimal totalCost) {
+            ReserveStatus reserveStatus,
+            Double totalCost) {
+    	this.id=id;
         this.customerName = customerName;
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.carType = carType;
         this.startDate = startDate;
         this.endDate = endDate;
-        this.status = status;
+        this.reserveStatus = reserveStatus;
         this.totalCost = totalCost;
-    }
+        }
 
-   
-
-    // --- Getters & Setters ---
     public String getCustomerName() {
         return customerName;
     }
@@ -95,19 +93,29 @@ public class ReservationDTO implements Serializable {
         this.endDate = endDate;
     }
 
-    public ReserveStatus getStatus() {
-        return status;
+    public ReserveStatus getreserveStatus() {
+        return reserveStatus;
     }
 
-    public void setStatus(ReserveStatus status) {
-        this.status = status;
+    public void setStatus(ReserveStatus reserveStatus) {
+        this.reserveStatus = reserveStatus;
     }
 
-    public BigDecimal getTotalCost() {
+    public Double getTotalCost() {
         return totalCost;
     }
 
-    public void setTotalCost(BigDecimal totalCost) {
+    public void setTotalCost(Double totalCost) {
         this.totalCost = totalCost;
     }
+    
+    public String getId() {
+		return id;
+	}
+
+
+	public void setId(String id) {
+		this.id = id;
+	}
 }
+

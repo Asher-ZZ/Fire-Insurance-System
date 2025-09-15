@@ -1,6 +1,7 @@
 package org.ace.accounting.web.system;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -35,8 +36,9 @@ public class ManageCarActionBean extends BaseBean {
 	private String location;
 	private List<String> carTypes;   // dynamic car types from DB
 	private String selectedCarType; 
-	private java.util.Date pickupDate;
-	private java.util.Date returnDate;
+	private Date startDate;
+	private Date endDate;
+
 
 	private List<Car> filteredCars;
 
@@ -55,7 +57,7 @@ public class ManageCarActionBean extends BaseBean {
 	private List<Car> carList;
 	private List<Car> selectedCarList;
 	private List<Car> availableCars;
-
+	private String carBranch;
 
 
 	private static final long serialVersionUID = 1L;
@@ -65,7 +67,6 @@ public class ManageCarActionBean extends BaseBean {
 		createNewCar();
 		rebindData();
         availableCars = carService.findAvailableCars();
-
 		 prepareCarTypes();
 		 filteredCars = availableCars;
 	}
@@ -78,7 +79,10 @@ public class ManageCarActionBean extends BaseBean {
 	        }
 	    }
 	}
-
+	
+	public void searchCars() {
+        carList = carService.searchAvailableCars(startDate, endDate, carBranch, selectedCarType);
+    }
 
 	public void rebindData() {
 		carList = carService.findAll();
@@ -131,7 +135,7 @@ public class ManageCarActionBean extends BaseBean {
 		this.createNew = false;
 	}
 	
-	public void searchCars() {
+	public void searchCar() {
 	    filteredCars = new ArrayList<>();
 	    for (Car c : availableCars) {
 	        boolean matches = true;
@@ -284,20 +288,20 @@ public class ManageCarActionBean extends BaseBean {
 		this.location = location;
 	}
 
-	public java.util.Date getPickupDate() {
-		return pickupDate;
+	public Date getStartDate() {
+		return startDate;
 	}
 
-	public void setPickupDate(java.util.Date pickupDate) {
-		this.pickupDate = pickupDate;
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
 	}
 
-	public java.util.Date getReturnDate() {
-		return returnDate;
+	public Date getEndDate() {
+		return endDate;
 	}
 
-	public void setReturnDate(java.util.Date returnDate) {
-		this.returnDate = returnDate;
+	public void setEndDate(Date endDate) {
+		this.endDate = endDate;
 	}
 
 	public List<Car> getFilteredCars() {

@@ -1,5 +1,6 @@
 package org.ace.accounting.system.car.service;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -73,4 +74,9 @@ public class CarService extends BaseService implements ICarService {
 	public List<Car> findAvailableCars() {
 		return carDAO.findByStatus(CarStatus.AVAILABLE);
 	}
+	
+	 @Transactional(readOnly = true)
+	 public List<Car> searchAvailableCars(Date startDate, Date endDate, String branch, String carType) {
+	        return carDAO.findAvailableCars(branch, carType, startDate, endDate);
+	    }
 }

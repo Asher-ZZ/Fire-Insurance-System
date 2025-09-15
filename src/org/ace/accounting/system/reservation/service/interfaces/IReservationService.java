@@ -17,6 +17,7 @@ public interface IReservationService {
     public void rejectReservation(String id) throws SystemException;
     public void approveReservation(String id) throws SystemException;
     Reservation findById(String id) throws DAOException;
-    public List<ReservationDTO> findByCriteria(Date start, Date end, String name, String carType, String status); 
     List<Reservation> findAll() throws DAOException;
+
+	
 }

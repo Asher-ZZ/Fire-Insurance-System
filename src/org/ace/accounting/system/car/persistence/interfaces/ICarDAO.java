@@ -1,5 +1,6 @@
 package org.ace.accounting.system.car.persistence.interfaces;
 
+import java.util.Date;
 import java.util.List;
 
 import org.ace.accounting.system.car.Car;
@@ -18,6 +19,7 @@ public interface ICarDAO {
 
     List<Car> findAll() throws DAOException;
     
+    public List<Car> findAvailableCars(String branch, String carType, Date startDate, Date endDate) throws DAOException ;
     public List<Car> findByStatus(CarStatus status) throws DAOException;
     
 }

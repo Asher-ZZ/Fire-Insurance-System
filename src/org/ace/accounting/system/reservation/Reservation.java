@@ -14,6 +14,7 @@ import org.ace.java.component.idgen.service.IDInterceptor;
 
 @Entity
 @Table(name = TableName.Reservation)
+
 @TableGenerator(
     name = "RESERVATION_GEN",
     table = "ID_GEN",

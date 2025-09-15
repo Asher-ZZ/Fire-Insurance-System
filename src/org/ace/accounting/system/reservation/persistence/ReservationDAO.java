@@ -31,7 +31,7 @@ public class ReservationDAO extends BasicDAO implements IReservationDAO {
             }
                 em.merge(reservation);
                 em.flush();
-        
+         
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException("Error inserting reservation: " + e.getMessage());
@@ -97,39 +97,6 @@ public class ReservationDAO extends BasicDAO implements IReservationDAO {
         return result;
     }
     
-    public List<Reservation> findByCriteria(Date start, Date end, String name, String carType, String status) {
-        StringBuilder jpql = new StringBuilder("SELECT r FROM Reservation r WHERE 1=1");
-        Map<String, Object> params = new HashMap<>();
-
-        if (start != null) {
-            jpql.append(" AND r.startDate >= :start");
-            params.put("start", start);
-        }
-
-        if (end != null) {
-            jpql.append(" AND r.endDate <= :end");
-            params.put("end", end);
-        }
-
-        if (name != null && !name.trim().isEmpty()) {
-            jpql.append(" AND LOWER(r.renter.name) LIKE :name");
-            params.put("name", "%" + name.trim().toLowerCase() + "%");
-        }
-
-        if (carType != null && !carType.trim().isEmpty()) {
-            jpql.append(" AND LOWER(r.car.type) LIKE :carType");
-            params.put("carType", "%" + carType.trim().toLowerCase() + "%");
-        }
-
-        if (status != null && !status.trim().isEmpty()) {
-            jpql.append(" AND r.reserveStatus = :status");
-            params.put("status", status);
-        }
-
-        TypedQuery<Reservation> query = em.createQuery(jpql.toString(), Reservation.class);
-        params.forEach(query::setParameter);
-
-        return query.getResultList();
-    }
+    
 
 }

@@ -57,7 +57,8 @@
 				</p:column>
 				<p:column style="width:30px;text-align: center;">
 					<p:commandButton action="#{CarDialogActionBean.selectCar(car)}"
-						styleClass="green-button" icon="fa fa-check" immediate="true" />
+						styleClass="green-button" icon="fa fa-check" immediate="true"
+						 rendered="#{car.carStatus eq 'AVAILABLE'}" />
 				</p:column>
 			</p:dataTable>
 		</h:form>

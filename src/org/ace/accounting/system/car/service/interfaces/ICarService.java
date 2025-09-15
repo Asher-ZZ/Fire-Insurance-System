@@ -1,5 +1,6 @@
 package org.ace.accounting.system.car.service.interfaces;
 
+import java.util.Date;
 import java.util.List;
 
 import org.ace.accounting.system.car.Car;
@@ -16,6 +17,6 @@ public interface ICarService {
     Car findById(String id) throws DAOException;
 
     List<Car> findAll() throws DAOException;
-    
+	 public List<Car> searchAvailableCars(Date startDate, Date endDate, String branch, String carType); 
     List<Car> findAvailableCars() throws DAOException;
 }
