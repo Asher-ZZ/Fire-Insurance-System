@@ -25,7 +25,7 @@ public class RenterDAO extends BasicDAO implements IRenterDAO {
         } catch (PersistenceException pe) {
             throw translate("Failed to insert renter", pe);
         }
-    }
+    } 
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED)

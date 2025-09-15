@@ -11,37 +11,37 @@
             <p:growl id="growl" globalOnly="true" showDetail="true" />
 
  <p:panel  styleClass="ui-panel-shadow" style="margin-bottom:20px; border:none;">
-        <!-- Reservation Start Date From -->
+       <!--  Reservation Start Date From -->
         <h:outputLabel for="startDateFrom" value="Start Date From:" />
         <p:calendar id="startDateFrom"
-                    value="#{manageActionBean.startDateFrom}"
+                    value="#{ReservationEnquiryBean.startDateFrom}"
                     pattern="dd-MM-yyyy" navigator="true" showOn="button"
                     yearRange="c-10:c+10" style="width:150px;" />
 
-        <!-- Reservation End Date To -->
+       <!--  Reservation End Date To -->
         <h:outputLabel for="endDateTo" value="End Date To:" />
         <p:calendar id="endDateTo"
-                    value="#{managActionBean.endDateTo}"
+                    value="#{ReservationEnquiryBean.endDateTo}"
                     pattern="dd-MM-yyyy" navigator="true" showOn="button"
                     yearRange="c-10:c+10" style="width:150px;" />
 
-        <!-- Customer Name -->
+       <!--  Customer Name -->
         <h:outputLabel for="customerName" value="Customer Name:" />
         <p:inputText id="customerName" 
-                     value="#{manaActionBean.customerName}" 
+                     value="#{ReservationEnquiryBean.customerName}" 
                      style="width:200px;" />
 
         <!-- Car Type -->
         <h:outputLabel for="carType" value="Car Type:" />
         <p:selectOneMenu id="carType" 
-                         value="#{managenActionBean.selectedCarType}" 
+                         value="#{ReservationEnquiryBean.selectedCarType}" 
                          style="width:200px;">
             <f:selectItem itemLabel="Any" itemValue="" />
-            <f:selectItems value="#{manageActionBean.carTypes}" var="type" 
+            <f:selectItems value="#{ReservationEnquiryBean.carTypes}" var="type" 
                            itemLabel="#{type}" itemValue="#{type}" />
         </p:selectOneMenu>
 
-        <!-- Status -->
+       <!--  Status -->
         <h:outputLabel for="status" value="Status:" />
         <p:selectOneMenu id="status" value="#{manageRActionBean.selectedStatus}" style="width:200px;">
             <f:selectItem itemLabel="All" itemValue="" />
@@ -53,15 +53,15 @@
         <!-- Search Button -->
         <h:outputLabel />
         <p:commandButton value="Search" icon="fa fa-search"
-                         action="#{manageActionBean.searchReservations}"
+                         action="#{ReservationEnquiryBean.searchReservations}"
                          update="reservationTable" styleClass="btn-search" />
-</p:panel>
+</p:panel> 
 
             <!-- Reservation List Panel -->
             <p:panel header="Manage Reservations" styleClass="ui-fluid">
                 
                 <p:dataTable id="reservationTable"
-                             value="#{ManageActionBean.reserveList}"
+                             value="#{ManageReservationActionBean.reserveList}"
                              var="res"
                              paginator="true"
                              rows="10"
@@ -99,8 +99,8 @@
                     <!-- Status Column -->
                     <p:column headerText="Status">
                         <h:outputText value="#{res.reserveStatus}">
-                            <f:passThroughAttribute name="style" 
-                                value="#{res.reserveStatus eq 'Approved' ? 'color:green;' : res.reserveStatus eq 'Rejected' ? 'color:red;' : 'color:orange;'}"/>
+                           <!--  <f:passThroughAttribute name="style" 
+                                value="#{res.reserveStatus eq 'Approved' ? 'color:green;' : res.reserveStatus eq 'Rejected' ? 'color:red;' : 'color:orange;'}"/> -->
                         </h:outputText>
                     </p:column>
 
@@ -108,20 +108,26 @@
                     <p:column headerText="Actions" style="width:200px;">
                         <p:commandButton value="Approve" icon="fa fa-check"
                                          styleClass="ui-button-success"
-                                         action="#{AdminReservationBean.approve(res)}"
-                                         update="reservationTable"
-                                         disabled="#{res.reserveStatus eq 'Approved'}" />
+                                         action="#{ManageReservationActionBean.approve(res)}"
+                                         update="reservationTable"/>
+                                    <!--      disabled="#{res.reserveStatus eq 'Approved'}"  -->
 
                         <p:commandButton value="Reject" icon="fa fa-times"
                                          styleClass="ui-button-danger"
-                                         action="#{AdminReservationBean.reject(res)}"
-                                         update="reservationTable"
-                                         disabled="#{res.reserveStatus eq 'Rejected'}" />
+                                         action="#{ManageReservationActionBean.reject(res)}"
+                                         update="reservationTable"/>
+                                         <!-- disabled="#{res.reserveStatus eq 'Rejected'}" --> 
                         
                         <p:commandButton value="Delete" icon="fa fa-trash"
-                                         action="#{AdminReservationBean.deleteReservation(res)}"
+                                         action="#{ManageReservationActionBean.deleteReservationFromDB(res)}"
                                          update="reservationTable"
                                          styleClass="ui-button-secondary" />
+                                         
+                                      <p:commandButton icon="fa fa-file-pdf-o"
+                     title="Download Letter"
+                     action="#{AdminReservationBean.generateLetter(res)}"
+                     ajax="false"
+                     rendered="#{res.reserveStatus eq 'APPROVED' or res.reserveStatus eq 'REJECTED'}"/>
                     </p:column>
 
                 </p:dataTable>

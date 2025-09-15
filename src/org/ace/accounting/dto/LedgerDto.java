@@ -1,4 +1,4 @@
-package org.ace.accounting.dto;
+ package org.ace.accounting.dto;
 
 import java.io.Serializable;
 import java.util.Date;

@@ -1,12 +1,14 @@
 package org.ace.accounting.system.reservation;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 import javax.persistence.*;
 
 import org.ace.accounting.common.BasicEntity;
 import org.ace.accounting.common.TableName;
 import org.ace.accounting.system.car.Car;
+import org.ace.accounting.system.car.enumTypes.ReserveStatus;
 import org.ace.accounting.system.customer.Renter;
 import org.ace.java.component.idgen.service.IDInterceptor;
 
@@ -53,12 +55,12 @@ public class Reservation implements Serializable {
     @Column(name = "TotalCost")
     private Double totalCost;
 
-    
+    @Enumerated(EnumType.STRING)
     @Column(name = "Status")
-    private String ReserveStatus; // store enum as string
+    private ReserveStatus reserveStatus; // store enum as string
+  
 
-   
-    @Column(name = "RentalType")
+	@Column(name = "RentalType")
     private String rentalType; // store enum as string
 
     @Embedded
@@ -120,12 +122,12 @@ public class Reservation implements Serializable {
         this.totalCost = totalCost;
     }
 
-    public String getReserveStatus() {
-		return ReserveStatus;
+    public ReserveStatus getReserveStatus() {
+		return reserveStatus;
 	}
 
-	public void setReserveStatus(String reserveStatus) {
-		ReserveStatus = reserveStatus;
+	public void setReserveStatus(ReserveStatus reserveStatus) {
+		this.reserveStatus = reserveStatus;
 	}
 
 	public String getRentalType() {

@@ -1,14 +1,15 @@
 package org.ace.accounting.system.reservation.persistence;
 
+import java.util.Date;
 import java.util.List;
-
+import java.util.*;
 
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 
-import org.ace.accounting.system.car.Car;
-import org.ace.accounting.system.car.enumTypes.CarStatus;
+import org.ace.accounting.system.car.enumTypes.ReserveStatus;
 import org.ace.accounting.system.reservation.Reservation;
 import org.ace.accounting.system.reservation.persistence.interfaces.IReservationDAO;
 import org.ace.java.component.persistence.BasicDAO;
@@ -23,19 +24,14 @@ public class ReservationDAO extends BasicDAO implements IReservationDAO {
 
     @Transactional(propagation = Propagation.REQUIRED)
     public void insert(Reservation reservation) throws DAOException{
-        try {
-            if (reservation.getCar() != null) {
-                reservation.setCar(em.getReference(reservation.getCar().getClass(), reservation.getCar().getId()));
-                Car car = reservation.getCar();
-                car.setCarStatus(CarStatus.PENDING);
-                em.merge(car);
+        
+    	try {
+    		if (reservation.getReserveStatus() == null) {
+                reservation.setReserveStatus(ReserveStatus.SUBMITTED);
             }
-            if (reservation.getRenter() != null) {
-                reservation.setRenter(em.getReference(reservation.getRenter().getClass(), reservation.getRenter().getId()));
-            }
-
-            em.persist(reservation);
-
+                em.merge(reservation);
+                em.flush();
+        
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException("Error inserting reservation: " + e.getMessage());
@@ -63,17 +59,6 @@ public class ReservationDAO extends BasicDAO implements IReservationDAO {
             if (managedReservation == null) {
                 throw new DAOException("Reservation not found with ID: " + reservation.getId(), null, null);
             }
-
-            // Update Car status
-            Car car = managedReservation.getCar();
-            if (car != null) {
-                Car managedCar = em.find(Car.class, car.getId());
-                if (managedCar != null) {
-                    managedCar.setCarStatus(CarStatus.AVAILABLE);
-                    em.merge(managedCar);
-                }
-            }
-
             // Remove reservation
             em.remove(managedReservation);
             em.flush();
@@ -82,10 +67,6 @@ public class ReservationDAO extends BasicDAO implements IReservationDAO {
             throw translate("Failed to delete Reservation", pe);
         }
     }
-
-
-
-   
 
 
     @Transactional(propagation = Propagation.REQUIRED, readOnly = true)
@@ -115,4 +96,40 @@ public class ReservationDAO extends BasicDAO implements IReservationDAO {
         }
         return result;
     }
+    
+    public List<Reservation> findByCriteria(Date start, Date end, String name, String carType, String status) {
+        StringBuilder jpql = new StringBuilder("SELECT r FROM Reservation r WHERE 1=1");
+        Map<String, Object> params = new HashMap<>();
+
+        if (start != null) {
+            jpql.append(" AND r.startDate >= :start");
+            params.put("start", start);
+        }
+
+        if (end != null) {
+            jpql.append(" AND r.endDate <= :end");
+            params.put("end", end);
+        }
+
+        if (name != null && !name.trim().isEmpty()) {
+            jpql.append(" AND LOWER(r.renter.name) LIKE :name");
+            params.put("name", "%" + name.trim().toLowerCase() + "%");
+        }
+
+        if (carType != null && !carType.trim().isEmpty()) {
+            jpql.append(" AND LOWER(r.car.type) LIKE :carType");
+            params.put("carType", "%" + carType.trim().toLowerCase() + "%");
+        }
+
+        if (status != null && !status.trim().isEmpty()) {
+            jpql.append(" AND r.reserveStatus = :status");
+            params.put("status", status);
+        }
+
+        TypedQuery<Reservation> query = em.createQuery(jpql.toString(), Reservation.class);
+        params.forEach(query::setParameter);
+
+        return query.getResultList();
+    }
+
 }

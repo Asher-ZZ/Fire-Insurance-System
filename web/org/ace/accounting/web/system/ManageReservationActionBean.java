@@ -203,6 +203,20 @@ private List<Renter> renterList;
 		Renter renter = (Renter) event.getObject();
 		reservation.setRenter(renter);
 	}
+	
+	public void approve(Reservation res) {
+	    reservationService.approveReservation(res.getId());
+	    FacesContext.getCurrentInstance().addMessage(null,
+	        new FacesMessage("Reservation approved"));
+	}
+
+	public void reject(Reservation res) {
+	    reservationService.rejectReservation(res.getId());
+	    FacesContext.getCurrentInstance().addMessage(null,
+	        new FacesMessage("Reservation rejected"));
+	}
+
+	
 
 	public List<Reservation> getReserveList() {return reserveList;}
 	public void setReserveList(List<Reservation> reserveList) {this.reserveList = reserveList;}
