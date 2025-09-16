@@ -56,9 +56,9 @@
 										<p:ajax event="dialogReturn"
 											listener="#{ManageReservationActionBean.returnCar}"
 											update="carId" />
-									</p:commandButton>
+									</p:commandButton>									
 									<p:inputText id="carId"
-										value="#{ManageReservationActionBean.reservation.car == null ? '' : ManageReservationActionBean.reservation.car.type}"
+										value="#{ManageReservationActionBean.reservation.car.type}"
 										readonly="true" />
 									<p:commandButton styleClass="red-button" icon="fa fa-times"
 										action="#{ManageReservationActionBean.reservation.setCar(null)}"

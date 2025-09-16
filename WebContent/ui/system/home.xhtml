@@ -218,6 +218,7 @@ body {
 								<label class="search-label">Location</label>
 								<p:selectOneMenu styleClass="search-input"
 									value="#{ManageCarActionBean.car.carBranch}">
+									<f:selectItem itemLabel="Any" itemValue="" />
 									<f:selectItems value="#{ManageCarActionBean.carBranches}"
 										var="branch" itemLabel="#{branch}" itemValue="#{branch}" />
 								</p:selectOneMenu>
@@ -233,18 +234,18 @@ body {
 							</div>
 							<div>
 								<label class="search-label">Start Date</label>
-								<p:calendar value="#{ManageCarActionBean.startDate}"
+								<p:calendar value="#{ManageCarActionBean.startDate}" yearRange="c-10:c+10"
 									pattern="dd-MM-yyyy" styleClass="search-input" />
 							</div>
 							<div>
 								<label class="search-label">End Date</label>
-								<p:calendar value="#{ManageCarActionBean.endDate}"
+								<p:calendar value="#{ManageCarActionBean.endDate}" yearRange="c-10:c+10"
 									pattern="dd-MM-yyyy" styleClass="search-input" />
 							</div>
 							<div>
 								<label class="search-label" style="opacity: 0">Search</label>
 								<p:commandButton value="Search" styleClass="btn-search"
-									action="#{ManageCarActionBean.searchCars}" update="carsSection" />
+									action="#{ManageCarActionBean.searchCars}" update=":carForm:carsSection" />
 							</div>
 						</div>
 					</h:form>
@@ -252,11 +253,12 @@ body {
 			</div>
 
 			<!-- Cars -->
+			<h:form id="carForm">
 			<h:panelGroup id="carsSection">
 				<div class="container cars-section">
 					<h2 class="section-title">Available Cars</h2>
 					<div class="car-grid">
-						<ui:repeat value="#{ManageCarActionBean.carList}" var="car">
+						<ui:repeat value="#{ManageCarActionBean.availableCar}" var="car">
 							<div class="car-card">
 								<!-- <h:graphicImage value="/resources/images/placeholder-car.png"
                 style="width:100px; height:60px; object-fit:cover; border-radius:5px; opacity:0.7;"
@@ -266,18 +268,20 @@ body {
 									<div class="car-features">#{car.passenger} Seats •
 										#{car.model} • #{car.category}</div>
 									<div class="car-price">$#{car.baseRate}/day</div>
-									<p:commandButton value="Rent Now" styleClass="btn-rent" />
+									<p:commandButton value="Rent Now" styleClass="btn-rent"
+									action="#{ManageCarActionBean.prepareRent(car)}" ajax="false" />
 								</div>
 							</div>
 						</ui:repeat>
 
-						<h:panelGroup rendered="#{empty ManageCarActionBean.carList}">
+						<h:panelGroup rendered="#{empty ManageCarActionBean.availableCar}">
 							<p style="grid-column: 1/-1; text-align: center; color: #6c757d;">
 								No cars available for selected criteria.</p>
 						</h:panelGroup>
 					</div>
 				</div>
 			</h:panelGroup>
+			</h:form>
 		</h:body>
 	</ui:define>
 </ui:composition>

@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedProperty;
+import javax.faces.bean.SessionScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
@@ -34,15 +35,19 @@ public class ManageCarActionBean extends BaseBean {
 	private Renter renter;
 	private Reservation reservation;
 	private String location;
-	private List<String> carTypes;   // dynamic car types from DB
-	private String selectedCarType; 
+	private List<String> carTypes; // dynamic car types from DB
+	private String selectedCarType;
 	private Date startDate;
 	private Date endDate;
-
-
+	private Car selectedCar;
+	private List<Car> carList;
+	private List<Car> selectedCarList;
+	private List<Car> availableCars;
 	private List<Car> filteredCars;
+	private CarBranch branch;
+	private List<Car> availableCar;
+	private List<Reservation> reservations;
 
-	
 	private boolean createNew = true;
 
 	@ManagedProperty(value = "#{CarService}")
@@ -54,10 +59,9 @@ public class ManageCarActionBean extends BaseBean {
 	@ManagedProperty(value = "#{ReservationService}")
 	private IReservationService reservationService;
 
-	private List<Car> carList;
-	private List<Car> selectedCarList;
-	private List<Car> availableCars;
-	private String carBranch;
+
+	@ManagedProperty("#{ManageReservationActionBean}")
+    private ManageReservationActionBean reservationBean;
 
 
 	private static final long serialVersionUID = 1L;
@@ -66,23 +70,36 @@ public class ManageCarActionBean extends BaseBean {
 	public void init() {
 		createNewCar();
 		rebindData();
-        availableCars = carService.findAvailableCars();
-		 prepareCarTypes();
-		 filteredCars = availableCars;
+		availableCars = carService.findAvailableCars();
+		prepareCarTypes();
+		filteredCars = availableCars;
+		reservations = reservationService.findAll();
+
 	}
-	
+
 	private void prepareCarTypes() {
-	    carTypes = new ArrayList<>();
-	    for (Car c : carList) {
-	        if (!carTypes.contains(c.getType())) {
-	            carTypes.add(c.getType());
-	        }
-	    }
+		carTypes = new ArrayList<>();
+		for (Car c : carList) {
+			if (!carTypes.contains(c.getType())) {
+				carTypes.add(c.getType());
+			}
+		}
 	}
-	
+
+	public String prepareRent(Car selectedCar) {
+	    if (selectedCar != null) {
+	        System.out.println("Prepare rent: selectedCar type = " + selectedCar);
+	        FacesContext.getCurrentInstance().getExternalContext()
+	                    .getFlash().put("selectedCar", selectedCar);
+	        return "ManageCustomerReservation.xhtml?faces-redirect=true";
+	    }
+	    return null;
+	}
+
 	public void searchCars() {
-        carList = carService.searchAvailableCars(startDate, endDate, carBranch, selectedCarType);
-    }
+		
+		availableCar = carService.searchAvailableCars(car.getCarBranch(), selectedCarType, startDate, endDate);
+	}
 
 	public void rebindData() {
 		carList = carService.findAll();
@@ -107,7 +124,7 @@ public class ManageCarActionBean extends BaseBean {
 
 	public void deleteCar(Car car) {
 		try {
-			
+
 			carService.deleteCar(car);
 			addInfoMessage(null, MessageId.DELETE_SUCCESS, car.getType());
 			createNewCar();
@@ -134,31 +151,7 @@ public class ManageCarActionBean extends BaseBean {
 		this.car = car;
 		this.createNew = false;
 	}
-	
-	public void searchCar() {
-	    filteredCars = new ArrayList<>();
-	    for (Car c : availableCars) {
-	        boolean matches = true;
 
-	        // filter by type
-	        if (selectedCarType != null && !selectedCarType.isEmpty()) {
-	            if (!c.getType().equals(selectedCarType)) {
-	                matches = false;
-	            }
-	        }
-
-	        // filter by branch
-	        if (car.getCarBranch() != null) {
-	            if (!c.getCarBranch().equals(car.getCarBranch())) {
-	                matches = false;
-	            }
-	        }
-
-	        if (matches) {
-	            filteredCars.add(c);
-	        }
-	    }
-	}
 
 	public Car getCar() {
 		return car;
@@ -259,7 +252,7 @@ public class ManageCarActionBean extends BaseBean {
 	public void setSelectedCarType(String selectedCarType) {
 		this.selectedCarType = selectedCarType;
 	}
-	
+
 	public IRenterService getRenterService() {
 		return renterService;
 	}
@@ -279,7 +272,7 @@ public class ManageCarActionBean extends BaseBean {
 	public Renter getRenter() {
 		return renter;
 	}
-	
+
 	public String getLocation() {
 		return location;
 	}
@@ -312,4 +305,41 @@ public class ManageCarActionBean extends BaseBean {
 		this.filteredCars = filteredCars;
 	}
 
+	public List<Car> getAvailableCar() {
+		return availableCar;
+	}
+
+	public void setAvailableCar(List<Car> availableCar) {
+		this.availableCar = availableCar;
+	}
+
+	public CarBranch getBranch() {
+		return branch;
+	}
+
+	public void setBranch(CarBranch branch) {
+		this.branch = branch;
+	}
+
+	public List<Reservation> getReservations() {
+		return reservations;
+	}
+
+	public void setReservations(List<Reservation> reservations) {
+		this.reservations = reservations;
+	}
+
+	
+
+	public Car getSelectedCar() {
+		return selectedCar;
+	}
+
+	public void setSelectedCar(Car selectedCar) {
+		this.selectedCar = selectedCar;
+	}
+
+	public void setReservationBean(ManageReservationActionBean reservationBean) {
+        this.reservationBean = reservationBean;
+    }
 }

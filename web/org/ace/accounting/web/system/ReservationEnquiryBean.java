@@ -96,7 +96,6 @@ public class ReservationEnquiryBean implements Serializable {
 
 	@PostConstruct
 	public void init() {
-		
 		prepareCarTypes();
 		carList = carService.findAll(); 
 	}

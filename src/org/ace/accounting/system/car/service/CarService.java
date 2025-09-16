@@ -6,6 +6,7 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import org.ace.accounting.system.car.Car;
+import org.ace.accounting.system.car.enumTypes.CarBranch;
 import org.ace.accounting.system.car.enumTypes.CarStatus;
 import org.ace.accounting.system.car.persistence.interfaces.ICarDAO;
 import org.ace.accounting.system.car.service.interfaces.ICarService;
@@ -76,7 +77,8 @@ public class CarService extends BaseService implements ICarService {
 	}
 	
 	 @Transactional(readOnly = true)
-	 public List<Car> searchAvailableCars(Date startDate, Date endDate, String branch, String carType) {
+	 public List<Car> searchAvailableCars(CarBranch branch, String carType,Date startDate, Date endDate) 
+	 {
 	        return carDAO.findAvailableCars(branch, carType, startDate, endDate);
 	    }
 }

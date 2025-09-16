@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.ace.accounting.system.car.Car;
+import org.ace.accounting.system.car.enumTypes.CarBranch;
 import org.ace.accounting.system.car.enumTypes.CarStatus;
 import org.ace.java.component.persistence.exception.DAOException;
 
@@ -19,7 +20,6 @@ public interface ICarDAO {
 
     List<Car> findAll() throws DAOException;
     
-    public List<Car> findAvailableCars(String branch, String carType, Date startDate, Date endDate) throws DAOException ;
-    public List<Car> findByStatus(CarStatus status) throws DAOException;
+	 public List<Car> findAvailableCars(CarBranch branch, String carType, Date startDate, Date endDate) throws DAOException ;    public List<Car> findByStatus(CarStatus status) throws DAOException;
     
 }

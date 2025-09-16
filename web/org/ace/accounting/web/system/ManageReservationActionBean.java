@@ -29,11 +29,23 @@ import org.primefaces.PrimeFaces;
 @ViewScoped
 public class ManageReservationActionBean extends BaseBean {
 
+	private List<Renter> renterList;
+
+	@ManagedProperty(value = "#{RenterService}")
+	private IRenterService renterService;
+
+	@ManagedProperty(value = "#{CarService}")
+	private ICarService carService;
+
+	@ManagedProperty(value = "#{ReservationService}")
+	private IReservationService reservationService;
+	
 	private boolean createNew = true;
 	private Car car;
 	private Renter renter;
 	private Reservation reservation=new Reservation();
 	private Car selectedCar = new Car();
+	private Car selectCar;
 	private List<Car> availableCars;
 	private List<Car> carList;
 	private List<Reservation> reservationList;
@@ -63,26 +75,25 @@ public class ManageReservationActionBean extends BaseBean {
 	    }
 
 
-
-private List<Renter> renterList;
-
-	@ManagedProperty(value = "#{RenterService}")
-	private IRenterService renterService;
-
-	@ManagedProperty(value = "#{CarService}")
-	private ICarService carService;
-
-	@ManagedProperty(value = "#{ReservationService}")
-	private IReservationService reservationService;
-
 	public void openVehicleDialog() {
 		availableCars = carService.findAvailableCars();
 	}
 
 	@PostConstruct
 	public void init() {
+		
 		createNewRenter();
 		createNewReservation();
+		Object obj = FacesContext.getCurrentInstance()
+                .getExternalContext().getFlash().get("selectedCar");
+
+   if (obj instanceof Car) {
+       Car selectedCar = (Car) obj;
+       reservation.setCar(selectedCar); // ✅ will not be overwritten now
+       System.out.println("DEBUG - Car received from Flash: " + selectedCar.getType());
+   } else {
+       System.out.println("DEBUG - No car found in Flash.");
+   }
 		reservationList = new ArrayList<>();
 		carList = carService.findAll();
 		renterList=renterService.findAll();
@@ -99,6 +110,10 @@ private List<Renter> renterList;
 		reservation = new Reservation();
 
 	}
+	
+	 public void setSelectedCarForReservation(Car car) {
+	        reservation.setCar(car);
+	    }
 
 	private void createNewRenter() {
 		this.renter = new Renter();
@@ -216,7 +231,6 @@ private List<Renter> renterList;
 	        new FacesMessage("Reservation rejected"));
 	}
 
-	
 
 	public List<Reservation> getReserveList() {return reserveList;}
 	public void setReserveList(List<Reservation> reserveList) {this.reserveList = reserveList;}
@@ -231,7 +245,13 @@ private List<Renter> renterList;
 	public Reservation getReservation() {return reservation;}
 	public void setReservation(Reservation reservation) {this.reservation = reservation;}
 	public Car getSelectedCar() {return selectedCar;}
-	public void setSelectedCar(Car selectedCar) {this.selectedCar = selectedCar;}
+	public void setSelectedCar(Car selectedCar) {this.selectedCar = selectedCar;
+	if (reservation == null) {
+		reservation = new Reservation();
+	}
+	reservation.setCar(selectedCar);
+
+	System.out.println("Selected Car in Reservation: " + selectedCar.getType());}
 	public List<Car> getAvailableCars() {return availableCars;}
 	public void setAvailableCars(List<Car> availableCars) {this.availableCars = availableCars;}
 	public List<Car> getCarList() {return carList;}
@@ -247,4 +267,11 @@ private List<Renter> renterList;
 	public IReservationService getReservationService() {return reservationService;}
 	public void setReservationService(IReservationService reservationService) {this.reservationService = reservationService;}
 
+	public Car getSelectCar() {
+		return selectCar;
+	}
+
+	public void setSelectCar(Car selectCar) {
+		this.selectCar = selectCar;
+	}
 }

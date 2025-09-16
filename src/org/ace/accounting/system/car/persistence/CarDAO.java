@@ -100,50 +100,53 @@ public class CarDAO extends BasicDAO implements ICarDAO {
 	}
 	
 	 @Transactional(readOnly = true)
-	 public List<Car> findAvailableCars(String branch, String carType, Date startDate, Date endDate) throws DAOException {
-		    try {
-		        StringBuilder hql = new StringBuilder("SELECT c FROM Car c WHERE 1=1");
+	 public List<Car> findAvailableCars(CarBranch branch, String carType, Date startDate, Date endDate) {
+	     StringBuilder hql = new StringBuilder("SELECT c FROM Car c WHERE c.carStatus = :status");
 
-		        if (branch != null && !branch.trim().isEmpty()) {
-		            hql.append(" AND c.carBranch = :branch");
-		        }
+	     if (branch != null) {
+	         hql.append(" AND c.carBranch = :branch");
+	     }
 
-		        if (carType != null && !carType.trim().isEmpty()) {
-		            hql.append(" AND c.type = :carType");
-		        }
+	     if (carType != null && !carType.trim().isEmpty()) {
+	         hql.append(" AND c.type = :carType");
+	     }
 
-		        if (startDate != null && endDate != null) {
-		            hql.append(" AND NOT EXISTS ( " +
-		                       "SELECT r FROM Reservation r " +
-		                       "WHERE r.car = c " +
-		                       "AND (r.reserveStatus = :submittedStatus OR r.reserveStatus = :rentedStatus) " +
-		                       "AND r.startDate <= :endDate " +
-		                       "AND r.endDate >= :startDate" +
-		                       ")");
-		        }
+	     if (startDate != null && endDate != null) {
+	         hql.append(" AND NOT EXISTS (");
+	         hql.append("   SELECT r FROM Reservation r");
+	         hql.append("   WHERE r.car = c");
+	         hql.append("   AND r.reserveStatus IN :excludedStatuses"); // ✅ fixed
+	         hql.append("   AND r.startDate <= :endDate");
+	         hql.append("   AND r.endDate >= :startDate");
+	         hql.append(")");
+	     }
 
-		        TypedQuery<Car> query = em.createQuery(hql.toString(), Car.class);
+	     TypedQuery<Car> query = em.createQuery(hql.toString(), Car.class);
+	     query.setParameter("status", CarStatus.AVAILABLE);
 
-		        if (branch != null && !branch.trim().isEmpty()) {
-		            query.setParameter("branch", CarBranch.valueOf(branch));
-		        }
+	     if (branch != null) {
+	         query.setParameter("branch", branch);
+	     }
 
-		        if (carType != null && !carType.trim().isEmpty()) {
-		            query.setParameter("carType", carType);
-		        }
+	     if (carType != null && !carType.trim().isEmpty()) {
+	         query.setParameter("carType", carType);
+	     }
 
-		        if (startDate != null && endDate != null) {
-		            query.setParameter("submittedStatus", ReserveStatus.SUBMITTED);
-		            query.setParameter("rentedStatus", ReserveStatus.RENTED);
-		            query.setParameter("startDate", startDate);
-		            query.setParameter("endDate", endDate);
-		        }
+	     if (startDate != null && endDate != null) {
+	         query.setParameter("startDate", startDate);
+	         query.setParameter("endDate", endDate);
 
-		        return query.getResultList();
-		    } catch (Exception e) {
-		        throw new DAOException("Failed to find available cars", carType, e);
-		    }
-		}
+	         // ✅ Use ArrayList instead of Arrays$ArrayList
+	         List<ReserveStatus> excludedStatuses = new ArrayList<>();
+	         excludedStatuses.add(ReserveStatus.SUBMITTED);
+	         excludedStatuses.add(ReserveStatus.RENTED);
+
+	         query.setParameter("excludedStatuses", excludedStatuses);
+	     }
+
+	     return query.getResultList();
+	 }
+
 
 
 
