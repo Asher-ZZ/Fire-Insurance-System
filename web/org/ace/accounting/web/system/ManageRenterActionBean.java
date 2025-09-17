@@ -70,6 +70,8 @@ public class ManageRenterActionBean extends BaseBean implements Serializable {
 		renter = new Renter();
 		createNew = true;
 	}
+	
+	
 
 	/** Add new renter */
 	public void addRenter() {

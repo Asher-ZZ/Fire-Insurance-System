@@ -192,8 +192,6 @@ body {
 	grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
 	gap: 20px;
 }
-
-
 </style>
 		</h:head>
 
@@ -213,74 +211,96 @@ body {
 				<!-- Search -->
 				<div class="search-section">
 					<h:form>
-						<div class="search-grid">
-							<div>
-								<label class="search-label">Location</label>
-								<p:selectOneMenu styleClass="search-input"
+						<div class="search-panel"
+							style="display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end; margin-bottom: 20px;">
+
+							<!-- Location -->
+							<div class="search-item" style="flex: 1; min-width: 150px;">
+								<h:outputLabel for="location" value="Location:"
+									styleClass="search-label" />
+								<p:selectOneMenu id="location" styleClass="search-input"
 									value="#{ManageCarActionBean.car.carBranch}">
 									<f:selectItem itemLabel="Any" itemValue="" />
 									<f:selectItems value="#{ManageCarActionBean.carBranches}"
 										var="branch" itemLabel="#{branch}" itemValue="#{branch}" />
 								</p:selectOneMenu>
 							</div>
-							<div>
-								<label class="search-label">Car Type</label>
-								<p:selectOneMenu styleClass="search-input"
+
+							<!-- Car Type -->
+							<div class="search-item" style="flex: 1; min-width: 150px;">
+								<h:outputLabel for="carType" value="Car Type:"
+									styleClass="search-label" />
+								<p:selectOneMenu id="carType" styleClass="search-input"
 									value="#{ManageCarActionBean.selectedCarType}">
 									<f:selectItem itemLabel="Any" itemValue="" />
 									<f:selectItems value="#{ManageCarActionBean.carTypes}"
 										var="type" itemLabel="#{type}" itemValue="#{type}" />
 								</p:selectOneMenu>
 							</div>
-							<div>
-								<label class="search-label">Start Date</label>
-								<p:calendar value="#{ManageCarActionBean.startDate}" yearRange="c-10:c+10"
-									pattern="dd-MM-yyyy" styleClass="search-input" />
+
+							<!-- Start Date -->
+							<div class="search-item" style="flex: 1; min-width: 120px;">
+								<h:outputLabel for="startDate" value="Start Date:"
+									styleClass="search-label" />
+								<p:calendar id="startDate" styleClass="search-input"
+									value="#{ManageCarActionBean.startDate}" pattern="dd-MM-yyyy"
+									navigator="true" showOn="button" />
 							</div>
-							<div>
-								<label class="search-label">End Date</label>
-								<p:calendar value="#{ManageCarActionBean.endDate}" yearRange="c-10:c+10"
-									pattern="dd-MM-yyyy" styleClass="search-input" />
+
+							<!-- End Date -->
+							<div class="search-item" style="flex: 1; min-width: 120px;">
+								<h:outputLabel for="endDate" value="End Date:"
+									styleClass="search-label" />
+								<p:calendar id="endDate" styleClass="search-input"
+									value="#{ManageCarActionBean.endDate}" pattern="dd-MM-yyyy"
+									navigator="true" showOn="button" />
 							</div>
-							<div>
-								<label class="search-label" style="opacity: 0">Search</label>
-								<p:commandButton value="Search" styleClass="btn-search"
-									action="#{ManageCarActionBean.searchCars}" update=":carForm:carsSection" />
+
+							<!-- Search Button -->
+							<div class="search-item" style="flex: 0 0 auto;">
+								<p:commandButton id="searchBtn" value="Search"
+									styleClass="btn-search"
+									action="#{ManageCarActionBean.searchCars}"
+									update=":carForm:carsSection" />
 							</div>
+
 						</div>
+
 					</h:form>
 				</div>
 			</div>
 
 			<!-- Cars -->
 			<h:form id="carForm">
-			<h:panelGroup id="carsSection">
-				<div class="container cars-section">
-					<h2 class="section-title">Available Cars</h2>
-					<div class="car-grid">
-						<ui:repeat value="#{ManageCarActionBean.availableCar}" var="car">
-							<div class="car-card">
-								<!-- <h:graphicImage value="/resources/images/placeholder-car.png"
+				<h:panelGroup id="carsSection">
+					<div class="container cars-section">
+						<h2 class="section-title">Available Cars</h2>
+						<div class="car-grid">
+							<ui:repeat value="#{ManageCarActionBean.availableCar}" var="car">
+								<div class="car-card">
+									<!-- <h:graphicImage value="/resources/images/placeholder-car.png"
                 style="width:100px; height:60px; object-fit:cover; border-radius:5px; opacity:0.7;"
                 alt="No image available"/> -->
-								<div class="car-content">
-									<div class="car-title">#{car.type}</div>
-									<div class="car-features">#{car.passenger} Seats •
-										#{car.model} • #{car.category}</div>
-									<div class="car-price">$#{car.baseRate}/day</div>
-									<p:commandButton value="Rent Now" styleClass="btn-rent"
-									action="#{ManageCarActionBean.prepareRent(car)}" ajax="false" />
+									<div class="car-content">
+										<div class="car-title">#{car.type}</div>
+										<div class="car-features">#{car.passenger} Seats •
+											#{car.model} • #{car.category}</div>
+										<div class="car-price">$#{car.baseRate}/day</div>
+										<p:commandButton value="Rent Now" styleClass="btn-rent"
+											action="#{ManageCarActionBean.prepareRent(car)}" ajax="false" />
+									</div>
 								</div>
-							</div>
-						</ui:repeat>
+							</ui:repeat>
 
-						<h:panelGroup rendered="#{empty ManageCarActionBean.availableCar}">
-							<p style="grid-column: 1/-1; text-align: center; color: #6c757d;">
-								No cars available for selected criteria.</p>
-						</h:panelGroup>
+							<h:panelGroup
+								rendered="#{empty ManageCarActionBean.availableCar}">
+								<p
+									style="grid-column: 1/-1; text-align: center; color: #6c757d;">
+									No cars available for selected criteria.</p>
+							</h:panelGroup>
+						</div>
 					</div>
-				</div>
-			</h:panelGroup>
+				</h:panelGroup>
 			</h:form>
 		</h:body>
 	</ui:define>

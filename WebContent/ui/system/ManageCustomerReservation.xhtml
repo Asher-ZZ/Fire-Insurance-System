@@ -40,6 +40,11 @@
 										action="#{ManageReservationActionBean.reservation.setRenter(null)}"
 										process="@this" update="renterId" />
 								</div>
+								<p:commandButton value="Register New Customer"
+                 icon="fa fa-user-plus"
+                 styleClass="green-button"
+                 action="#{RenterDialogActionBean.goToCustomerInfo}"
+                 process="@this" />
 							</div>
 						</p:panelGrid>
 
@@ -56,7 +61,7 @@
 										<p:ajax event="dialogReturn"
 											listener="#{ManageReservationActionBean.returnCar}"
 											update="carId" />
-									</p:commandButton>									
+									</p:commandButton>
 									<p:inputText id="carId"
 										value="#{ManageReservationActionBean.reservation.car.type}"
 										readonly="true" />
@@ -72,14 +77,19 @@
 						<h:outputText value="Start Date" />
 						<p:calendar id="startDate"
 							value="#{ManageReservationActionBean.reservation.startDate}"
-							pattern="yyyy-MM-dd" showIcon="true" />
+							minDate="#{ManageReservationActionBean.today}"
+							pattern="yyyy-MM-dd"
+							showIcon="true" >
+							<p:ajax event="dateSelect" update="endDate" />
+							</p:calendar>
 
 						<p:outputLabel />
 						<p:message for="endDate" display="text" />
 						<h:outputText value="End Date" />
 						<p:calendar id="endDate"
 							value="#{ManageReservationActionBean.reservation.endDate}"
-							pattern="yyyy-MM-dd" showIcon="true" />
+							pattern="yyyy-MM-dd" showIcon="true"
+							minDate="#{ManageReservationActionBean.reservation.startDate}" />
 					</p:panelGrid>
 				</p:panelGrid>
 
@@ -131,6 +141,7 @@
 							actionListener="#{ManageReservationActionBean.deleteReservation(r)}"
 							update="reservationTable" process="@this" />
 					</p:column>
+
 				</p:dataTable>
 			</p:panel>
 			<!-- Buttons -->
@@ -197,7 +208,7 @@
 					filterMatchMode="contains">
 					<h:outputText value="#{r.endDate}" />
 				</p:column>
-				
+
 				<!-- <p:column headerText="Status" filterBy="#{r.reserveStatus}"
 					filterMatchMode="contains">
 					<h:outputText value="#{r.reserveStatus}" />

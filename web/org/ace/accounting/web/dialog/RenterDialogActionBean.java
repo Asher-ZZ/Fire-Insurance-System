@@ -1,11 +1,13 @@
 package org.ace.accounting.web.dialog;
 
+import java.io.IOException;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
+import javax.faces.context.FacesContext;
 
 import org.ace.accounting.system.customer.Renter;
 import org.ace.accounting.system.customer.service.interfaces.IRenterService;
@@ -28,7 +30,15 @@ public class RenterDialogActionBean extends BaseBean {
 	}
 
 	
-
+	public void goToCustomerInfo() {
+        try {
+            FacesContext.getCurrentInstance().getExternalContext()
+                .redirect("ManageCustomerInformation.xhtml");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+	
 	public List<Renter> getRenterList() {
 		return renterList;
 	}

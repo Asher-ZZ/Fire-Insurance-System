@@ -19,6 +19,7 @@ public class ReservationDTO implements Serializable {
     private Date endDate;
     private ReserveStatus reserveStatus;
     private Double totalCost;
+    
 
     public ReservationDTO() {
     }

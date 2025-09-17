@@ -180,6 +180,11 @@
   </navigation-case>
   
   <navigation-case>
+   <from-outcome>reservationHistoryForm</from-outcome>
+   <to-view-id>/ui/system/CustomerReservationList.xhtml</to-view-id>
+   <redirect/>
+  </navigation-case>
+  <navigation-case>
    <from-outcome>CarRenterForm</from-outcome>
    <to-view-id>/ui/system/ManageCustomerInformation.xhtml</to-view-id>
    <redirect/>

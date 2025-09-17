@@ -101,51 +101,69 @@ public class CarDAO extends BasicDAO implements ICarDAO {
 	
 	 @Transactional(readOnly = true)
 	 public List<Car> findAvailableCars(CarBranch branch, String carType, Date startDate, Date endDate) {
-	     StringBuilder hql = new StringBuilder("SELECT c FROM Car c WHERE c.carStatus = :status");
+		    StringBuilder hql = new StringBuilder("SELECT c FROM Car c WHERE c.carStatus = :status");
 
-	     if (branch != null) {
-	         hql.append(" AND c.carBranch = :branch");
-	     }
+		    if (branch != null) {
+		        hql.append(" AND c.carBranch = :branch");
+		    }
 
-	     if (carType != null && !carType.trim().isEmpty()) {
-	         hql.append(" AND c.type = :carType");
-	     }
+		    if (carType != null && !carType.trim().isEmpty()) {
+		        hql.append(" AND c.type = :carType");
+		    }
 
-	     if (startDate != null && endDate != null) {
-	         hql.append(" AND NOT EXISTS (");
-	         hql.append("   SELECT r FROM Reservation r");
-	         hql.append("   WHERE r.car = c");
-	         hql.append("   AND r.reserveStatus IN :excludedStatuses"); // ✅ fixed
-	         hql.append("   AND r.startDate <= :endDate");
-	         hql.append("   AND r.endDate >= :startDate");
-	         hql.append(")");
-	     }
+		    if (startDate != null && endDate != null) {
+		        hql.append(" AND NOT EXISTS (");
+		        hql.append("   SELECT r FROM Reservation r");
+		        hql.append("   WHERE r.car = c");
+		        hql.append("   AND r.reserveStatus IN :excludedStatuses");
+		        hql.append("   AND r.startDate <= :endDate");
+		        hql.append("   AND r.endDate >= :startDate");
+		        hql.append(")");
+		    } else if (startDate != null) {
+		        hql.append(" AND NOT EXISTS (");
+		        hql.append("   SELECT r FROM Reservation r");
+		        hql.append("   WHERE r.car = c");
+		        hql.append("   AND r.reserveStatus IN :excludedStatuses");
+		        hql.append("   AND r.endDate >= :startDate");
+		        hql.append(")");
+		    } else if (endDate != null) {
+		        hql.append(" AND NOT EXISTS (");
+		        hql.append("   SELECT r FROM Reservation r");
+		        hql.append("   WHERE r.car = c");
+		        hql.append("   AND r.reserveStatus IN :excludedStatuses");
+		        hql.append("   AND r.startDate <= :endDate");
+		        hql.append(")");
+		    }
 
-	     TypedQuery<Car> query = em.createQuery(hql.toString(), Car.class);
-	     query.setParameter("status", CarStatus.AVAILABLE);
+		    TypedQuery<Car> query = em.createQuery(hql.toString(), Car.class);
+		    query.setParameter("status", CarStatus.AVAILABLE);
 
-	     if (branch != null) {
-	         query.setParameter("branch", branch);
-	     }
+		    if (branch != null) {
+		        query.setParameter("branch", branch);
+		    }
 
-	     if (carType != null && !carType.trim().isEmpty()) {
-	         query.setParameter("carType", carType);
-	     }
+		    if (carType != null && !carType.trim().isEmpty()) {
+		        query.setParameter("carType", carType);
+		    }
 
-	     if (startDate != null && endDate != null) {
-	         query.setParameter("startDate", startDate);
-	         query.setParameter("endDate", endDate);
+		    if (startDate != null) {
+		        query.setParameter("startDate", startDate);
+		    }
 
-	         // ✅ Use ArrayList instead of Arrays$ArrayList
-	         List<ReserveStatus> excludedStatuses = new ArrayList<>();
-	         excludedStatuses.add(ReserveStatus.SUBMITTED);
-	         excludedStatuses.add(ReserveStatus.RENTED);
+		    if (endDate != null) {
+		        query.setParameter("endDate", endDate);
+		    }
 
-	         query.setParameter("excludedStatuses", excludedStatuses);
-	     }
+		    if (startDate != null || endDate != null) {
+		        List<ReserveStatus> excludedStatuses = Arrays.asList(
+		            ReserveStatus.SUBMITTED,
+		            ReserveStatus.RENTED
+		        );
+		        query.setParameter("excludedStatuses", excludedStatuses);
+		    }
 
-	     return query.getResultList();
-	 }
+		    return query.getResultList();
+		}
 
 
 

@@ -1,137 +1,233 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:ui="http://java.sun.com/jsf/facelets"
-                xmlns:h="http://java.sun.com/jsf/html"
-                xmlns:f="http://java.sun.com/jsf/core"
-                xmlns:p="http://primefaces.org/ui"
-                template="/common/commonLayout.xhtml">
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/common/commonLayout.xhtml">
 
-    <ui:define name="content">
-    
-        <h:form id="adminReservationForm">
-            <p:growl id="growl" globalOnly="true" showDetail="true" />
+	<ui:define name="content">
 
- <p:panel  styleClass="ui-panel-shadow" style="margin-bottom:20px; border:none;">
-       <!--  Reservation Start Date From -->
-        <h:outputLabel for="startDateFrom" value="Start Date From:" />
-        <p:calendar id="startDateFrom"
-                    value="#{ReservationEnquiryBean.startDateFrom}"
-                    pattern="dd-MM-yyyy" navigator="true" showOn="button"
-                    yearRange="c-10:c+10" style="width:150px;" />
+		<h:form id="adminReservationForm">
+			<p:growl id="growl" globalOnly="true" showDetail="true" />
 
-       <!--  Reservation End Date To -->
-        <h:outputLabel for="endDateTo" value="End Date To:" />
-        <p:calendar id="endDateTo"
-                    value="#{ReservationEnquiryBean.endDateTo}"
-                    pattern="dd-MM-yyyy" navigator="true" showOn="button"
-                    yearRange="c-10:c+10" style="width:150px;" />
+			<p:panel styleClass="ui-panel-shadow"
+				style="margin-bottom:20px; border:none;">
+				<!--  Reservation Start Date From -->
+				<h:outputLabel for="startDateFrom" value="Start Date From:" />
+				<p:calendar id="startDateFrom"
+					value="#{ReservationEnquiryBean.startDateFrom}"
+					pattern="dd-MM-yyyy" navigator="true" showOn="button"
+					yearRange="c-10:c+10" style="width:150px;" />
 
-       <!--  Customer Name -->
-        <h:outputLabel for="customerName" value="Customer Name:" />
-        <p:inputText id="customerName" 
-                     value="#{ReservationEnquiryBean.customerName}" 
-                     style="width:200px;" />
+				<!--  Reservation End Date To -->
+				<h:outputLabel for="endDateTo" value="End Date To:" />
+				<p:calendar id="endDateTo"
+					value="#{ReservationEnquiryBean.endDateTo}" pattern="dd-MM-yyyy"
+					navigator="true" showOn="button" yearRange="c-10:c+10"
+					style="width:150px;" />
 
-        <!-- Car Type -->
-        <h:outputLabel for="carType" value="Car Type:" />
-        <p:selectOneMenu id="carType" 
-                         value="#{ReservationEnquiryBean.selectedCarType}" 
-                         style="width:200px;">
-            <f:selectItem itemLabel="Any" itemValue="" />
-            <f:selectItems value="#{ReservationEnquiryBean.carTypes}" var="type" 
-                           itemLabel="#{type}" itemValue="#{type}" />
-        </p:selectOneMenu>
+				<!--  Customer Name -->
+				<h:outputLabel for="customerName" value="Customer Name:" />
+				<p:inputText id="customerName"
+					value="#{ReservationEnquiryBean.customerName}" style="width:200px;" />
 
-       <!--  Status -->
-        <h:outputLabel for="status" value="Status:" /> 
-<p:selectOneMenu id="status" value="#{ReservationEnquiryBean.selectedStatus}" style="width:200px">
-    <f:selectItem itemLabel="All" itemValue="#{null}" />
-    <f:selectItems value="#{ReservationEnquiryBean.allStatuses}" var="st"
-                   itemLabel="#{st}" itemValue="#{st}" />
-</p:selectOneMenu>
+				<!-- Car Type -->
+				<h:outputLabel for="carType" value="Car Type:" />
+				<p:selectOneMenu id="carType"
+					value="#{ReservationEnquiryBean.selectedCarType}"
+					style="width:200px;">
+					<f:selectItem itemLabel="Any" itemValue="" />
+					<f:selectItems value="#{ReservationEnquiryBean.carTypes}"
+						var="type" itemLabel="#{type}" itemValue="#{type}" />
+				</p:selectOneMenu>
 
-        <!-- Search Button -->
-        <h:outputLabel />
-        <p:commandButton value="Search" icon="fa fa-search"
-                         action="#{ReservationEnquiryBean.searchReservations}"
-                         update="reservationTable" styleClass="btn-search" />
-</p:panel> 
+				<!--  Status -->
+				<h:outputLabel for="status" value="Status:" />
+				<p:selectOneMenu id="status"
+					value="#{ReservationEnquiryBean.selectedStatus}"
+					style="width:200px">
+					<f:selectItem itemLabel="All" itemValue="#{null}" />
+					<f:selectItems value="#{ReservationEnquiryBean.allStatuses}"
+						var="st" itemLabel="#{st}" itemValue="#{st}" />
+				</p:selectOneMenu>
 
-            <!-- Reservation List Panel -->
-            <p:panel header="Manage Reservations" styleClass="ui-fluid">
-                
-                <p:dataTable id="reservationTable"
-                             value="#{ReservationEnquiryBean.reservations}"
-                             var="res"
-                             paginator="true"
-                             rows="10"
-                             emptyMessage="No reservations found."
-                             styleClass="ui-datatable-gridlines">
+				<!-- Search Button -->
+				<h:outputLabel />
+				<p:commandButton value="Search" icon="fa fa-search"
+					action="#{ReservationEnquiryBean.searchReservations}"
+					update="reservationTable" styleClass="btn-search" />
+			</p:panel>
 
-                    <!-- Customer Info -->
-                    <p:column headerText="Customer Name">
-                        <h:outputText value="#{res.customerName}" />
-                    </p:column>
-                    <p:column headerText="Email">
-                        <h:outputText value="#{res.email}" />
-                    </p:column>
-                    <p:column headerText="Phone">
-                        <h:outputText value="#{res.phoneNumber}" />
-                    </p:column>
+			<!-- Reservation List Panel -->
+			<p:panel header="Manage Reservations" styleClass="ui-fluid">
 
-                    <!-- Car Info -->
-                    <p:column headerText="Car">
-                        <h:outputText value="#{res.carType}" />
-                    </p:column>
+				<p:dataTable id="reservationTable"
+					value="#{ReservationEnquiryBean.reservations}" var="res"
+					paginator="true" rows="10" emptyMessage="No reservations found."
+					styleClass="ui-datatable-gridlines">
 
-                    <!-- Reservation Dates -->
-                    <p:column headerText="Start Date">
-                        <h:outputText value="#{res.startDate}">
-                            <f:convertDateTime pattern="yyyy-MM-dd" />
+					<!-- Customer Info -->
+					<p:column headerText="Customer Name">
+						<h:outputText value="#{res.customerName}" />
+					</p:column>
+					<p:column headerText="Email">
+						<h:outputText value="#{res.email}" />
+					</p:column>
+					<p:column headerText="Phone">
+						<h:outputText value="#{res.phoneNumber}" />
+					</p:column>
+
+					<!-- Car Info -->
+					<p:column headerText="Car">
+						<h:outputText value="#{res.carType}" />
+					</p:column>
+
+					<!-- Reservation Dates -->
+					<p:column headerText="Start Date">
+						<h:outputText value="#{res.startDate}"> 
+							<f:convertDateTime pattern="yyyy-MM-dd" />
+						</h:outputText>
+					</p:column>
+					<p:column headerText="End Date">
+						<h:outputText value="#{res.endDate}">
+							<f:convertDateTime pattern="yyyy-MM-dd" />
+						</h:outputText>
+					</p:column>
+
+					<!-- Status Column -->
+					<p:column headerText="Status">
+						<h:outputText value="#{res.reserveStatus}">
+							<f:passThroughAttribute name="style"
+								value="#{res.reserveStatus eq 'APPROVED' ? 'color:green;' : res.reserveStatus eq 'REJECTED' ? 'color:red;' : 'color:orange;'}" />  -->
                         </h:outputText>
-                    </p:column>
-                    <p:column headerText="End Date">
-                        <h:outputText value="#{res.endDate}">
-                            <f:convertDateTime pattern="yyyy-MM-dd" />
-                        </h:outputText>
-                    </p:column>
+					</p:column>
 
-                    <!-- Status Column -->
-                    <p:column headerText="Status">
-                        <h:outputText value="#{res.reserveStatus}">
-                            <f:passThroughAttribute name="style" 
-                                value="#{res.reserveStatus eq 'APPROVED' ? 'color:green;' : res.reserveStatus eq 'REJECTED' ? 'color:red;' : 'color:orange;'}"/>  -->
-                        </h:outputText>
-                    </p:column>
+					<p:column style="width:4%;">
+						<p:commandButton id="detailReservationBtn"
+                 icon="fa fa-laptop"
+                 styleClass="green-button"
+                 actionListener="#{ReservationEnquiryBean.printReservation(res)}"
+                 update="reservationDetailDialog"
+                 oncomplete="PF('reservationDetailDialog').show()" />
+					</p:column>
+					<!-- Action Buttons -->
+					<p:column headerText="Actions" style="width:200px;">
+						<p:commandButton value="Approve" icon="fa fa-check"
+							styleClass="ui-button-success"
+							action="#{ReservationEnquiryBean.approve(res)}"
+							update="reservationTable"
+							disabled="#{res.reserveStatus eq 'APPROVED'}" />
+							
+						<p:commandButton value="Reject" icon="fa fa-times"
+							styleClass="ui-button-danger"
+							action="#{ReservationEnquiryBean.reject(res)}"
+							update="reservationTable"
+							disabled="#{res.reserveStatus eq 'REJECTED'}" />
 
-                    <!-- Action Buttons -->
-                    <p:column headerText="Actions" style="width:200px;">
-                        <p:commandButton value="Approve" icon="fa fa-check"
-                                         styleClass="ui-button-success"
-                                         action="#{ReservationEnquiryBean.approve(res)}"
-                                         update="reservationTable" disabled="#{res.reserveStatus eq 'APPROVED'}" />
-                                    
+						<p:commandButton value="Delete" icon="fa fa-trash"
+							action="#{ReservationEnquiryBean.deleteReservation(res)}"
+							update="reservationTable" styleClass="ui-button-secondary" />
 
-                        <p:commandButton value="Reject" icon="fa fa-times"
-                                         styleClass="ui-button-danger"
-                                         action="#{ReservationEnquiryBean.reject()}"
-                                         update="reservationTable" disabled="#{res.reserveStatus eq 'REJECTED'}"/>
-                                   
-                        
-                         <p:commandButton value="Delete" icon="fa fa-trash"
-                                         action="#{ReservationEnquiryBean.deleteReservation(res)}"
-                                         update="reservationTable"
-                                         styleClass="ui-button-secondary" />
-                                         
-                     <p:commandButton icon="fa fa-file-pdf-o"
-                     title="Download Letter"
-                     action="#{AdminReservationBean.generateLetter(res)}"
-                     ajax="false"
-                     rendered="#{res.reserveStatus eq 'APPROVED' or res.reserveStatus eq 'REJECTED'}"/> 
-                    </p:column>
+						<p:commandButton icon="fa fa-file-pdf-o" title="Download Letter"
+							action="#{AdminReservationBean.generateLetter(res)}" ajax="false"
+							rendered="#{res.reserveStatus eq 'APPROVED' or res.reserveStatus eq 'REJECTED'}" />
+					</p:column>
 
-                </p:dataTable>
-            </p:panel>
+				</p:dataTable>
+			</p:panel>
+		</h:form>
 
-        </h:form>
-    </ui:define>
+		<p:dialog appendTo="@(body)" dynamic="true" modal="true"
+			style="align:center;" responsive="true"
+			header="Reservation Detail form" height="400" width="400"
+			hideEffect="explode" widgetVar="reservationDetailDialog"
+			id="reservationDetailDialog">
+			<p:tabView>
+			<p:tab title="Customer Information">
+				<h:panelGrid columns="2" columnClasses="label,value" cellpadding="5"
+					>
+					<h:outputText value="Name:" />
+					<h:outputText
+						value="#{ReservationEnquiryBean.selectedReservation.customer.name}" />
+
+					<h:outputText value="Email:" />
+					<h:outputText
+						value="#{ReservationEnquiryBean.selectedReservation.customer.email}" />
+
+					<h:outputText value="Phone Number:" />
+					<h:outputText
+						value="#{ReservationEnquiryBean.selectedReservation.customer.phoneNumber}" />
+
+					<h:outputText value="Driver License:" />
+					<h:outputText
+						value="#{ReservationEnquiryBean.selectedReservation.customer.driverLicence}" />
+
+					<h:outputText value="Address:" />
+					<h:outputText
+						value="#{ReservationEnquiryBean.selectedReservation.customer.address}" />
+
+					<h:outputText value="Gender:" />
+					<h:outputText
+						value="#{ReservationEnquiryBean.selectedReservation.customer.gender}" />
+
+					<h:outputText value="ID Type:" />
+					<h:outputText
+						value="#{ReservationEnquiryBean.selectedReservation.customer.idType}" />
+
+					<h:outputText value="ID Number:" />
+					<h:outputText
+						value="#{ReservationEnquiryBean.selectedReservation.customer.idNumber}" />
+				</h:panelGrid>
+				</p:tab>
+				
+				<p:tab title="Car Information">
+				<h:panelGrid columns="2" columnClasses="label,value" cellpadding="5"
+					>
+					<h:outputText value="Type:" />
+					<h:outputText
+						value="#{ReservationEnquiryBean.selectedReservation.car.type}" />
+
+					<h:outputText value="Make:" />
+					<h:outputText
+						value="#{ReservationEnquiryBean.selectedReservation.car.make}" />
+
+					<h:outputText value="Model:" />
+					<h:outputText
+						value="#{ReservationEnquiryBean.selectedReservation.car.model}" />
+
+					<h:outputText value="Registraiton Number:" />
+					<h:outputText
+						value="#{ReservationEnquiryBean.selectedReservation.car.registrationNo}" />
+
+					<h:outputText value="Year:" />
+					<h:outputText
+						value="#{ReservationEnquiryBean.selectedReservation.car.year}" />
+
+					<h:outputText value="Base Rate:" />
+					<h:outputText
+						value="#{ReservationEnquiryBean.selectedReservation.car.baseRate}" />
+
+					<h:outputText value="Passenger:" />
+					<h:outputText
+						value="#{ReservationEnquiryBean.selectedReservation.car.passenger}" />
+
+					<h:outputText value=" Status:" />
+					<h:outputText
+						value="#{ReservationEnquiryBean.selectedReservation.car.carStatus}" />
+						
+					<h:outputText value="Branch:" />
+					<h:outputText
+						value="#{ReservationEnquiryBean.selectedReservation.car.carBranch}" />
+						
+						<h:outputText value="ID Number:" />
+					<h:outputText
+						value="#{ReservationEnquiryBean.selectedReservation.car.category}" />
+					
+				</h:panelGrid>
+				</p:tab>
+				
+				</p:tabView>
+		</p:dialog>
+
+	</ui:define>
 </ui:composition>

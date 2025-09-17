@@ -1,5 +1,6 @@
 package org.ace.accounting.web.system;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.HashMap;
 import java.util.List;
@@ -13,8 +14,9 @@ import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.SessionScoped;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
-
+import java.util.Date;
 import org.ace.accounting.common.Gender;
+import org.ace.accounting.dto.ReservationDTO;
 import org.ace.accounting.system.car.Car;
 import org.ace.accounting.system.car.service.interfaces.ICarService;
 import org.ace.accounting.system.customer.Renter;
@@ -51,8 +53,10 @@ public class ManageReservationActionBean extends BaseBean {
 	private List<Reservation> reservationList;
 	private List<Reservation> reserveList;
 	private Double totalBaseRate;
+	private Reservation selectedReservation;
+	private Date today;
 	
-	 public void calculateTotalCost() {
+	public void calculateTotalCost() {
 	        Date startDate = reservation.getStartDate();
 	        Date endDate = reservation.getEndDate();
 
@@ -81,7 +85,7 @@ public class ManageReservationActionBean extends BaseBean {
 
 	@PostConstruct
 	public void init() {
-		
+		setToday(new Date());
 		createNewRenter();
 		createNewReservation();
 		Object obj = FacesContext.getCurrentInstance()
@@ -115,6 +119,8 @@ public class ManageReservationActionBean extends BaseBean {
 	        reservation.setCar(car);
 	    }
 
+	 
+	 
 	private void createNewRenter() {
 		this.renter = new Renter();
 	}
@@ -126,6 +132,29 @@ public class ManageReservationActionBean extends BaseBean {
 		            new FacesMessage(FacesMessage.SEVERITY_WARN, "Please select a car and enter renter info!", ""));
 		        return;
 		    }
+		 if (reservation.getStartDate() == null) {
+			    FacesContext.getCurrentInstance().addMessage(null,
+			        new FacesMessage(FacesMessage.SEVERITY_WARN, "Please select a start date!", ""));
+			    return;
+			}
+
+			if (reservation.getEndDate() == null) {
+			    FacesContext.getCurrentInstance().addMessage(null,
+			        new FacesMessage(FacesMessage.SEVERITY_WARN, "Please select an end date!", ""));
+			    return;
+			}
+
+			if (reservation.getEndDate().before(reservation.getStartDate())) {
+			    FacesContext.getCurrentInstance().addMessage(null,
+			        new FacesMessage(FacesMessage.SEVERITY_WARN, "End date must be greater than start date!", ""));
+			    return;
+			}
+
+			if (reservation.getStartDate().before(new Date())) { // To check if the start date is in the past
+			    FacesContext.getCurrentInstance().addMessage(null,
+			        new FacesMessage(FacesMessage.SEVERITY_WARN, "Start date cannot be in the past!", ""));
+			    return;
+			}
 		Reservation temp = new Reservation();
 		temp.setRenter(reservation.getRenter());
 		temp.setCar(reservation.getCar());
@@ -194,6 +223,16 @@ public class ManageReservationActionBean extends BaseBean {
 
 	}
 	
+	public void printReservation(Reservation r) {
+		 try {
+		        this.selectedReservation = reservationService.findById(r.getId());
+		        System.out.println("Reservation details loaded: " + selectedReservation.getId());
+		    } catch (Exception e) {
+		        FacesContext.getCurrentInstance().addMessage(null, 
+		            new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error loading reservation details", e.getMessage()));
+		        e.printStackTrace();
+		    }
+   }
 	public void deleteReservationFromDB(Reservation reservationToDelete) {
 	    try {
 	        reservationService.deleteReservation(reservationToDelete); // service layer handles JPA delete
@@ -231,6 +270,7 @@ public class ManageReservationActionBean extends BaseBean {
 	        new FacesMessage("Reservation rejected"));
 	}
 
+	
 
 	public List<Reservation> getReserveList() {return reserveList;}
 	public void setReserveList(List<Reservation> reserveList) {this.reserveList = reserveList;}
@@ -267,11 +307,29 @@ public class ManageReservationActionBean extends BaseBean {
 	public IReservationService getReservationService() {return reservationService;}
 	public void setReservationService(IReservationService reservationService) {this.reservationService = reservationService;}
 
-	public Car getSelectCar() {
-		return selectCar;
+	public Car getSelectCar() {return selectCar;}
+
+	public void setSelectCar(Car selectCar) {this.selectCar = selectCar;}
+
+
+	public Reservation getSelectedReservation() {
+		return selectedReservation;
 	}
 
-	public void setSelectCar(Car selectCar) {
-		this.selectCar = selectCar;
+
+	public void setSelectedReservation(Reservation selectedReservation) {
+		this.selectedReservation = selectedReservation;
 	}
+
+
+	public Date getToday() {
+		return today;
+	}
+
+
+	public void setToday(Date today) {
+		this.today = today;
+	}
+
+
 }

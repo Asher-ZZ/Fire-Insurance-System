@@ -1,0 +1,191 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	template="/common/commonLayout.xhtml">
+
+	<ui:define name="content">
+		<h:form id="reservationHistoryForm">
+			<p:growl globalOnly="true" showDetail="true" escape="false" />
+
+			<p:dataTable var="r"
+				value="#{ManageReservationActionBean.reserveList}" id="reserveTable"
+				paginator="true" rows="10" style="width:100%"
+				widgetVar="reserveTable"
+				paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+				rowsPerPageTemplate="5,10,15" rowKey="#{r.id}" reflow="true"
+				rowIndexVar="var" paginatorPosition="bottom">
+
+				<!-- Row Number -->
+				<p:column headerText="No" width="2%">
+					<h:outputText value="#{var + 1}" />
+				</p:column>
+
+
+				<!-- Car Type -->
+				<p:column headerText="Customer Name" >
+					<h:outputText value="#{r.renter.name}" />
+				</p:column>
+
+				<!-- Car Make -->
+				<p:column headerText="Email" >
+					<h:outputText value="#{r.renter.email}" />
+				</p:column>
+
+				<!-- Car Model -->
+				<p:column headerText="Phone" >
+					<h:outputText value="#{r.renter.phoneNumber}" />
+				</p:column>
+
+				<!-- Year -->
+				<p:column headerText="Car" filterBy="#{r.car.type}"
+					filterMatchMode="contains">
+					<h:outputText value="#{r.car.type}" />
+				</p:column>
+
+				<p:column headerText="TOTAL COST" >
+					<h:outputText value="#{r.totalCost}" />
+				</p:column>
+
+				<!-- Status -->
+				<p:column headerText="Start Date" filterBy="#{r.startDate}"
+					filterMatchMode="contains">
+					<h:outputText value="#{r.startDate}" >
+					<f:convertDateTime pattern="dd-MM-yyyy" />
+				</h:outputText>
+				</p:column>
+
+				<!-- Base Rate -->
+				<p:column headerText="End Date" filterBy="#{r.endDate}"
+					filterMatchMode="contains">
+					<h:outputText value="#{r.endDate}" >
+					<f:convertDateTime pattern="dd-MM-YYYY" />
+					</h:outputText>
+				</p:column>
+
+				<p:column headerText="Status" filterBy="#{r.reserveStatus}"
+					filterMatchMode="contains">
+					<h:outputText value="#{r.reserveStatus}" />
+				</p:column> -->
+
+				<!-- Edit Button -->
+				<p:column style="width:4%;">
+					 <p:commandButton icon="fa fa-eye"
+            action="#{ManageReservationActionBean.printReservation(r)}"
+            oncomplete="PF('historyDetailDialog').show()" 
+            process="@this" update="historyDetailDialog" />
+				</p:column>
+
+				<p:column style="width:4%;">
+					<p:commandButton styleClass="red-button" icon="fa fa-times"
+						action="#{ManageReservationActionBean.deleteReservationFromDB(r)}"
+						update="reserveTable">
+						<p:confirm header="Confirmation"
+							message="Are you sure you want to delete this car?"
+							icon="fa fa-exclamation-triangle" />
+					</p:commandButton>
+				</p:column>
+
+			</p:dataTable>
+		</h:form>
+		<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+			<p:commandButton value="Yes" type="button"
+				styleClass="ui-confirmdialog-yes" icon="pi pi-check" />
+			<p:commandButton value="No" type="button"
+				styleClass="ui-confirmdialog-no" icon="pi pi-times" />
+		</p:confirmDialog>
+		
+		<p:dialog appendTo="@(body)" dynamic="true" modal="true"
+			style="align:center;" responsive="true" update="historyDetailDialog"
+			header="Reservation Detail form" height="400" width="400"
+			hideEffect="explode" widgetVar="historyDetailDialog"
+			id="historyDetailDialog">
+			<p:tabView>
+			<p:tab title="Customer Information">
+				<h:panelGrid columns="2" columnClasses="label,value" cellpadding="5"
+					>
+					<h:outputText value="Name:" />
+					<h:outputText
+						value="#{ManageReservationActionBean.selectedReservation.customer.name}" />
+
+					<h:outputText value="Email:" />
+					<h:outputText
+						value="#{ManageReservationActionBean.selectedReservation.customer.email}" />
+
+					<h:outputText value="Phone Number:" />
+					<h:outputText
+						value="#{ManageReservationActionBean.selectedReservation.customer.phoneNumber}" />
+
+					<h:outputText value="Driver License:" />
+					<h:outputText
+						value="#{ManageReservationActionBean.selectedReservation.customer.driverLicence}" />
+
+					<h:outputText value="Address:" />
+					<h:outputText
+						value="#{ManageReservationActionBean.selectedReservation.customer.address}" />
+
+					<h:outputText value="Gender:" />
+					<h:outputText
+						value="#{ManageReservationActionBean.selectedReservation.customer.gender}" />
+
+					<h:outputText value="ID Type:" />
+					<h:outputText
+						value="#{ManageReservationActionBean.selectedReservation.customer.idType}" />
+
+					<h:outputText value="ID Number:" />
+					<h:outputText
+						value="#{ManageReservationActionBean.selectedReservation.customer.idNumber}" />
+				</h:panelGrid>
+				</p:tab>
+				
+				<p:tab title="Car Information">
+				<h:panelGrid columns="2" columnClasses="label,value" cellpadding="5"
+					>
+					<h:outputText value="Type:" />
+					<h:outputText
+						value="#{ManageReservationActionBean.selectedReservation.car.type}" />
+
+					<h:outputText value="Make:" />
+					<h:outputText
+						value="#{ManageReservationActionBean.selectedReservation.car.make}" />
+
+					<h:outputText value="Model:" />
+					<h:outputText
+						value="#{ManageReservationActionBean.selectedReservation.car.model}" />
+
+					<h:outputText value="Registraiton Number:" />
+					<h:outputText
+						value="#{ManageReservationActionBean.selectedReservation.car.registrationNo}" />
+
+					<h:outputText value="Year:" />
+					<h:outputText
+						value="#{ManageReservationActionBean.selectedReservation.car.year}" />
+
+					<h:outputText value="Base Rate:" />
+					<h:outputText
+						value="#{ManageReservationActionBean.selectedReservation.car.baseRate}" />
+
+					<h:outputText value="Passenger:" />
+					<h:outputText
+						value="#{ManageReservationActionBean.selectedReservation.car.passenger}" />
+
+					<h:outputText value=" Status:" />
+					<h:outputText
+						value="#{ManageReservationActionBean.selectedReservation.car.carStatus}" />
+						
+					<h:outputText value="Branch:" />
+					<h:outputText
+						value="#{ManageReservationActionBean.selectedReservation.car.carBranch}" />
+						
+						<h:outputText value="ID Number:" />
+					<h:outputText
+						value="#{ManageReservationActionBean.selectedReservation.car.category}" />
+					
+				</h:panelGrid>
+				</p:tab>
+				
+				</p:tabView>
+		</p:dialog>
+	</ui:define>
+</ui:composition>

@@ -97,7 +97,6 @@ public class ManageCarActionBean extends BaseBean {
 	}
 
 	public void searchCars() {
-		
 		availableCar = carService.searchAvailableCars(car.getCarBranch(), selectedCarType, startDate, endDate);
 	}
 

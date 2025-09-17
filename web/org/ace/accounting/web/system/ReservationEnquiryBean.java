@@ -45,6 +45,11 @@ public class ReservationEnquiryBean implements Serializable {
 		private List<Reservation> reservationList;
 		private List<Reservation> reserveList;
 		private ReserveStatus selectedStatus1;
+		private Reservation selectedReservation;
+
+		public Reservation getSelectedReservation() { return selectedReservation; }
+		public void setSelectedReservation(Reservation selectedReservation) { this.selectedReservation = selectedReservation; }
+
 		
 	@ManagedProperty(value = "#{ReservationService}")
 	private IReservationService reservationService;
@@ -98,7 +103,15 @@ public class ReservationEnquiryBean implements Serializable {
 	public void init() {
 		prepareCarTypes();
 		carList = carService.findAll(); 
+		
 	}
+	
+	
+	public void printReservation(ReservationDTO res) {
+        this.selectedReservation = reservationService.findById(res.getId());
+        System.out.println("Printing reservation: " + res.getId());
+    }
+	
 	
 	public void loadReservations() {
 	    try {
