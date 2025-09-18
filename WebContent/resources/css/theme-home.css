@@ -497,7 +497,8 @@ form .ui-state-highlight, .ui-widget-content .ui-state-highlight, .ui-widget-hea
 }
 
 .ui-widget-header{
-	background: #00aab4;
+	color:white;
+	background:#4c4d4e;
 }
 
 .ui-widget-overlay {

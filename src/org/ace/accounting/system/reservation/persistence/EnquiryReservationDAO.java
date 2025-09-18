@@ -39,7 +39,8 @@ public class EnquiryReservationDAO extends BasicDAO implements IEnquiryReservati
 	            "r.startDate, " +
 	            "r.endDate, " +
 	            "r.reserveStatus, " +
-	            "r.totalCost) " +
+	            "r.totalCost, " +
+	            "r.reason) " +
 	            "FROM Reservation r " +
 	            "JOIN r.renter cr " +
 	            "JOIN r.car c " +

@@ -19,12 +19,11 @@ public class ReservationDTO implements Serializable {
     private Date endDate;
     private ReserveStatus reserveStatus;
     private Double totalCost;
+    private String reason;
     
-
     public ReservationDTO() {
     }
 
-   
     public ReservationDTO(
     		String id,
             String customerName,
@@ -34,7 +33,8 @@ public class ReservationDTO implements Serializable {
             Date startDate,
             Date endDate,
             ReserveStatus reserveStatus,
-            Double totalCost) {
+            Double totalCost,
+            String reason) {
     	this.id=id;
         this.customerName = customerName;
         this.email = email;
@@ -44,6 +44,7 @@ public class ReservationDTO implements Serializable {
         this.endDate = endDate;
         this.reserveStatus = reserveStatus;
         this.totalCost = totalCost;
+        this.reason=reason;
         }
 
     public String getCustomerName() {
@@ -117,6 +118,16 @@ public class ReservationDTO implements Serializable {
 
 	public void setId(String id) {
 		this.id = id;
+	}
+
+
+	public String getReason() {
+		return reason;
+	}
+
+
+	public void setReason(String reason) {
+		this.reason = reason;
 	}
 }
 

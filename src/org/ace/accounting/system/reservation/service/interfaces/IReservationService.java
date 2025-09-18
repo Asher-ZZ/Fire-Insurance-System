@@ -14,7 +14,7 @@ public interface IReservationService {
     void updateReservation(Reservation reservation) throws DAOException;
 
     void deleteReservation(Reservation reservation) throws DAOException;
-    public void rejectReservation(String id) throws SystemException;
+    public void rejectReservation(String id, String reason) throws SystemException;
     public void approveReservation(String id) throws SystemException;
     Reservation findById(String id) throws DAOException;
     List<Reservation> findAll() throws DAOException;

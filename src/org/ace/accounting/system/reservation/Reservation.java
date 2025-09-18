@@ -71,6 +71,13 @@ public class Reservation implements Serializable {
     @Column(name = "VERSION")
     private Integer version;
 
+    
+    @Column(name="reason",length = 500)
+    private String reason;
+    
+    public String getReason() { return reason; }
+    
+    public void setReason(String reason) { this.reason = reason; }
     // Getters and setters
 
 

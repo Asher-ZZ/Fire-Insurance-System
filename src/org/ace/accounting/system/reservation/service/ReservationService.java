@@ -98,19 +98,24 @@ public class ReservationService extends BaseService implements IReservationServi
         updateReservation(res);
     }
 
-    public void rejectReservation(String id) throws SystemException {
+    @Transactional(propagation = Propagation.REQUIRED)
+    public void rejectReservation(String id, String reason) throws SystemException {
         Reservation res = findById(id);
         if (res == null) throw new SystemException("404", "Reservation not found");
-
         res.setReserveStatus(ReserveStatus.REJECTED);
-
+        res.setReason(reason);
+        
+           
         Car car = res.getCar();
         if (car != null) {
             car.setCarStatus(CarStatus.AVAILABLE);
         }
         updateReservation(res);
     }
+
     
+    
+
    
 
 

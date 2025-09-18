@@ -14,6 +14,5 @@ public interface IReservationDAO {
     
     Reservation findById(String id) throws DAOException;
     
-
     List<Reservation> findAll() throws DAOException;
 }

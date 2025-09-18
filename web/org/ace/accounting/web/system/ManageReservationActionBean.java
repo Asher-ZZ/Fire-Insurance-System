@@ -55,7 +55,20 @@ public class ManageReservationActionBean extends BaseBean {
 	private Double totalBaseRate;
 	private Reservation selectedReservation;
 	private Date today;
+	private String rejectionReason;
 	
+
+	
+	public String getRejectionReason() {
+		return rejectionReason;
+	}
+
+
+	public void setRejectionReason(String rejectionReason) {
+		this.rejectionReason = rejectionReason;
+	}
+
+
 	public void calculateTotalCost() {
 	        Date startDate = reservation.getStartDate();
 	        Date endDate = reservation.getEndDate();
@@ -264,13 +277,33 @@ public class ManageReservationActionBean extends BaseBean {
 	        new FacesMessage("Reservation approved"));
 	}
 
+	/*
+	 * public void reject(Reservation res) {
+	 * reservationService.rejectReservation(res.getId());
+	 * FacesContext.getCurrentInstance().addMessage(null, new
+	 * FacesMessage("Reservation rejected")); }
+	 */
 	public void reject(Reservation res) {
-	    reservationService.rejectReservation(res.getId());
-	    FacesContext.getCurrentInstance().addMessage(null,
-	        new FacesMessage("Reservation rejected"));
-	}
+	    try {
+	        if (rejectionReason == null || rejectionReason.trim().isEmpty()) {
+	            FacesContext.getCurrentInstance().addMessage(null,
+	                new FacesMessage(FacesMessage.SEVERITY_WARN, "Please provide a rejection reason!", ""));
+	            return;
+	        }
 
-	
+	        reservationService.rejectReservation(res.getId(), rejectionReason.trim());
+
+	        FacesContext.getCurrentInstance().addMessage(null,
+	            new FacesMessage("Reservation rejected with reason: " + rejectionReason));
+
+	        loadReservations();
+	        rejectionReason = null;
+	    } catch (Exception e) {
+	        FacesContext.getCurrentInstance().addMessage(null,
+	            new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error rejecting reservation", e.getMessage()));
+	        e.printStackTrace();
+	    }
+	}
 
 	public List<Reservation> getReserveList() {return reserveList;}
 	public void setReserveList(List<Reservation> reserveList) {this.reserveList = reserveList;}
@@ -306,30 +339,18 @@ public class ManageReservationActionBean extends BaseBean {
 	public void setTotalBaseRate(Double totalBaseRate) {this.totalBaseRate = totalBaseRate;}
 	public IReservationService getReservationService() {return reservationService;}
 	public void setReservationService(IReservationService reservationService) {this.reservationService = reservationService;}
-
 	public Car getSelectCar() {return selectCar;}
-
 	public void setSelectCar(Car selectCar) {this.selectCar = selectCar;}
-
-
 	public Reservation getSelectedReservation() {
 		return selectedReservation;
 	}
-
-
 	public void setSelectedReservation(Reservation selectedReservation) {
 		this.selectedReservation = selectedReservation;
 	}
-
-
 	public Date getToday() {
 		return today;
 	}
-
-
 	public void setToday(Date today) {
 		this.today = today;
 	}
-
-
 }
