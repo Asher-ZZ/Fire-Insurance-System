@@ -42,21 +42,21 @@
 						<h:outputText for="make" value="Make"
 							styleClass="input-label mandatory" />
 						<p:inputText id="make" value="#{ManageCarActionBean.car.make}"
-							required="true" />
+							required="true" requiredMessage="Car Make is required"  />
 
 						<p:outputLabel />
 						<p:message for="model" display="text" />
 						<h:outputText for="model" value="Model"
 							styleClass="input-label mandatory" />
 						<p:inputText id="model" value="#{ManageCarActionBean.car.model}"
-							required="true" />
+							required="true" requiredMessage="Car Model is required" />
 
 						<p:outputLabel />
 						<p:message for="year" display="text" />
 						<h:outputText for="year" value="Year"
 							styleClass="input-label mandatory" />
 						<p:inputNumber id="year" value="#{ManageCarActionBean.car.year}"
-							required="true" decimalPlaces="0" />
+							required="true" decimalPlaces="0" requiredMessage="Car Year is required"  />
 					</p:panelGrid>
 					<p:panelGrid columns="2"
 						columnClasses="ui-grid-col-3,ui-grid-col-9" layout="grid"
@@ -67,15 +67,15 @@
 							styleClass="input-label mandatory" />
 						<p:inputText id="regNo"
 							value="#{ManageCarActionBean.car.registrationNo}" required="true"
-							validator="#{ManageCarActionBean.validateRegistrationNo}" />
+							validator="#{ManageCarActionBean.validateRegistrationNo}" requiredMessage="Registeration Number is required" />
 
-						<p:outputLabel />
+						<p:outputLabel /> 
 						<p:message for="passenger" display="text" />
 						<h:outputText for="passenger" value="Passenger Capacity"
 							styleClass="input-label mandatory" />
 						<p:inputNumber id="passenger"
 							value="#{ManageCarActionBean.car.passenger}" required="true"
-							decimalPlaces="0" />
+							decimalPlaces="0" requiredMessage="Passenger Capacity is required" />
 
 						<p:outputLabel />
 						<p:message for="baseRate" display="text" />
@@ -83,7 +83,7 @@
 							styleClass="input-label mandatory" />
 						<p:inputNumber id="baseRate"
 							value="#{ManageCarActionBean.car.baseRate}" required="true"
-							decimalPlaces="2" />
+							decimalPlaces="2" requiredMessage="Base Rate is required" />
 						<p:outputLabel />
 						<p:message for="branch" display="text" />
 						<p:outputLabel for="branch" value="Branch"
@@ -162,38 +162,32 @@
 				</p:column>
 
 				<!-- Car Type -->
-				<p:column headerText="Type" filterBy="#{car.type}"
-					filterMatchMode="contains">
+				<p:column headerText="Type" >
 					<h:outputText value="#{car.type}" />
 				</p:column>
 
 				<!-- Car Make -->
-				<p:column headerText="Make" filterBy="#{car.make}"
-					filterMatchMode="contains">
+				<p:column headerText="Make" >
 					<h:outputText value="#{car.make}" />
 				</p:column>
 
 				<!-- Car Model -->
-				<p:column headerText="Model" filterBy="#{car.model}"
-					filterMatchMode="contains">
+				<p:column headerText="Model" >
 					<h:outputText value="#{car.model}" />
 				</p:column>
 
 				<!-- Year -->
-				<p:column headerText="Year" filterBy="#{car.year}"
-					filterMatchMode="contains">
+				<p:column headerText="Year" >
 					<h:outputText value="#{car.year}" />
 				</p:column>
 
 				<!-- Status -->
-				<p:column headerText="Status" filterBy="#{car.carStatus}"
-					filterMatchMode="contains">
+				<p:column headerText="Status" >
 					<h:outputText value="#{car.carStatus}" />
 				</p:column>
 
 				<!-- Base Rate -->
-				<p:column headerText="Base Rate" filterBy="#{car.baseRate}"
-					filterMatchMode="contains">
+				<p:column headerText="Base Rate" >
 					<h:outputText value="#{car.baseRate}" />
 				</p:column>
 

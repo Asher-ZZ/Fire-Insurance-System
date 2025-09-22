@@ -8,6 +8,7 @@ import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.application.FacesMessage;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -297,8 +298,8 @@ public class ReservationEnquiryBean extends BaseBean implements Serializable {
 	        params.put("phoneNumber", dto.getPhoneNumber());
 	        params.put("carType", dto.getCarType());
 	        params.put("totalCost", dto.getTotalCost());
-	        params.put("startDate", Utils.formattedDate(dto.getStartDate()));
-	        params.put("endDate", Utils.formattedDate(dto.getEndDate()));
+	       params.put("startDate", dto.getStartDate());
+	        params.put("endDate", dto.getEndDate());
 
 	        if (dto.getreserveStatus() == ReserveStatus.REJECTED) {
 	            params.put("reason", dto.getReason());
@@ -353,6 +354,29 @@ public void generateAndStoreReport(Reservation reservation) {
         addInfoMessage("PDF report generated and stored successfully.");
     }
 }
+
+public void exportToExcel() {
+    try {
+        if (reservations == null || reservations.isEmpty()) {
+            reservations = enquiryReservationService.findByCriteria(
+                null, null, null, null, null
+            );
+        }
+
+        String fileName = "reservations_" + 
+            new java.text.SimpleDateFormat("yyyyMMdd_HHmmss").format(new java.util.Date()) + ".xlsx";
+
+        ReservationExcelExport.exportReservationsToExcel(reservations, fileName);
+
+        FacesContext.getCurrentInstance().addMessage(null,
+            new FacesMessage(FacesMessage.SEVERITY_INFO, "Export Successful", "File exported successfully."));
+    } catch (Exception e) {
+        e.printStackTrace();
+        FacesContext.getCurrentInstance().addMessage(null,
+            new FacesMessage(FacesMessage.SEVERITY_ERROR, "Export Failed", e.getMessage()));
+    }
+}
+
 
 	
 	public Date getStartDateFrom() {

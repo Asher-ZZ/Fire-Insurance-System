@@ -1,5 +1,7 @@
 package org.ace.accounting.system.reservation.service.interfaces;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
@@ -17,6 +19,7 @@ public interface IReservationService {
     public void rejectReservation(String id, String reason) throws SystemException;
     public void approveReservation(String id) throws SystemException;
     Reservation findById(String id) throws DAOException;
+    public ByteArrayInputStream exportToExcel(List<ReservationDTO> reservations) throws IOException;
     List<Reservation> findAll() throws DAOException;
 
 	

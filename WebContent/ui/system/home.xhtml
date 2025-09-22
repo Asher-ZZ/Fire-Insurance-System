@@ -22,7 +22,6 @@
 	margin: 0;
 	padding: 0;
 	box-sizing: border-box;
-	font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 body {
@@ -31,19 +30,13 @@ body {
 	line-height: 1.6;
 }
 
-.container {
-	max-width: 1200px;
-	margin: 0 auto;
-	padding: 0 15px;
-}
-
 /* HERO */
 .hero-section {
 	background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
 		url('https://images.unsplash.com/photo-1537005081207-04f90e3ba640?ixlib=rb-4.0.3&amp;auto=format&amp;fit=crop&amp;w=1674&amp;q=80')
 		no-repeat center center/cover;
 	color: white;
-	padding: 100px 0;
+	padding: 50px 0;
 	text-align: center;
 }
 
@@ -78,13 +71,22 @@ body {
 
 /* SEARCH */
 .search-section {
-	background: white;
-	border-radius: 10px;
-	padding: 30px;
-	margin-top: -50px;
-	box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1);
-	position: relative;
-	z-index: 10;
+	display: flex;
+	justify-content: center;
+	margin-top: -50px; /* pull card into hero */
+	margin-bottom: 40px;
+}
+
+.search-panel {
+	background: #fff;
+	padding: 28px 36px 44px 33px;
+	border-radius: 12px;
+	box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+	display: flex;
+	flex-wrap: wrap;
+	gap: 20px;
+	max-width: 1000px;
+	align-items: flex-end;
 }
 
 .search-grid {
@@ -101,7 +103,6 @@ body {
 
 .search-input {
 	width: 100%;
-	padding: 10px;
 	border: 1px solid var(- -light-gray);
 	border-radius: 5px;
 }
@@ -109,7 +110,6 @@ body {
 .btn-search {
 	background: var(- -primary);
 	color: white;
-	padding: 12px 20px;
 	border-radius: 5px;
 	font-weight: 600;
 	cursor: pointer;
@@ -123,7 +123,7 @@ body {
 
 /* CAR LIST */
 .cars-section {
-	padding: 60px 0;
+	margin-bottom: 60px;
 }
 
 .section-title {
@@ -203,8 +203,6 @@ body {
 						<h1 class="hero-title">ACCOMPANY YOUR JOURNEY WITH COMFORT</h1>
 						<p class="hero-subtitle">Car rent services for various terrain
 							with guaranteed quality</p>
-						<a href="#" class="btn-hero">Learn More</a> <a href="#"
-							class="btn-hero">Watch Video</a>
 					</div>
 				</div>
 
@@ -215,16 +213,17 @@ body {
 							style="display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end; margin-bottom: 20px;">
 
 							<!-- Location -->
-							 <div class="search-item" style="flex: 1; min-width: 150px;">
+							<div class="search-item" style="flex: 1; min-width: 150px;">
+							<p:message for="location" display="text" />
 								<h:outputLabel for="location" value="Location:"
 									styleClass="search-label" />
-								<p:selectOneMenu id="location" styleClass="search-input"
+								<p:selectOneMenu id="location" styleClass="search-input" required="true" requiredMessage="Location is required"
 									value="#{ManageCarActionBean.branch}">
 									<f:selectItem itemLabel="Any" itemValue="" />
 									<f:selectItems value="#{ManageCarActionBean.carBranches}"
 										var="branch" itemLabel="#{branch}" itemValue="#{branch}" />
 								</p:selectOneMenu>
-							</div> 
+							</div>
 
 							<!-- Car Type -->
 							<!-- <div class="search-item" style="flex: 1; min-width: 150px;">
@@ -239,27 +238,33 @@ body {
 							</div> -->
 
 							<!-- Start Date -->
-							
+							<div class="search-item" style="flex: 1; min-width: 120px;">
+							<p:message for="startDate" display="text" />
 								<h:outputLabel for="startDate" value="Start Date:"
 									styleClass="search-label" />
-								<p:calendar id="startDate" value="#{ManageCarActionBean.startDate}"
-								 pattern="yyyy-MM-dd" navigator="true" required="true" requiredMessage="Start date is required" />
-								
-							
+								<p:calendar id="startDate"
+									value="#{ManageCarActionBean.startDate}"
+									styleClass="search-input" pattern="yyyy-MM-dd" navigator="true"
+									required="true" requiredMessage="Start date is required" />
+							</div>
+
 
 							<!-- End Date -->
-							
+							<div class="search-item" style="flex: 1; min-width: 150px;">
+							<p:message for="endDate" display="text" />
 								<h:outputLabel for="endDate" value="End Date:"
 									styleClass="search-label" />
-								<p:calendar id="endDate" value="#{ManageCarActionBean.endDate}" pattern="yyyy-MM-dd" navigator="true" required="true" requiredMessage="End date is required" />
-							
+								<p:calendar id="endDate" value="#{ManageCarActionBean.endDate}"
+									pattern="yyyy-MM-dd" navigator="true" styleClass="search-input"
+									required="true" requiredMessage="End date is required" />
+							</div>
 
 							<!-- Search Button -->
 							<div class="search-item" style="flex: 0 0 auto;">
 								<p:commandButton id="searchBtn" value="Search"
 									styleClass="btn-search"
 									action="#{ManageCarActionBean.searchCars}"
-									update=":carForm:carsSection" />
+									update=":carForm:carsSection @form" process="@form"  />
 							</div>
 
 						</div>
@@ -270,35 +275,48 @@ body {
 
 			<!-- Cars -->
 			<h:form id="carForm">
-				<h:panelGroup id="carsSection">
+				<h:panelGroup id="carsSection" styleClass="ui-fluid">
 					<div class="container cars-section">
 						<h2 class="section-title">Available Cars</h2>
-						<div class="car-grid">
-							<ui:repeat value="#{ManageCarActionBean.availableCar}" var="car">
-								<div class="car-card">
-									<!-- <h:graphicImage value="/resources/images/placeholder-car.png"
-                style="width:100px; height:60px; object-fit:cover; border-radius:5px; opacity:0.7;"
-                alt="No image available"/> -->
-									<div class="car-content">
-										<div class="car-title">#{car.type}</div>
-										<div class="car-features">#{car.passenger} Seats •
-											#{car.model} • #{car.category}</div>
-										<div class="car-price">$#{car.baseRate}/day</div>
-										<p:commandButton value="Rent Now" styleClass="btn-rent"
-											action="#{ManageCarActionBean.prepareRent(car)}" ajax="false" />
-									</div>
-								</div>
-							</ui:repeat>
+						<p:dataTable id="carsTable" paginator="true"
+							value="#{ManageCarActionBean.availableCar}" var="car"
+							emptyMessage="No cars available for selected criteria."
+							styleClass="ui-datatable-gridlines" rowStyleClass="car-row">
 
-							<h:panelGroup
-								rendered="#{empty ManageCarActionBean.availableCar}">
-								<p
-									style="grid-column: 1/-1; text-align: center; color: #6c757d;">
-									No cars available for selected criteria.</p>
-							</h:panelGroup>
-						</div>
+							<p:column headerText="Type">
+								<h:outputText value="#{car.type}" />
+							</p:column>
+
+							<p:column headerText="Make">
+								<h:outputText value="#{car.make}" />
+							</p:column>
+
+							<!-- Model -->
+							<p:column headerText="Model">
+								<h:outputText value="#{car.model}" />
+							</p:column>
+
+							<!-- Year -->
+							<p:column headerText="Year">
+								<h:outputText value="#{car.year}" />
+							</p:column>
+
+							<p:column headerText="Rate">
+								<h:outputText value="$#{car.baseRate}/day" />
+							</p:column>
+							<p:column headerText="Passenger">
+								<h:outputText value="#{car.passenger}" />
+							</p:column>
+
+							<p:column headerText="Action">
+								<p:commandButton value="Rent Now" styleClass="btn-rent"
+									action="#{ManageCarActionBean.prepareRent(car)}" ajax="false" />
+							</p:column>
+
+						</p:dataTable>
 					</div>
 				</h:panelGroup>
+
 			</h:form>
 		</h:body>
 	</ui:define>

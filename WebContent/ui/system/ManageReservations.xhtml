@@ -60,7 +60,12 @@
 
 			<!-- Reservation List Panel -->
 			<p:panel header="Manage Reservations" styleClass="ui-fluid">
-
+			
+				<p:commandButton value="Export all to Excel"
+                             styleClass="ui-button-primary"
+                             action="#{ReservationEnquiryBean.exportToExcel}"
+                             ajax="false" />
+				
 				<p:dataTable id="reservationTable"
 					value="#{ReservationEnquiryBean.reservations}" var="res"
 					paginator="true" rows="10" emptyMessage="No reservations found."
@@ -142,8 +147,11 @@
 							process="@this" update=":previewDialog"
 							oncomplete="PF('previewDlg').show()"
 							rendered="#{res.reserveStatus eq 'APPROVED' or res.reserveStatus eq 'REJECTED'}" />
+							
+							
 					</p:column>
 				</p:dataTable>
+
 			</p:panel>
 		</h:form>
 
