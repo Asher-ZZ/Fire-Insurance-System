@@ -12,6 +12,7 @@ import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
+import javax.faces.context.FacesContext;
 
 import org.ace.accounting.common.Gender;
 import org.ace.accounting.common.validation.MessageId;
@@ -60,23 +61,24 @@ public class ManageRenterActionBean extends BaseBean implements Serializable {
 		states = new ArrayList<>(stateTownshipMap.keySet());
 	}
 
-	/** Load renter list */
 	public void rebindData() {
 		renterList = renterService.findAll();
 	}
 
-	/** Prepare empty renter for new entry */
 	public void createNewRenter() {
 		renter = new Renter();
 		createNew = true;
 	}
-	
-	
 
-	/** Add new renter */
 	public void addRenter() {
 		try {
 			generateFinalIDNumber();
+			
+			if (!isIdUnique(renter.getIdNumber())) {
+		        FacesContext.getCurrentInstance().addMessage(null,
+		            new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "This NRC/Passport already exists!"));
+		        return; 
+		    }
 			renterService.addNewRenter(renter);
 			addInfoMessage(null, MessageId.INSERT_SUCCESS, renter.getName());
 			createNewRenter();
@@ -86,7 +88,6 @@ public class ManageRenterActionBean extends BaseBean implements Serializable {
 		}
 	}
 
-	/** Delete renter */
 	public void deleteRenter(Renter renter) {
 		System.out.println("DEBUG >> renter before delete: " + renter);
 
@@ -114,12 +115,12 @@ public class ManageRenterActionBean extends BaseBean implements Serializable {
 			if (selectedState != null && selectedTownship != null && selectedType != null && nrcNumber != null) {
 				renter.setIdNumber(selectedState + "/" + selectedTownship + "(" + selectedType + ")" + nrcNumber);
 			} else {
-				renter.setIdNumber(""); // never null
+				renter.setIdNumber(""); 
 			}
 		} else if ("PASSPORT".equalsIgnoreCase(renter.getIdType())) {
 			renter.setIdNumber(passportNumber != null ? passportNumber : "");
 		} else {
-			renter.setIdNumber(""); // fallback
+			renter.setIdNumber(""); 
 		}
 	}
 
@@ -128,17 +129,14 @@ public class ManageRenterActionBean extends BaseBean implements Serializable {
 
 		if (renter != null) {
 			if (Boolean.TRUE.equals(hasDriverLicence)) {
-				// User has a license; keep existing value or empty
 				renter.setDriverLicence("");
 			} else {
-				// User does NOT have a license; set to "No"
 				renter.setDriverLicence("No");
 			}
 		}
 
 	}
 
-	/** Update renter */
 	public void updateRenter() {
 		try {
 			renterService.updateRenter(renter);
@@ -150,11 +148,60 @@ public class ManageRenterActionBean extends BaseBean implements Serializable {
 		}
 	}
 
+	public boolean isIdUnique(String idNumber) {
+	    if (idNumber == null || idNumber.trim().isEmpty()) {
+	        return true; 
+	    }
+
+	    if (renterList == null) {
+	        return true; 
+	    }
+
+	    for (Renter r : renterList) {
+	        
+	        if (r.getIdNumber() != null 
+	            && r.getIdNumber().equals(idNumber) 
+	            && (createNew || !r.getId().equals(renter.getId()))) {
+	            return false; 
+	        }
+	    }
+
+	    return true; 
+	}
+
+	public void validateNRC() {
+	    generateFinalIDNumber();
+	    if (!isIdUnique(renter.getIdNumber())) {
+	        FacesContext.getCurrentInstance().addMessage(null,
+	            new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "This NRC already exists!"));
+	    }
+	}
+	
+	public void validateEmail() {
+	    String email = renter.getEmail();
+	    
+	    if (email == null || !email.matches("^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,6}$")) {
+	        FacesContext.getCurrentInstance().addMessage("CarRenterForm:email",
+	            new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Invalid email format!"));
+	        return;
+	    }
+	}
+
+	public void validatePhone() {
+	    String phone = renter.getPhoneNumber();
+
+	    if (phone == null || !phone.matches("\\d{11}")) {
+	        FacesContext.getCurrentInstance().addMessage("CarRenterForm:phone",
+	            new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Invalid phone number! Must be 10 digits."));
+	        return;
+	    }
+	}
+
+	
 	public boolean getHasDriverLicence() {
 		return hasDriverLicence;
 	}
 
-	/** Prepare renter for editing */
 	public void prepareUpdateRenter(Renter renter) {
 		this.renter = renter;
 		this.createNew = false;

@@ -105,7 +105,6 @@
 						<h:outputText value="#{res.reason}" />
 					</p:column>
 
-
 					<p:column style="width:4%;">
 						<p:commandButton id="detailReservationBtn" icon="fa fa-laptop"
 							styleClass="green-button"
@@ -139,10 +138,11 @@
 							update="reservationTable" styleClass="ui-button-secondary" />
 
 						<p:commandButton icon="fa fa-file-pdf-o" title="Download Letter"
-							action="#{ReservationEnquiryBean.generateReport(res)}" ajax="false"
+							actionListener="#{ReservationEnquiryBean.generateReport(res)}"
+							process="@this" update=":previewDialog"
+							oncomplete="PF('previewDlg').show()"
 							rendered="#{res.reserveStatus eq 'APPROVED' or res.reserveStatus eq 'REJECTED'}" />
 					</p:column>
-
 				</p:dataTable>
 			</p:panel>
 		</h:form>
@@ -248,17 +248,33 @@
 				<p:inputTextarea id="reasonField"
 					value="#{ReservationEnquiryBean.rejectionReason}" rows="4"
 					cols="50" required="true" requiredMessage="Reason is required" />
+				<h:panelGroup layout="block"
+					style="margin-top:10px; text-align:right;">
+					<p:commandButton value="Confirm Reject"
+						actionListener="#{ReservationEnquiryBean.reject}"
+						update=":adminReservationForm:reservationTable :adminReservationForm:growl"
+						oncomplete="if (!args.validationFailed) PF('rejectDialogWidget').hide();" />
 
-				<p:commandButton value="Confirm Reject"
-					actionListener="#{ReservationEnquiryBean.reject}"
-					update=":adminReservationForm:reservationTable :adminReservationForm:growl"
-					oncomplete="if (!args.validationFailed) PF('rejectDialogWidget').hide();" />
-
-				<p:commandButton value="Cancel"
-					onclick="PF('rejectDialogWidget').hide(); return false;" />
+					<p:commandButton value="Cancel"
+						onclick="PF('rejectDialogWidget').hide(); return false;" />
+				</h:panelGroup>
 			</h:form>
 		</p:dialog>
 
+		<p:dialog id="previewDialog" header="Reservaiton Report"
+			widgetVar="previewDlg" modal="true" resizable="true"
+			maximizable="true" width="800" height="600" appendTo="@(body)">
+
+			<object type="application/pdf"
+				data="#{request.contextPath}#{ReservationEnquiryBean.pdfDirPath}#{ReservationEnquiryBean.fileName}.pdf"
+				width="100%" height="100%">
+				<p>
+					Your browser does not support embedded PDF.
+					<h:outputLink
+						value="#{request.contextPath}#{ReservationEnquiryBean.pdfDirPath}#{ReservationEnquiryBean.fileName}.pdf">Download</h:outputLink>
+				</p>
+			</object>
+		</p:dialog>
 
 	</ui:define>
 </ui:composition>

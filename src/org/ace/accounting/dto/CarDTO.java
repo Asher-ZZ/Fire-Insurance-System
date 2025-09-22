@@ -7,7 +7,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
-public class ReservationDTO implements Serializable {
+public class CarDTO implements Serializable {
 
     private static final long serialVersionUID = 1L;
     private String id;
@@ -21,10 +21,10 @@ public class ReservationDTO implements Serializable {
     private Double totalCost;
     private String reason;
     
-    public ReservationDTO() {
+    public CarDTO() {
     }
 
-    public ReservationDTO(
+    public CarDTO(
     		String id,
             String customerName,
             String email,
@@ -47,11 +47,7 @@ public class ReservationDTO implements Serializable {
         this.reason=reason;
         }
 
-    public ReservationDTO(Reservation reservation) {
-		// TODO Auto-generated constructor stub
-	}
-
-	public String getCustomerName() {
+    public String getCustomerName() {
         return customerName;
     }
 

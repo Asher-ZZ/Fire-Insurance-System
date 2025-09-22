@@ -98,5 +98,37 @@ public class ReservationDAO extends BasicDAO implements IReservationDAO {
     }
     
     
+    @Transactional(propagation = Propagation.REQUIRED, readOnly = true)
+    public List<Reservation> findByStatus(ReserveStatus status) throws DAOException {
+        try {
+            String jpql = "SELECT r FROM Reservation r";
+
+            if (status != null) {
+                jpql += " WHERE r.reserveStatus = :status";
+            }
+
+            TypedQuery<Reservation> query = em.createQuery(jpql, Reservation.class);
+
+            if (status != null) {
+                query.setParameter("status", status);
+            }
+
+            return query.getResultList();
+        } catch (Exception e) {
+            throw new DAOException("Error fetching reservations by status", null, e);
+        }
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public void saveReportPDF(Reservation reservation, byte[] pdfBytes) throws DAOException {
+        try {
+            reservation.setReportPDF(pdfBytes);
+            em.merge(reservation);
+            em.flush();
+        } catch (Exception e) {
+            throw new DAOException("Failed to save PDF report", null, e);
+        }
+    }
+
 
 }

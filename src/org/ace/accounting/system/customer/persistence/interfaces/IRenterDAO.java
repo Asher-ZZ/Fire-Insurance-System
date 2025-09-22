@@ -14,6 +14,6 @@ public interface IRenterDAO {
     void delete(Renter renter) throws DAOException;
 
     Renter findById(String id) throws DAOException;
-
+    public boolean isIdNumberUnique(String idNumber) ;
     List<Renter> findAll() throws DAOException;
 }

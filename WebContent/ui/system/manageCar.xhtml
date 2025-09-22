@@ -66,9 +66,8 @@
 						<h:outputText for="regNo" value="Registration No"
 							styleClass="input-label mandatory" />
 						<p:inputText id="regNo"
-							value="#{ManageCarActionBean.car.registrationNo}" required="true" />
-
-
+							value="#{ManageCarActionBean.car.registrationNo}" required="true"
+							validator="#{ManageCarActionBean.validateRegistrationNo}" />
 
 						<p:outputLabel />
 						<p:message for="passenger" display="text" />

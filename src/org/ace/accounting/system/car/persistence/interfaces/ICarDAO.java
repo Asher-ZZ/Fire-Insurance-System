@@ -19,7 +19,7 @@ public interface ICarDAO {
     Car findById(String id) throws DAOException;
 
     List<Car> findAll() throws DAOException;
-    
+    public boolean registrationNoExists(String regNo);
 	 public List<Car> findAvailableCars(CarBranch branch, String carType, Date startDate, Date endDate) throws DAOException ;    public List<Car> findByStatus(CarStatus status) throws DAOException;
     
 }

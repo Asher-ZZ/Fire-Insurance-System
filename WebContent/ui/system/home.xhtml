@@ -215,19 +215,19 @@ body {
 							style="display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end; margin-bottom: 20px;">
 
 							<!-- Location -->
-							<div class="search-item" style="flex: 1; min-width: 150px;">
+							 <div class="search-item" style="flex: 1; min-width: 150px;">
 								<h:outputLabel for="location" value="Location:"
 									styleClass="search-label" />
 								<p:selectOneMenu id="location" styleClass="search-input"
-									value="#{ManageCarActionBean.car.carBranch}">
+									value="#{ManageCarActionBean.branch}">
 									<f:selectItem itemLabel="Any" itemValue="" />
 									<f:selectItems value="#{ManageCarActionBean.carBranches}"
 										var="branch" itemLabel="#{branch}" itemValue="#{branch}" />
 								</p:selectOneMenu>
-							</div>
+							</div> 
 
 							<!-- Car Type -->
-							<div class="search-item" style="flex: 1; min-width: 150px;">
+							<!-- <div class="search-item" style="flex: 1; min-width: 150px;">
 								<h:outputLabel for="carType" value="Car Type:"
 									styleClass="search-label" />
 								<p:selectOneMenu id="carType" styleClass="search-input"
@@ -236,25 +236,23 @@ body {
 									<f:selectItems value="#{ManageCarActionBean.carTypes}"
 										var="type" itemLabel="#{type}" itemValue="#{type}" />
 								</p:selectOneMenu>
-							</div>
+							</div> -->
 
 							<!-- Start Date -->
-							<div class="search-item" style="flex: 1; min-width: 120px;">
+							
 								<h:outputLabel for="startDate" value="Start Date:"
 									styleClass="search-label" />
-								<p:calendar id="startDate" styleClass="search-input"
-									value="#{ManageCarActionBean.startDate}" pattern="dd-MM-yyyy"
-									navigator="true" showOn="button" />
-							</div>
+								<p:calendar id="startDate" value="#{ManageCarActionBean.startDate}"
+								 pattern="yyyy-MM-dd" navigator="true" required="true" requiredMessage="Start date is required" />
+								
+							
 
 							<!-- End Date -->
-							<div class="search-item" style="flex: 1; min-width: 120px;">
+							
 								<h:outputLabel for="endDate" value="End Date:"
 									styleClass="search-label" />
-								<p:calendar id="endDate" styleClass="search-input"
-									value="#{ManageCarActionBean.endDate}" pattern="dd-MM-yyyy"
-									navigator="true" showOn="button" />
-							</div>
+								<p:calendar id="endDate" value="#{ManageCarActionBean.endDate}" pattern="yyyy-MM-dd" navigator="true" required="true" requiredMessage="End date is required" />
+							
 
 							<!-- Search Button -->
 							<div class="search-item" style="flex: 0 0 auto;">

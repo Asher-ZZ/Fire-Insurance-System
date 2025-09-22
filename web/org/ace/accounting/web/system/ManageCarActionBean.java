@@ -10,7 +10,10 @@ import javax.faces.bean.SessionScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
+import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
+import javax.faces.validator.ValidatorException;
+
 import org.ace.accounting.common.validation.ErrorMessage;
 import org.ace.accounting.common.validation.MessageId;
 import org.ace.accounting.common.validation.ValidationResult;
@@ -47,6 +50,15 @@ public class ManageCarActionBean extends BaseBean {
 	private CarBranch branch;
 	private List<Car> availableCar;
 	private List<Reservation> reservations;
+	private CarBranch selectedBranch; // new property for branch selection
+
+	public CarBranch getSelectedBranch() {
+	    return selectedBranch;
+	}
+
+	public void setSelectedBranch(CarBranch selectedBranch) {
+	    this.selectedBranch = selectedBranch;
+	}
 
 	private boolean createNew = true;
 
@@ -59,10 +71,8 @@ public class ManageCarActionBean extends BaseBean {
 	@ManagedProperty(value = "#{ReservationService}")
 	private IReservationService reservationService;
 
-
 	@ManagedProperty("#{ManageReservationActionBean}")
-    private ManageReservationActionBean reservationBean;
-
+	private ManageReservationActionBean reservationBean;
 
 	private static final long serialVersionUID = 1L;
 
@@ -70,10 +80,9 @@ public class ManageCarActionBean extends BaseBean {
 	public void init() {
 		createNewCar();
 		rebindData();
-		availableCars = carService.findAvailableCars();
 		prepareCarTypes();
-		filteredCars = availableCars;
 		reservations = reservationService.findAll();
+		availableCar = new ArrayList<>();
 
 	}
 
@@ -87,22 +96,24 @@ public class ManageCarActionBean extends BaseBean {
 	}
 
 	public String prepareRent(Car selectedCar) {
-	    if (selectedCar != null) {
-	        System.out.println("Prepare rent: selectedCar type = " + selectedCar);
-	        FacesContext.getCurrentInstance().getExternalContext()
-	                    .getFlash().put("selectedCar", selectedCar);
-	        return "ManageCustomerReservation.xhtml?faces-redirect=true";
-	    }
-	    return null;
+		if (selectedCar != null) {
+			System.out.println("Prepare rent: selectedCar type = " + selectedCar);
+			FacesContext.getCurrentInstance().getExternalContext().getFlash().put("selectedCar", selectedCar);
+			return "ManageCustomerReservation.xhtml?faces-redirect=true";
+		}
+		return null;
 	}
 
 	public void searchCars() {
-		availableCar = carService.searchAvailableCars(car.getCarBranch(), selectedCarType, startDate, endDate);
+		System.out.printf("branch=%s, type=%s, start=%s, end=%s%n",
+                car.getCarBranch(), selectedCarType, startDate, endDate);
+
+		availableCar = carService.searchAvailableCars(branch, selectedCarType, startDate, endDate);
 	}
 
 	public void rebindData() {
 		carList = carService.findAll();
-		availableCars = carService.findAvailableCars();
+	
 	}
 
 	public void createNewCar() {
@@ -149,6 +160,28 @@ public class ManageCarActionBean extends BaseBean {
 	public void prepareUpdateCar(Car car) {
 		this.car = car;
 		this.createNew = false;
+	}
+	
+	public void validateRegistrationNo(FacesContext context, UIComponent component, Object value)
+	        throws ValidatorException {
+
+	    if (value == null) {
+	        throw new ValidatorException(new FacesMessage(
+	            FacesMessage.SEVERITY_ERROR, "Registration No. is required.", null));
+	    }
+
+	    String regNo = value.toString().trim();
+
+	    if (regNo.isEmpty()) {
+	        throw new ValidatorException(new FacesMessage(
+	            FacesMessage.SEVERITY_ERROR, "Registration No. is required.", null));
+	    }
+
+	    // Check uniqueness
+	    if (carService.existsByRegistrationNo(regNo)) {
+	        throw new ValidatorException(new FacesMessage(
+	            FacesMessage.SEVERITY_ERROR, "Registration No. already exists.", null));
+	    }
 	}
 
 
@@ -328,8 +361,6 @@ public class ManageCarActionBean extends BaseBean {
 		this.reservations = reservations;
 	}
 
-	
-
 	public Car getSelectedCar() {
 		return selectedCar;
 	}
@@ -339,6 +370,6 @@ public class ManageCarActionBean extends BaseBean {
 	}
 
 	public void setReservationBean(ManageReservationActionBean reservationBean) {
-        this.reservationBean = reservationBean;
-    }
+		this.reservationBean = reservationBean;
+	}
 }

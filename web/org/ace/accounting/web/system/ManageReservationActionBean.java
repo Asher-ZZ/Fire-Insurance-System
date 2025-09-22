@@ -18,11 +18,14 @@ import java.util.Date;
 import org.ace.accounting.common.Gender;
 import org.ace.accounting.dto.ReservationDTO;
 import org.ace.accounting.system.car.Car;
+import org.ace.accounting.system.car.enumTypes.ReserveStatus;
 import org.ace.accounting.system.car.service.interfaces.ICarService;
 import org.ace.accounting.system.customer.Renter;
 import org.ace.accounting.system.customer.service.interfaces.IRenterService;
 import org.ace.accounting.system.reservation.Reservation;
+import org.ace.accounting.system.reservation.persistence.interfaces.IReservationDAO;
 import org.ace.accounting.system.reservation.service.interfaces.IReservationService;
+import org.ace.java.component.persistence.exception.DAOException;
 import org.ace.java.web.common.BaseBean;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.PrimeFaces;
@@ -42,6 +45,17 @@ public class ManageReservationActionBean extends BaseBean {
 	@ManagedProperty(value = "#{ReservationService}")
 	private IReservationService reservationService;
 	
+	@ManagedProperty(value = "#{ReservationDAO}")
+	private IReservationDAO reservationDAO;
+	
+	public IReservationDAO getReservationDAO() {
+		return reservationDAO;
+	}
+
+
+	public void setReservationDAO(IReservationDAO reservationDAO) {
+		this.reservationDAO = reservationDAO;
+	}
 	private boolean createNew = true;
 	private Car car;
 	private Renter renter;
@@ -56,9 +70,18 @@ public class ManageReservationActionBean extends BaseBean {
 	private Reservation selectedReservation;
 	private Date today;
 	private String rejectionReason;
-	
+	private String selectedStatus;
 
-	
+	public String getSelectedStatus() {
+		return selectedStatus;
+	}
+
+
+	public void setSelectedStatus(String selectedStatus) {
+		this.selectedStatus = selectedStatus;
+	}
+
+
 	public String getRejectionReason() {
 		return rejectionReason;
 	}
@@ -131,9 +154,7 @@ public class ManageReservationActionBean extends BaseBean {
 	 public void setSelectedCarForReservation(Car car) {
 	        reservation.setCar(car);
 	    }
-
-	 
-	 
+ 
 	private void createNewRenter() {
 		this.renter = new Renter();
 	}
@@ -177,7 +198,6 @@ public class ManageReservationActionBean extends BaseBean {
 		        temp.setDailyRate(reservation.getCar().getBaseRate());
 		    }
 
-		    // ✅ Calculate totalCost
 		    if (temp.getStartDate() != null && temp.getEndDate() != null && !temp.getEndDate().before(temp.getStartDate())) {
 		        long diffInMillies = temp.getEndDate().getTime() - temp.getStartDate().getTime();
 		        long days = TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS);
@@ -224,7 +244,6 @@ public class ManageReservationActionBean extends BaseBean {
 	}
 
 	public void editReservation(Reservation r) {
-		// Option 1: copy data to the form for editing
 		this.reservation = r;
 		this.renter = r.getRenter();
 	}
@@ -277,12 +296,7 @@ public class ManageReservationActionBean extends BaseBean {
 	        new FacesMessage("Reservation approved"));
 	}
 
-	/*
-	 * public void reject(Reservation res) {
-	 * reservationService.rejectReservation(res.getId());
-	 * FacesContext.getCurrentInstance().addMessage(null, new
-	 * FacesMessage("Reservation rejected")); }
-	 */
+	
 	public void reject(Reservation res) {
 	    try {
 	        if (rejectionReason == null || rejectionReason.trim().isEmpty()) {
@@ -305,6 +319,22 @@ public class ManageReservationActionBean extends BaseBean {
 	    }
 	}
 
+	public void filterReservations() {
+        try {
+            ReserveStatus statusEnum = null;
+
+            if (selectedStatus != null && !selectedStatus.isEmpty()) {
+                statusEnum = ReserveStatus.valueOf(selectedStatus);
+            }
+
+            reserveList = reservationDAO.findByStatus(statusEnum);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+	
 	public List<Reservation> getReserveList() {return reserveList;}
 	public void setReserveList(List<Reservation> reserveList) {this.reserveList = reserveList;}
 	public ICarService getCarService() {return carService;}

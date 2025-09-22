@@ -2,6 +2,8 @@ package org.ace.accounting.system.reservation.persistence.interfaces;
 
 import java.util.Date;
 import java.util.List;
+
+import org.ace.accounting.system.car.enumTypes.ReserveStatus;
 import org.ace.accounting.system.reservation.Reservation;
 import org.ace.java.component.persistence.exception.DAOException;
 
@@ -15,4 +17,6 @@ public interface IReservationDAO {
     Reservation findById(String id) throws DAOException;
     
     List<Reservation> findAll() throws DAOException;
+    public List<Reservation> findByStatus(ReserveStatus status) throws DAOException;
+    public void saveReportPDF(Reservation reservation, byte[] pdfBytes) throws DAOException;
 }

@@ -1,6 +1,8 @@
 package org.ace.accounting.system.car;
 
 import java.io.Serializable;
+import java.util.*;
+
 import javax.persistence.*;
 
 import org.ace.accounting.common.BasicEntity;
@@ -8,6 +10,7 @@ import org.ace.accounting.common.TableName;
 import org.ace.accounting.system.car.enumTypes.CarBranch;
 import org.ace.accounting.system.car.enumTypes.CarStatus;
 import org.ace.accounting.system.car.enumTypes.Category;
+import org.ace.accounting.system.reservation.Reservation;
 import org.ace.java.component.idgen.service.IDInterceptor;
 
 @Entity
@@ -38,6 +41,18 @@ public class Car implements Serializable {
 	@Column(name = "Status")
 	private CarStatus carStatus = CarStatus.AVAILABLE; // default
 
+	
+
+	@OneToMany(mappedBy = "Car", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Reservation> reservations = new ArrayList<>();
+	
+	public List<Reservation> getReservations() {
+		return reservations;
+	}
+
+	public void setReservations(List<Reservation> reservations) {
+		this.reservations = reservations;
+	}
 
 	@Column(name = "Make")
 	private String make;
@@ -58,7 +73,7 @@ public class Car implements Serializable {
 	private Double baseRate;
 
 	@Enumerated(EnumType.STRING)
-	@Column(name = "Branch")
+	@Column(name = "CarBranch")
 	private CarBranch carBranch;
 
 	@Enumerated(EnumType.STRING)

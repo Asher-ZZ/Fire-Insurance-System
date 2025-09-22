@@ -81,4 +81,9 @@ public class CarService extends BaseService implements ICarService {
 	 {
 	        return carDAO.findAvailableCars(branch, carType, startDate, endDate);
 	    }
+	 
+	 @Transactional(readOnly = true)
+	 public boolean existsByRegistrationNo( String regNo) {
+	     return carDAO.registrationNoExists(regNo);
+	 }
 }

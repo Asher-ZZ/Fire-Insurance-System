@@ -24,6 +24,16 @@
 					filterMatchMode="contains">
 					<h:outputText value="#{renter.name}" />
 				</p:column>
+				
+				<p:column headerText="Email" filterBy="#{renter.email}"
+					filterMatchMode="contains">
+					<h:outputText value="#{renter.email}" />
+				</p:column>
+				
+				<p:column headerText="Phone Number" filterBy="#{renter.phoneNumber}"
+					filterMatchMode="contains">
+					<h:outputText value="#{renter.phoneNumber}" />
+				</p:column>
 
 				<p:column style="width:30px;text-align: center;">
 					<p:commandButton action="#{RenterDialogActionBean.selectRenter(renter)}"

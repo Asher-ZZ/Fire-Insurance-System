@@ -79,4 +79,13 @@ public class RenterDAO extends BasicDAO implements IRenterDAO {
         }
         return result;
     }
+    
+    @Transactional(propagation = Propagation.REQUIRED, readOnly = true)
+    public boolean isIdNumberUnique(String idNumber) {  
+        String query = "SELECT COUNT(r) FROM Renter r WHERE r.idNumber = :idNumber";
+        Long count = (Long) em.createQuery(query)
+            .setParameter("idNumber", idNumber)
+            .getSingleResult();
+        return count == 0;
+    }
 }

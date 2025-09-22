@@ -20,4 +20,5 @@ public interface ICarService {
     List<Car> findAll() throws DAOException;
 	 public List<Car> searchAvailableCars(CarBranch branch, String carType,Date startDate, Date endDate); 
     List<Car> findAvailableCars() throws DAOException;
+    public boolean existsByRegistrationNo( String regNo);
 }

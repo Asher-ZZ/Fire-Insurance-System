@@ -59,7 +59,6 @@ public class Reservation implements Serializable {
     @Enumerated(EnumType.STRING)
     @Column(name = "Status")
     private ReserveStatus reserveStatus; // store enum as string
-  
 
 	@Column(name = "RentalType")
     private String rentalType; // store enum as string
@@ -74,6 +73,18 @@ public class Reservation implements Serializable {
     
     @Column(name="reason",length = 500)
     private String reason;
+    
+    @Lob
+    @Column(name = "ReportPDF")
+    private byte[] reportPDF;
+
+    public byte[] getReportPDF() {
+        return reportPDF;
+    }
+
+    public void setReportPDF(byte[] reportPDF) {
+        this.reportPDF = reportPDF;
+    }
     
     public String getReason() { return reason; }
     

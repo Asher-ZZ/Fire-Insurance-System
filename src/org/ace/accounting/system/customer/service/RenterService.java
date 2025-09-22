@@ -72,4 +72,6 @@ public class RenterService extends BaseService implements IRenterService {
         	throw new SystemException(e.getErrorCode(), "Failed to find all Renters)", e);
         }
     }
+    
+    
 }

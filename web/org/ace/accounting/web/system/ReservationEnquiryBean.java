@@ -8,6 +8,7 @@ import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.application.FacesMessage;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -18,6 +19,7 @@ import java.util.Date;
 import java.util.*;
 import java.util.List;
 
+import org.ace.accounting.common.Utils;
 import org.ace.accounting.dto.ReservationDTO;
 import org.ace.accounting.system.car.Car;
 import org.ace.accounting.system.car.enumTypes.ReserveStatus;
@@ -41,6 +43,7 @@ import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
 
@@ -133,8 +136,7 @@ public class ReservationEnquiryBean extends BaseBean implements Serializable {
 	@PostConstruct
 	public void init() {
 		prepareCarTypes();
-		carList = carService.findAll(); 
-		
+		carList = carService.findAll(); 	
 	}
 	
 	
@@ -184,7 +186,6 @@ public class ReservationEnquiryBean extends BaseBean implements Serializable {
 	    }
 	}
 	
-
 	public void approve(ReservationDTO resDto) {
 	    try {
 	        reservationService.approveReservation(resDto.getId()); // call service directly
@@ -248,7 +249,6 @@ public class ReservationEnquiryBean extends BaseBean implements Serializable {
 	        e.printStackTrace();
 	    }
 	}
-
 	
 	public void searchReservations() {
 	    try {
@@ -267,108 +267,57 @@ public class ReservationEnquiryBean extends BaseBean implements Serializable {
 	    }
 	}
 	
-
-
-
-public void generateReport() {
-		
-		if (results == null || results.isEmpty()) {
-	        addErrorMessage(null, "No search results to generate report");
-	        return;
+	public byte[] generateReport(ReservationDTO dto) {
+		String template;
+		if (dto.getreserveStatus() == ReserveStatus.APPROVED) {
+		    template = "ReservationApprovalForm.jrxml";
+		} else if (dto.getreserveStatus() == ReserveStatus.REJECTED) {
+		    template = "ReservationRejectionForm.jrxml";
+		} else {
+	        throw new IllegalArgumentException("Unknown status: " + dto.getreserveStatus());
 	    }
-
-	    // Example: take the first result, or better, use selectedPolicy/selected DTO
-	    ReservationDTO dto = results.get(0);
-
-		String pdfFilePath = dirPath + fileName + ".pdf";
 		System.out.println("generateReport: Writing PDF to " + dirPath + fileName + ".pdf");
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-		try (InputStream inputStream = Thread.currentThread().getContextClassLoader()
-				.getResourceAsStream("CarRentalApproval.jrxml")) {
+	    try (InputStream inputStream = Thread.currentThread()
+	             .getContextClassLoader()
+	             .getResourceAsStream(template)) {
 
-			if (inputStream == null) {
-				addErrorMessage(null, "Report design file not found");
-				return;
-			}
+	        if (inputStream == null) {
+	            addErrorMessage(null, "Report template not found!");
+	            return null;
+	        }
 
-			Map<String, Object> parameters = new HashMap<>();
-			System.out.println("Customer Name = " + dto.getCustomerName());
-			System.out.println("Email     = " + dto.getEmail());
-			System.out.println("Phone Number   = " + dto.getPhoneNumber());
-			parameters.put("CustomerName", dto.getCustomerName());
-			parameters.put("Email", dto.getEmail());
-			parameters.put("Car Type", dto.getCarType());
-			parameters.put("Total Cost", dto.getTotalCost());
-			parameters.put("Start Date", dto.getStartDate());
-			parameters.put("End Date", dto.getEndDate());
+	        JasperDesign design = JRXmlLoader.load(inputStream);
+	        JasperReport report = JasperCompileManager.compileReport(design);
 
+	        Map<String, Object> params = new HashMap<>();
+	        params.put("customerName", dto.getCustomerName());
+	        params.put("email", dto.getEmail());
+	        params.put("phoneNumber", dto.getPhoneNumber());
+	        params.put("carType", dto.getCarType());
+	        params.put("totalCost", dto.getTotalCost());
+	        params.put("startDate", Utils.formattedDate(dto.getStartDate()));
+	        params.put("endDate", Utils.formattedDate(dto.getEndDate()));
 
-			JasperDesign jasperDesign = JRXmlLoader.load(inputStream);
-			JasperReport jasperReport = JasperCompileManager.compileReport(jasperDesign);
+	        if (dto.getreserveStatus() == ReserveStatus.REJECTED) {
+	            params.put("reason", dto.getReason());
+	        }
+	        JasperPrint print = JasperFillManager.fillReport(report, params, new JREmptyDataSource());
+	        JasperExportManager.exportReportToPdfStream(print, baos);
 
-			JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, new JREmptyDataSource());
+	        FileUtils.forceMkdir(new File(dirPath));
+	        JasperExportManager.exportReportToPdfFile(print, dirPath + fileName + ".pdf");
 
-			File pdfFile = new File(pdfFilePath);
-			FileUtils.forceMkdir(pdfFile.getParentFile()); // Create parent directories
-
-			JasperExportManager.exportReportToPdfFile(jasperPrint, pdfFilePath);
-
-			addInfoMessage(null, "Report generated successfully!");
-		} catch (Exception e) {
-			e.printStackTrace();
-			addErrorMessage(null, "Report Generation Failed: " + e.getMessage());
-		}
+	        addInfoMessage(null, "Report generated successfully");
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        addErrorMessage(null, "Report generation failed: " + e.getMessage());
+	    }
+		return baos.toByteArray();
 	}
 
-public void generateRejectReport() {
 	
-	if (results == null || results.isEmpty()) {
-        addErrorMessage(null, "No search results to generate report");
-        return;
-    }
-
-    ReservationDTO dto = results.get(0);
-
-	String pdfFilePath = dirPath + fileName + ".pdf";
-	System.out.println("generateReport: Writing PDF to " + dirPath + fileName + ".pdf");
-
-	try (InputStream inputStream = Thread.currentThread().getContextClassLoader()
-			.getResourceAsStream("CarRentalApproval.jrxml")) {
-
-		if (inputStream == null) {
-			addErrorMessage(null, "Report design file not found");
-			return;
-		}
-
-		Map<String, Object> parameters = new HashMap<>();
-		System.out.println("Customer Name = " + dto.getCustomerName());
-		System.out.println("Email     = " + dto.getEmail());
-		System.out.println("Phone Number   = " + dto.getPhoneNumber());
-		parameters.put("CustomerName", dto.getCustomerName());
-		parameters.put("Email", dto.getEmail());
-		parameters.put("Car Type", dto.getCarType());
-		parameters.put("Total Cost", dto.getTotalCost());
-		parameters.put("Start Date", dto.getStartDate());
-		parameters.put("End Date", dto.getEndDate());
-
-
-		JasperDesign jasperDesign = JRXmlLoader.load(inputStream);
-		JasperReport jasperReport = JasperCompileManager.compileReport(jasperDesign);
-
-		JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, new JREmptyDataSource());
-
-		File pdfFile = new File(pdfFilePath);
-		FileUtils.forceMkdir(pdfFile.getParentFile()); // Create parent directories
-
-		JasperExportManager.exportReportToPdfFile(jasperPrint, pdfFilePath);
-
-		addInfoMessage(null, "Report generated successfully!");
-	} catch (Exception e) {
-		e.printStackTrace();
-		addErrorMessage(null, "Report Generation Failed: " + e.getMessage());
-	}
-}
-
 public StreamedContent getDownload() {
 	try {
 		String pdfFilePath = dirPath + fileName + ".pdf";
@@ -377,7 +326,7 @@ public StreamedContent getDownload() {
 
 		// Generate report if PDF does not exist
 		if (!file.exists()) {
-			generateReport();
+			generateReport(selectReject);
 		}
 
 		if (!file.exists()) {
@@ -397,16 +346,15 @@ public StreamedContent getDownload() {
 	}
 }
 
+public void generateAndStoreReport(Reservation reservation) {
+    byte[] pdfBytes = generateReport(new ReservationDTO(reservation));
+    if (pdfBytes != null) {
+        reservationDAO.saveReportPDF(reservation, pdfBytes);;
+        addInfoMessage("PDF report generated and stored successfully.");
+    }
+}
 
-	private void addInfoMessage(Object object, String string) {
-	// TODO Auto-generated method stub
 	
-}
-	
-	private void addErrorMessage(Object object, String string) {
-	// TODO Auto-generated method stub
-	
-}
 	public Date getStartDateFrom() {
 		return startDateFrom;
 	}
@@ -465,7 +413,6 @@ public StreamedContent getDownload() {
 	 public List<Reservation> getReservationList() {
 			return reservationList;
 		}
-
 
 		public void setReservationList(List<Reservation> reservationList) {
 			this.reservationList = reservationList;
@@ -533,6 +480,24 @@ public StreamedContent getDownload() {
 		}
 		public void setSelectReject(ReservationDTO selectReject) {
 			this.selectReject = selectReject;
+		}
+		public static long getSerialversionuid() {
+			return serialVersionUID;
+		}
+		public String getReportName() {
+			return reportName;
+		}
+		public String getFileName() {
+			return fileName;
+		}
+		public String getPdfDirPath() {
+			return pdfDirPath;
+		}
+		public String getDirPath() {
+			return dirPath;
+		}
+		public void setSelectedStatus1(ReserveStatus selectedStatus1) {
+			this.selectedStatus1 = selectedStatus1;
 		}
     
 }
