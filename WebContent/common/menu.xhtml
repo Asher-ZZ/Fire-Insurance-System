@@ -1,43 +1,45 @@
-<ui:composition 
-    xmlns:ui="http://java.sun.com/jsf/facelets"
-    xmlns="http://www.w3.org/1999/xhtml"
-    xmlns:f="http://java.sun.com/jsf/core"
-    xmlns:h="http://java.sun.com/jsf/html"
-    xmlns:p="http://primefaces.org/ui">
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui">
 
-    <h:form id="menuForm">
-        <style type="text/css">
-            .ui-menubar,
-            .ui-menu-child,
-            .ui-menu {
-                background: #222222 !important;
-   				 border: 1px solid rgba(0, 0, 0, 0.8) !important;
-            }
+	<h:form id="menuForm">
+		<style type="text/css">
+.ui-menubar, .ui-menu-child, .ui-menu {
+	background: #1e3246 !important;
+	border: 1px solid rgba(0, 0, 0, 0.8) !important;
+}
 
-            .ui-menu .ui-menuitem-text {
-                color: white;
-            }
+.ui-menu .ui-menuitem-text {
+	color: white;
+}
 
-            .ui-menu .ui-state-hover {
-                background: #75807a !important;
-            }
-        </style>
+.ui-menu .ui-state-hover {
+	background: #75807a !important;
+}
+</style>
 
-        <p:menubar autoDisplay="false" rendered="#{not empty sessionScope.LoginUser}">
-            <p:menuitem value="Home" action="home" ajax="false" immediate="true" />
+		<p:menubar autoDisplay="false"
+			rendered="#{not empty sessionScope.LoginUser}">
+			<p:menuitem value="Home" action="home" ajax="false" immediate="true" />
 
-            <p:submenu label="Setup Entry" rendered="#{LoginBean.hasPermission('Setup Entry')}">
-                <p:menuitem value="Branch Entry" action="branchEntry" ajax="false"
-                    rendered="#{LoginBean.hasSubmenuPermission('Branch Entry')}" />
+			<p:submenu label="Setup Entry"
+				rendered="#{LoginBean.hasPermission('Setup Entry')}">
+				<p:menuitem value="Branch Entry" action="branchEntry" ajax="false"
+					rendered="#{LoginBean.hasSubmenuPermission('Branch Entry')}" />
 
-                <p:menuitem value="User Entry" action="userEntry" ajax="false"
-                    rendered="#{LoginBean.hasSubmenuPermission('User Entry')}" />
+				<p:menuitem value="User Entry" action="userEntry" ajax="false"
+					rendered="#{LoginBean.hasSubmenuPermission('User Entry')}" />
+				<p:menuitem value="Manage Car Form" action="carEntryForm" ajax="false"
+					rendered="#{LoginBean.hasSubmenuPermission('Manage Car Form')}" />
+					<p:menuitem value="Manage Reservations" action="adminReservationForm" ajax="false"
+					rendered="#{LoginBean.hasSubmenuPermission('Manage Reservations')}" />
+				<p:menuitem value="Role Entry" action="roleEntry" ajax="false"
+					rendered="#{LoginBean.hasSubmenuPermission('Role Entry')}" />
+			</p:submenu>
 
-                <p:menuitem value="Role Entry" action="roleEntry" ajax="false"
-                    rendered="#{LoginBean.hasSubmenuPermission('Role Entry')}" />
-            </p:submenu>
-
-            <!-- <p:menuitem value="Wizard" action="wizard" ajax="false" immediate="true" />
+			<!-- <p:menuitem value="Wizard" action="wizard" ajax="false" immediate="true" />
             <p:menuitem value="Customer List" action="customerList" ajax="false" immediate="true" />
             <p:menuitem value="Manage Occupation" action="manageOccupation" ajax="false" immediate="true" />
             <p:menuitem value="Manage Proposal" action="manageProposal" ajax="false" immediate="true" />
@@ -46,13 +48,18 @@
             <p:menuitem value="Search Page" action="searchProposal" ajax="false" immediate="true" />
             <p:menuitem value="FireProposal Form" action="fireProposalEntry" ajax="false" immediate="true" />
             <p:menuitem value="Fire Policy Enuiry Form" action="policySearchForm" ajax="false" immediate="true" /> -->
-       		<p:menuitem value="Manage Car Form" action="carEntryForm" ajax="false" immediate="true" />
-       		<p:menuitem value="Make a Rent" action="rentalForm" ajax="false" immediate="true" />
-       		<p:menuitem value="Manage Renter Information" action="CarRenterForm" ajax="false" immediate="true" />
-       		<p:menuitem value="Manage Reservations" action="adminReservationForm" ajax="false" immediate="true" />
-       		<p:menuitem value="Reservation History" action="reservationHistoryForm" ajax="false" immediate="true" />
-       		
-       		
-        </p:menubar>
-    </h:form>
+			<!-- <p:menuitem value="Manage Car Form" action="carEntryForm"
+				ajax="false" immediate="true" /> -->
+			<p:menuitem value="Make a Rent" action="rentalForm" ajax="false"
+				immediate="true" />
+			<p:menuitem value="Manage Renter Information" action="CarRenterForm"
+				ajax="false" immediate="true" />
+			<!-- <p:menuitem value="Manage Reservations" action="adminReservationForm"
+				ajax="false" immediate="true" /> -->
+			<p:menuitem value="Reservation History"
+				action="reservationHistoryForm" ajax="false" immediate="true" />
+
+
+		</p:menubar>
+	</h:form>
 </ui:composition>

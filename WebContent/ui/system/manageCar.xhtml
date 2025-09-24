@@ -42,7 +42,7 @@
 						<h:outputText for="make" value="Make"
 							styleClass="input-label mandatory" />
 						<p:inputText id="make" value="#{ManageCarActionBean.car.make}"
-							required="true" requiredMessage="Car Make is required"  />
+							required="true" requiredMessage="Car Make is required" />
 
 						<p:outputLabel />
 						<p:message for="model" display="text" />
@@ -56,7 +56,8 @@
 						<h:outputText for="year" value="Year"
 							styleClass="input-label mandatory" />
 						<p:inputNumber id="year" value="#{ManageCarActionBean.car.year}"
-							required="true" decimalPlaces="0" requiredMessage="Car Year is required"  />
+							required="true" decimalPlaces="0"
+							requiredMessage="Car Year is required" />
 					</p:panelGrid>
 					<p:panelGrid columns="2"
 						columnClasses="ui-grid-col-3,ui-grid-col-9" layout="grid"
@@ -67,15 +68,17 @@
 							styleClass="input-label mandatory" />
 						<p:inputText id="regNo"
 							value="#{ManageCarActionBean.car.registrationNo}" required="true"
-							validator="#{ManageCarActionBean.validateRegistrationNo}" requiredMessage="Registeration Number is required" />
+							validator="#{ManageCarActionBean.validateRegistrationNo}"
+							requiredMessage="Registeration Number is required" />
 
-						<p:outputLabel /> 
+						<p:outputLabel />
 						<p:message for="passenger" display="text" />
 						<h:outputText for="passenger" value="Passenger Capacity"
 							styleClass="input-label mandatory" />
 						<p:inputNumber id="passenger"
 							value="#{ManageCarActionBean.car.passenger}" required="true"
-							decimalPlaces="0" requiredMessage="Passenger Capacity is required" />
+							decimalPlaces="0"
+							requiredMessage="Passenger Capacity is required" />
 
 						<p:outputLabel />
 						<p:message for="baseRate" display="text" />
@@ -155,41 +158,44 @@
 					<h:outputText value="#{var + 1}" />
 				</p:column>
 
-				<!-- Car ID -->
-				<p:column headerText="Car ID" filterBy="#{car.id}"
-					filterMatchMode="contains">
-					<h:outputText value="#{car.id}" disabled="true" />
-				</p:column>
-
 				<!-- Car Type -->
-				<p:column headerText="Type" >
+				<p:column headerText="Type" filterBy="#{car.type}"
+					filterMatchMode="contains">
 					<h:outputText value="#{car.type}" />
 				</p:column>
 
 				<!-- Car Make -->
-				<p:column headerText="Make" >
+				<p:column headerText="Make" filterBy="#{car.make}"
+					filterMatchMode="contains">
 					<h:outputText value="#{car.make}" />
 				</p:column>
 
 				<!-- Car Model -->
-				<p:column headerText="Model" >
+				<p:column headerText="Model" filterBy="#{car.make}"
+					filterMatchMode="contains">
 					<h:outputText value="#{car.model}" />
 				</p:column>
 
 				<!-- Year -->
-				<p:column headerText="Year" >
+				<p:column headerText="Year">
 					<h:outputText value="#{car.year}" />
 				</p:column>
 
 				<!-- Status -->
-				<p:column headerText="Status" >
+				<p:column headerText="Status">
 					<h:outputText value="#{car.carStatus}" />
 				</p:column>
 
 				<!-- Base Rate -->
-				<p:column headerText="Base Rate" >
+				<p:column headerText="Base Rate">
 					<h:outputText value="#{car.baseRate}" />
 				</p:column>
+
+				<p:column headerText="Branch" filterBy="#{car.carBranch}"
+					filterMatchMode="contains">
+					<h:outputText value="#{car.carBranch}" />
+				</p:column>
+
 
 				<p:column style="width:4%;">
 					<p:commandButton id="detailCarBtn" styleClass="green-button"
@@ -218,7 +224,7 @@
 
 			</p:dataTable>
 		</h:form>
-		
+
 		<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
 			<p:commandButton value="Yes" type="button"
 				styleClass="ui-confirmdialog-yes" icon="pi pi-check" />
@@ -228,9 +234,10 @@
 
 		<!-- Show Details Dialog -->
 
-		<p:dialog appendTo="@(body)" dynamic="true" modal="true" style="align:center;"
-			responsive="true" header="Car Detail form" height="400" width="400"
-			hideEffect="explode" widgetVar="carDetailDialog" id="carDetailDialog">
+		<p:dialog appendTo="@(body)" dynamic="true" modal="true"
+			style="align:center;" responsive="true" header="Car Detail form"
+			height="400" width="400" hideEffect="explode"
+			widgetVar="carDetailDialog" id="carDetailDialog">
 			<h:form id="carDetailForm">
 				<h:panelGrid columns="2" columnClasses="label,value" cellpadding="5"
 					id="carDetailPanel">
@@ -253,7 +260,8 @@
 					<h:outputText value="#{ManageCarActionBean.selectedCar.baseRate}" />
 
 					<h:outputText value="Registration No:" />
-					<h:outputText value="#{ManageCarActionBean.selectedCar.registrationNo}" />
+					<h:outputText
+						value="#{ManageCarActionBean.selectedCar.registrationNo}" />
 
 					<h:outputText value="Passenger Capacity:" />
 					<h:outputText value="#{ManageCarActionBean.selectedCar.passenger}" />

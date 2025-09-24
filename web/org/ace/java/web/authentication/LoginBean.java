@@ -88,7 +88,7 @@ public class LoginBean extends BaseBean {
 
 	public boolean hasSubmenuPermission(String menu) {
 		boolean subpermit = false;
-		User user = new User();
+		User user = new User(); 
 		user = (User) getParam(ParamId.LOGIN_USER);
 		// User user = userService.findUser(username);
 

@@ -55,9 +55,15 @@ public class ManageRenterActionBean extends BaseBean implements Serializable {
 		createNewRenter();
 		rebindData();
 		stateTownshipMap = new HashMap<>();
-		stateTownshipMap.put("1", Arrays.asList("yangon", "thanlyin"));
-		stateTownshipMap.put("2", Arrays.asList("mandalay", "pyinOoLwin"));
-		stateTownshipMap.put("3", Arrays.asList("taunggyi", "kalaw"));
+		stateTownshipMap.put("1", Arrays.asList("BaMaNa", "DaHpaYa"));
+		stateTownshipMap.put("2", Arrays.asList("BaLaKha", "DaMaSa"));
+		stateTownshipMap.put("3", Arrays.asList("BaGaLa", "LaBaNa"));
+		stateTownshipMap.put("4", Arrays.asList("KaKhaNa", "HpaLaNa"));
+		stateTownshipMap.put("5", Arrays.asList("AhYaTa", "BaMaNa"));
+		stateTownshipMap.put("6", Arrays.asList("BaPaNa", "HtaWaNa"));
+		stateTownshipMap.put("7", Arrays.asList("DaOuNa", "KaPaKa"));
+		stateTownshipMap.put("8", Arrays.asList("AhLaNa", "KhaMaNa"));
+		stateTownshipMap.put("9", Arrays.asList("AhMaYa", "AhMaZa"));
 		states = new ArrayList<>(stateTownshipMap.keySet());
 	}
 
@@ -70,6 +76,10 @@ public class ManageRenterActionBean extends BaseBean implements Serializable {
 		createNew = true;
 	}
 
+	public void resetRenter() {
+		createNewRenter();
+	}
+	
 	public void addRenter() {
 		try {
 			generateFinalIDNumber();
@@ -185,6 +195,17 @@ public class ManageRenterActionBean extends BaseBean implements Serializable {
 	            new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Invalid email format!"));
 	        return;
 	    }
+	    
+	    List<Renter> renters = renterService.findAll(); // 
+	    for (Renter r : renters) {
+	        if (r.getEmail() != null && r.getEmail().equalsIgnoreCase(email)) {
+	            if (createNew || !r.getId().equals(renter.getId())) {
+	                FacesContext.getCurrentInstance().addMessage("CarRenterForm:email",
+	                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "This email is already used!"));
+	                return;
+	            }
+	        }
+	    }
 	}
 
 	public void validatePhone() {
@@ -192,8 +213,19 @@ public class ManageRenterActionBean extends BaseBean implements Serializable {
 
 	    if (phone == null || !phone.matches("\\d{11}")) {
 	        FacesContext.getCurrentInstance().addMessage("CarRenterForm:phone",
-	            new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Invalid phone number! Must be 10 digits."));
+	            new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Invalid phone number! Must be 11 digits."));
 	        return;
+	    }
+	    
+	    List<Renter> renters = renterService.findAll(); 
+	    for (Renter r : renters) {
+	        if (r.getPhoneNumber() != null && r.getPhoneNumber().equals(phone)) {
+	            if (createNew || !r.getId().equals(renter.getId())) {
+	                FacesContext.getCurrentInstance().addMessage("CarRenterForm:phone",
+	                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "This phone number is already used!"));
+	                return;
+	            }
+	        }
 	    }
 	}
 

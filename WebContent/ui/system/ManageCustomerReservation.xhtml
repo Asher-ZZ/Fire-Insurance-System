@@ -154,7 +154,7 @@
 					process="@this" update="@form" />
 			</h:panelGrid>
 
-			<p:dataTable var="r"
+			<!-- <p:dataTable var="r"
 				value="#{ManageReservationActionBean.reserveList}" id="reserveTable"
 				paginator="true" rows="10" style="width:100%"
 				widgetVar="reserveTable"
@@ -162,31 +162,31 @@
 				rowsPerPageTemplate="5,10,15" rowKey="#{r.id}" reflow="true"
 				rowIndexVar="var" paginatorPosition="bottom">
 
-				<!-- Row Number -->
+				Row Number
 				<p:column headerText="No" width="2%">
 					<h:outputText value="#{var + 1}" />
 				</p:column>
 
 
-				<!-- Car Type -->
+				Car Type
 				<p:column headerText="Customer Name" filterBy="#{r.renter.name}"
 					filterMatchMode="contains">
 					<h:outputText value="#{r.renter.name}" />
 				</p:column>
 
-				<!-- Car Make -->
+				Car Make
 				<p:column headerText="Email" filterBy="#{r.renter.email}"
 					filterMatchMode="contains">
 					<h:outputText value="#{r.renter.email}" />
 				</p:column>
 
-				<!-- Car Model -->
+				Car Model
 				<p:column headerText="Phone" filterBy="#{r.renter.phoneNumber}"
 					filterMatchMode="contains">
 					<h:outputText value="#{r.renter.phoneNumber}" />
 				</p:column>
 
-				<!-- Year -->
+				Year
 				<p:column headerText="Car" filterBy="#{r.car.type}"
 					filterMatchMode="contains">
 					<h:outputText value="#{r.car.type}" />
@@ -197,30 +197,30 @@
 					<h:outputText value="#{r.totalCost}" />
 				</p:column>
 
-				<!-- Status -->
+				Status
 				<p:column headerText="Start Date" filterBy="#{r.startDate}"
 					filterMatchMode="contains">
 					<h:outputText value="#{r.startDate}" />
 				</p:column>
 
-				<!-- Base Rate -->
+				Base Rate
 				<p:column headerText="End Date" filterBy="#{r.endDate}"
 					filterMatchMode="contains">
 					<h:outputText value="#{r.endDate}" />
 				</p:column>
 
-				<!-- <p:column headerText="Status" filterBy="#{r.reserveStatus}"
+				<p:column headerText="Status" filterBy="#{r.reserveStatus}"
 					filterMatchMode="contains">
 					<h:outputText value="#{r.reserveStatus}" />
-				</p:column> -->
+				</p:column>
 
-				<!-- Edit Button -->
-				<!-- <p:column style="width:4%;">
+				Edit Button
+				<p:column style="width:4%;">
 					<p:commandButton styleClass="green-button" icon="fa fa-paint-brush"
 						action="#{ManageCarActionBean.prepareUpdateCar(car)}"
 						process="@this" update=":carEntryForm" />
 				</p:column>
-				 -->
+				
 				<p:column style="width:4%;">
 					<p:commandButton styleClass="red-button" icon="fa fa-times"
 						action="#{ManageReservationActionBean.deleteReservationFromDB(r)}"
@@ -231,7 +231,7 @@
 					</p:commandButton>
 				</p:column>
 
-			</p:dataTable>
+			</p:dataTable> -->
 		</h:form>
 		<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
 			<p:commandButton value="Yes" type="button"

@@ -32,13 +32,14 @@ public class RenterService extends BaseService implements IRenterService {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
-    public void updateRenter(Renter renter) throws DAOException {
+    public Renter updateRenter(Renter renter) throws DAOException {
         try {
         	renterDAO.update(renter);
         } catch (DAOException e) {
         	throw new SystemException(e.getErrorCode(), "Failed to update renter)", e);
             
         }
+        return renter;
     }
 
     @Override

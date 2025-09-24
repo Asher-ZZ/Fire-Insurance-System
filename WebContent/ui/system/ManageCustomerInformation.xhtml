@@ -186,8 +186,8 @@
 						rendered="#{!ManageRenterActionBean.createNew}"
 						update=":CarRenterForm :renterTableForm" style="width:70px;"
 						oncomplete="PF('renterTable').clearFilters();" />
-					<p:commandButton value="Reset" icon="pi pi-refresh" type="reset"
-						actionListener="#{ManageRenterActionBean.createNewRenter}"
+					<p:commandButton value="Reset" icon="pi pi-refresh"
+						action="#{ManageRenterActionBean.resetRenter}" immediate="true"
 						process="@this" update=":CarRenterForm" />
 				</h:panelGrid>
 			</p:panel>
@@ -229,7 +229,7 @@
 
 				<p:column headerText="Email" filterBy="#{r.email}"
 					filterMatchMode="contains">
-					<h:outputText value="#{r.name}" />
+					<h:outputText value="#{r.email}" />
 				</p:column>
 
 
@@ -243,10 +243,6 @@
 					<h:outputText value="#{r.driverLicence}" />
 				</p:column>
 				<!-- Year -->
-				<p:column headerText="Email" filterBy="#{r.email}"
-					filterMatchMode="contains">
-					<h:outputText value="#{r.email}" />
-				</p:column>
 
 				<!-- Status -->
 				<p:column headerText="ID Type" filterBy="#{r.idType}"

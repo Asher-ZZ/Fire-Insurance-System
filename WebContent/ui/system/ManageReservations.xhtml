@@ -60,12 +60,12 @@
 
 			<!-- Reservation List Panel -->
 			<p:panel header="Manage Reservations" styleClass="ui-fluid">
-			
+			<h:panelGrid >
 				<p:commandButton value="Export all to Excel"
                              styleClass="ui-button-primary"
                              action="#{ReservationEnquiryBean.exportToExcel}"
                              ajax="false" />
-				
+				</h:panelGrid>
 				<p:dataTable id="reservationTable"
 					value="#{ReservationEnquiryBean.reservations}" var="res"
 					paginator="true" rows="10" emptyMessage="No reservations found."

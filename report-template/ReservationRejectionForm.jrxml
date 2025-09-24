@@ -49,11 +49,11 @@
 	<columnHeader>
 		<band height="110" splitType="Stretch">
 			<staticText>
-				<reportElement x="2" y="40" width="534" height="50" uuid="e8154d44-cb74-40ed-aa4d-1f3289f1ac65"/>
+				<reportElement x="2" y="40" width="534" height="59" uuid="e8154d44-cb74-40ed-aa4d-1f3289f1ac65"/>
 				<textElement>
 					<font size="14"/>
 				</textElement>
-				<text><![CDATA[We appreciate your choice our company and warmly inform you that, your proposal of Car Rental has been approved and Your Charges is as follow.]]></text>
+				<text><![CDATA[We appreciate your choice our company.We have carefully reviewed your recent car rental request.Unfortunately, we regret to inform you that we are unable to approve your reservation for the following reason(s):]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="2" y="0" width="156" height="30" uuid="bfde8317-52ca-4274-b15d-d86fe4b495eb"/>
@@ -67,21 +67,21 @@
 	<detail>
 		<band height="342" splitType="Stretch">
 			<staticText>
-				<reportElement x="2" y="100" width="178" height="30" uuid="1f1f267f-4e56-406f-a727-778b08bcdeb2"/>
+				<reportElement x="0" y="80" width="178" height="30" uuid="1f1f267f-4e56-406f-a727-778b08bcdeb2"/>
 				<textElement>
 					<font size="14"/>
 				</textElement>
 				<text><![CDATA[CarType]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="0" y="140" width="180" height="30" uuid="5a3f0554-d781-4665-bc2a-6bfa13c73994"/>
+				<reportElement x="-1" y="120" width="180" height="30" uuid="5a3f0554-d781-4665-bc2a-6bfa13c73994"/>
 				<textElement>
 					<font size="14"/>
 				</textElement>
 				<text><![CDATA[totalCost]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="0" y="180" width="180" height="30" uuid="a186145d-b451-43e7-9c38-3f07ecbb1f16"/>
+				<reportElement x="-1" y="160" width="180" height="30" uuid="a186145d-b451-43e7-9c38-3f07ecbb1f16"/>
 				<textElement>
 					<font size="14"/>
 				</textElement>
@@ -96,77 +96,77 @@
 ]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="240" y="100" width="220" height="30" uuid="1e846035-f005-4bc0-9378-9f4f92764e6e"/>
+				<reportElement x="240" y="80" width="220" height="30" uuid="1e846035-f005-4bc0-9378-9f4f92764e6e"/>
 				<textElement>
 					<font size="14"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{carType}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="0" y="10" width="180" height="30" uuid="d677772c-89f7-4177-8b08-66edc2a4b68c"/>
+				<reportElement x="1" y="0" width="180" height="30" uuid="d677772c-89f7-4177-8b08-66edc2a4b68c"/>
 				<textElement>
 					<font size="14"/>
 				</textElement>
 				<text><![CDATA[email]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="0" y="60" width="180" height="30" uuid="616596ef-71d9-476c-b4f8-11b538681a15"/>
+				<reportElement x="0" y="40" width="180" height="30" uuid="616596ef-71d9-476c-b4f8-11b538681a15"/>
 				<textElement>
 					<font size="14"/>
 				</textElement>
 				<text><![CDATA[phoneNumber]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="0" y="220" width="180" height="30" uuid="c47cdd46-5d20-4402-91ce-0c6690b290d3"/>
+				<reportElement x="-1" y="200" width="180" height="30" uuid="c47cdd46-5d20-4402-91ce-0c6690b290d3"/>
 				<textElement>
 					<font size="14"/>
 				</textElement>
 				<text><![CDATA[endDate]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="240" y="60" width="240" height="30" uuid="eca2a907-89dd-4bd4-8197-99d871cb3484"/>
+				<reportElement x="240" y="40" width="240" height="30" uuid="eca2a907-89dd-4bd4-8197-99d871cb3484"/>
 				<textElement>
 					<font size="14"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{phoneNumber}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="240" y="180" width="240" height="30" uuid="b762cf80-2522-4fac-ac5c-ae99c0b71345"/>
+				<reportElement x="240" y="160" width="240" height="30" uuid="b762cf80-2522-4fac-ac5c-ae99c0b71345"/>
 				<textElement>
 					<font size="14"/>
 				</textElement>
 				<textFieldExpression><![CDATA[new SimpleDateFormat("dd/MM/yyyy").format($P{startDate})]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="240" y="220" width="296" height="30" uuid="ea9c44e5-4410-4b97-8ded-48b373c323df"/>
+				<reportElement x="240" y="200" width="296" height="30" uuid="ea9c44e5-4410-4b97-8ded-48b373c323df"/>
 				<textElement>
 					<font size="14"/>
 				</textElement>
 				<textFieldExpression><![CDATA[new SimpleDateFormat("dd/MM/yyyy").format($P{endDate})]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="240" y="140" width="140" height="30" uuid="8c4a09b6-4078-4086-b147-aa84d8428f23"/>
+				<reportElement x="240" y="120" width="140" height="30" uuid="8c4a09b6-4078-4086-b147-aa84d8428f23"/>
 				<textElement>
 					<font size="14"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{totalCost}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="240" y="10" width="220" height="30" uuid="57839f4a-87ee-49fd-a3bd-5b1268383330"/>
+				<reportElement x="240" y="0" width="220" height="30" uuid="57839f4a-87ee-49fd-a3bd-5b1268383330"/>
 				<textElement>
 					<font size="14"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{email}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="0" y="250" width="180" height="30" uuid="a90f920e-9357-4545-a710-176713457fe7"/>
+				<reportElement x="1" y="240" width="180" height="30" uuid="a90f920e-9357-4545-a710-176713457fe7"/>
 				<textElement>
 					<font size="14"/>
 				</textElement>
 				<text><![CDATA[reason]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="240" y="250" width="300" height="30" uuid="58cca83a-d967-4f52-8052-3bc52072c4bf"/>
+				<reportElement x="240" y="240" width="300" height="30" uuid="58cca83a-d967-4f52-8052-3bc52072c4bf"/>
 				<textElement>
 					<font size="14"/>
 				</textElement>

@@ -258,6 +258,7 @@ img.right {
 form .ui-state-highlight, .ui-widget-content .ui-state-highlight, .ui-widget-header .ui-state-highlight {
     background: url('#{request.contextPath}/images/ui-bg_highlight-soft.png') !important;
 }
+
 .ui-widget-content{
 	background: rgb(255, 255, 255); 
 }
@@ -293,7 +294,7 @@ form .ui-state-highlight, .ui-widget-content .ui-state-highlight, .ui-widget-hea
 .ui-panel .ui-panel-titlebar {
     font-size: 13px !important;
     font-family: Adobe Garamond Pro !important;
-    color: #ffffff;
+ /*    color: #ffffff; */
     text-shadow: 0 0px 0px #BFEFFF;
 }
 
@@ -496,10 +497,10 @@ form .ui-state-highlight, .ui-widget-content .ui-state-highlight, .ui-widget-hea
 	background: #6fc055;
 }
 
-.ui-widget-header{
+ .ui-widget-header{
 	color:white;
-	background:1e3246;
-}
+	background:#1e3246;
+} 
 
 .ui-widget-overlay {
 	background :#f4f5f7 !important;

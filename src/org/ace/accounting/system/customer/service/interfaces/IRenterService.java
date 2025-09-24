@@ -9,10 +9,11 @@ public interface IRenterService {
 
     void addNewRenter(Renter renter) throws DAOException;
 
-    void updateRenter(Renter renter) throws DAOException;
+    Renter updateRenter(Renter renter) throws DAOException;
 
     void deleteRenter(Renter renter) throws DAOException;
 
     Renter findById(String id) throws DAOException;
+    
     List<Renter> findAll() throws DAOException;
 }
